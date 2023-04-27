@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pengampu;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Tugas;
 use Illuminate\Http\Request;
 
@@ -15,12 +17,11 @@ class TugasController extends Controller
     public function index()
     {
         $data = [
-            // menampilkan tugas yang dibuat oleh guru yang sedang login
-            'tugas' => \App\Models\Tugas::where('kode_pengampu', \Illuminate\Support\Facades\Auth::guard('webguru')->user()->kode_pengampu)->get(),
+            // menampilkan tugas yang dibuat oleh guru yang login
+            'tugas' => Tugas::where('kode_guru', Auth::guard('webguru')->user()->kode_guru)->get(),
             'title' => 'Tugas',
-            'pengampu' => \App\Models\Pengampu::all(),
-        ];
-        
+        ];        
+
         return view('tugas.index', $data);
     }
 
@@ -31,7 +32,15 @@ class TugasController extends Controller
      */
     public function create()
     {
-        //
+        $data = [
+            'title' => 'Tambah Tugas Baru',
+            // menampilkan kelas yang diajar oleh guru yang login
+            'kelasYangDiajar' => Pengampu::where('kode_guru', Auth::guard('webguru')->user()->kode_guru)->get(),
+            
+        ];
+
+        // dd($data);
+        return view('tugas.create', $data);
     }
 
     /**

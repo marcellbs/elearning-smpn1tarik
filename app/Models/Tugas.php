@@ -15,9 +15,16 @@ class Tugas extends Model
     protected $guarded = ['kode_tugas'];
 
 
-    // relasi ke pengampu
-    public function pengampu(){
-        return $this->belongsTo(Pengampu::class, 'kode_pengampu');
+    public function guru() {
+        return $this->belongsTo(Guru::class, 'kode_guru');
+    }
+
+    public function mapel(){
+        return $this->belongsTo(Mapel::class, 'kode_pelajaran');
+    }
+
+    public function kelas(){
+        return $this->belongsTo(Kelas::class, 'kode_kelas');
     }
 
 
