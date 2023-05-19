@@ -33,31 +33,19 @@
               <td>:</td>
               <td>{{ $pengampu->kelas->tingkat->nama_tingkat }}{{ $pengampu->kelas->nama_kelas }}</td>
             </tr>
+            <tr>
+              <td>Tautan</td>
+              <td>:</td>
+              <td>
+                {{ $pengampu->link . " " }}
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{ $pengampu->id }}">
+                  <i class="bi bi-pencil-square"></i>
+              </button>
+            </td>
+            </tr>
           </table>
 
           <div class="card-footer">
-            <div class="row">
-              
-              <div class="col-10 pe-0 ps-1">
-              <form action="">
-                @csrf
-                <div class="form-group d-flex">
-                  <input type="text" name="link" id="link" class="form-control" placeholder="Masukkan link video conference" value="{{ $pengampu->link }}">
-                  <button type="submit" class="btn btn-primary mx-1">Simpan</button>
-                </div>
-              </form>
-              </div>
-    
-              <div class="col-2 p-0">
-              <form action="/guru/pengampu/{{ $pengampu->kode_pengampu }}" method="POST" class="d-inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger">Hapus</button>
-              </form>
-              </div>
-
-            </div>
-            {{-- section mulai conference dan presensi --}}
             <div class="row mt-2">
               <div class="col-md-6 ps-1 mt-1">
                 <a href="{{ $pengampu->link }}" class="btn btn-warning d-block text-white" target="_blank">Mulai</a>
@@ -76,7 +64,7 @@
       <div class="card-body">
         <div class="table-responsive mt-3">
           <div class="card">
-            <h5>Materi yang dibagikan</h5>
+            <h5><strong>Materi yang dibagikan</strong> </h5>
             <hr class="hr">
             <table class="table table-borderless">
               <thead>
@@ -87,9 +75,9 @@
                 </tr>
               </thead>
               <tbody>
+                
+                @foreach ($materi as $m)  
                 <tr>
-                  
-                  @foreach ($materi as $m)  
                   <td>{{$m->judul_materi}}</td>
                   <td>
                     <?php 
@@ -109,9 +97,9 @@
                   <td>
                     <a href="/guru/materi/{{$m->kode_materi}}" class="text-primary">Lihat</a>
                   </td>
+                </tr>
                   @endforeach
 
-                </tr>
               </tbody>
             </table>
           </div>
@@ -120,6 +108,75 @@
     </div>
   </div>
 
+  {{-- nama siswa --}}
+  <div class="col-lg-12 mt-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive mt-3">
+          <div class="card">
+            <h5 class="mb-0"><strong>Daftar Siswa</strong></h5>
+            <p class="text-muted mb-0">Jumlah siswa : {{$siswa->count()}}</p>
+            <hr class="hr">
+            <table class="table table-bordered datatable mb-2" id="datatable"> 
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>NIS</th>
+                  <th>Nama Siswa</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach ($siswa as $s) 
+                <tr>
+                  <td>{{$loop->iteration}}</td>
+                  <td>{{$s->nis}}</td>
+                  <td>{{ucwords($s->nama_siswa)}}</td>
+                  <td>
+                    {{ ucwords($s->jenis_kelamin) }}
+                  </td>
+                </tr>
+                @endforeach
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal{{ $pengampu->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form action="/guru/detail/{{ $hash->encode($pengampu->id) }}" method="post">
+              @csrf
+              @method('put')
+              <div class="mb-3">
+                <label for="link" class="form-label">Link</label>
+                <input type="text" class="form-control" id="link" name="link" value="{{ $pengampu->link }}">
+              </div>
+
+              <input type="hidden" name="id" value="{{ $pengampu->id }}">
+              <input type="hidden" name="kode_guru" value="{{ $pengampu->kode_guru }}">
+              
+              
+            
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
 </div>
 
 @endsection

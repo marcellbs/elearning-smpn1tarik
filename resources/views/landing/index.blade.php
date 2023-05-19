@@ -57,7 +57,7 @@
               <div class="row">
                 <h5 class="text-center">Login Sebagai</h5>
                 <div class="col text-center">
-                  <a href="login.html" class="btn btn-primary mx-2 my-1">Siswa</a>
+                  <a href="/siswa/login" class="btn btn-primary mx-2 my-1">Siswa</a>
                   <a href="/guru/login" class="btn btn-primary mx-2 my-1 px-3">Guru</a>
                   <a href="/admin/login" class="btn btn-primary mx-2 my-1">Admin</a>
                 </div>

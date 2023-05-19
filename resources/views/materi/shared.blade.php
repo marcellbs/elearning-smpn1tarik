@@ -6,8 +6,18 @@
 {{-- menampilkan materi yang dibagikan --}}
 
 <div class="row">
-  <div class="col-md-4">
-    @foreach ($materi as $m)
+  {{-- jika tidak ada materi yang bagikan --}}
+  @if (count($materi) == 0)
+    <div class="alert alert-light" role="alert">
+      <h4 class="alert-heading">Tidak ada materi yang dibagikan</h4>
+      <p>Silahkan tambahkan materi terlebih dahulu</p>
+      <hr>
+      <a href="/guru/materi/create" class="btn btn-primary">Tambah Materi</a>
+    </div>
+  @endif
+  
+  @foreach ($materi as $m)
+    <div class="col-md-4">
       <div class="card mb-3 rounded-2">
         <div class="card-header-shared">
           <h5 class="card-title-shared">{{$m->judul_materi}}</h5>
@@ -16,11 +26,18 @@
         <hr class="hr">
         <div class="card-body">
           <p class="card-text">{{$m->keterangan}}</p>
-          <a href="/guru/materi/{{$m->kode_materi}}" class="card-link">Lihat Materi</a>
+          <a href="/guru/materi/{{$m->kode_materi}}" class="card-link btn text-white" style="background-color: orange;"><i class="bi bi-eye"></i></a>
+          {{-- delete --}}
+          <form action="/guru/materi/{{$m->kode_materi}}" method="post" class="d-inline">
+            @method('delete')
+            @csrf
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah anda yakin?')"><i class="bi bi-trash"></i></button>
+          </form>
         </div>
       </div>
-    @endforeach
-  </div>
+    </div>
+  @endforeach
+  
 </div>
 
 

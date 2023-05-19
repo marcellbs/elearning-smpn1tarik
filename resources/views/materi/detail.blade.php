@@ -1,4 +1,4 @@
-@extends('layout.main')
+@extends((Auth::guard('webguru')->check()) ? 'layout.guru' : 'layout.main')
 @section('content')
   <div class="card bg-white">
     <div class="card-body mt-3">
@@ -46,7 +46,7 @@
 
       @if ($ekstensi == 'docx' || $ekstensi == 'pptx' || $ekstensi == 'xlsx')
         {{-- google docs --}}
-        <embed src="https://docs.google.com/gview?url={{ asset('file/materi/'.$materi->berkas) }}&embedded=true" style="width:100%; height:500px;" frameborder="0">
+        <embed src="https://docs.google.com/gview?embedded=true&url={{ asset('file/materi/'.$materi->berkas) }}" style="width:100%; height:500px;" frameborder="0">
       @elseif($ekstensi == 'pdf')
         <embed src="{{ asset('file/materi/'.$materi->berkas) }}" type="application/pdf" width="100%" height="500px">
       @else

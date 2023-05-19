@@ -24,15 +24,19 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
-                
+                return redirect(RouteServiceProvider::HOME);    
             } 
-            if (Auth::guard('webadmin')->check()) {
+            elseif(Auth::guard('webadmin')->check()){
                 return redirect(RouteServiceProvider::ADMIN);
             }
-            if (Auth::guard('webguru')->check()) {
+            elseif (Auth::guard('webguru')->check()) {
                 return redirect(RouteServiceProvider::GURU);
             }
+            elseif (Auth::guard('websiswa')->check()) {
+                return redirect(RouteServiceProvider::SISWA);
+            }
+            
+
         }
 
         return $next($request);

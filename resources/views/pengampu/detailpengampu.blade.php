@@ -32,5 +32,7 @@
       </div>
     </div>
   </div>
+
+  {{ $kelas_siswa }}
   
 @endsection

@@ -24,10 +24,11 @@
               <tr>
                 <td>{{$loop->iteration}}</td>
                 <td>{{$s->nis}}</td>
-                <td>{{$s->nama_siswa}}</td>
-                <td>{{$s->email}}</td>           
-                {{-- menampilkan kelas siswa berdasarkan kode_siswa --}}
-                <td>{{ $s->kelassiswa() }}</td>
+                <td>{{ucwords($s->nama_siswa)}}</td>
+                <td>{{$s->jenis_kelamin}}</td>           
+                {{-- menampilkan kelas siswa--}}
+                <td>
+                  {{ $s->kelas_Siswa() }}
                 <td>
                   <a href="/admin/siswa/{{$s->kode_siswa}}/edit" class="btn btn-warning">Edit</a>
                   <form action="/admin/siswa/{{$s->id}}" method="post" class="d-inline">

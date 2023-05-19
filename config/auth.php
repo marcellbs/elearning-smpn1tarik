@@ -48,6 +48,10 @@ return [
             'driver' => 'session',
             'provider' => 'guru',
         ],
+        'websiswa' => [
+            'driver' => 'session',
+            'provider' => 'siswa',
+        ],
     ],
 
     /*
@@ -82,6 +86,11 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Guru::class,
         ],
+
+        'siswa' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Siswa::class,
+        ]
 
     ],
 

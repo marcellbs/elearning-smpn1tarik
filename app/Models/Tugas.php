@@ -12,8 +12,16 @@ class Tugas extends Model
     public $timestamps = false;
     protected $table = 'tugas';
     protected $primaryKey = 'kode_tugas';
-    protected $guarded = ['kode_tugas'];
-
+    protected $fillable = [
+        'judul_tugas',
+        'keterangan',
+        'berkas',
+        'kode_guru',
+        'kode_kelas',
+        'kode_pelajaran',
+        'created_at',
+        'deadline'
+    ];
 
     public function guru() {
         return $this->belongsTo(Guru::class, 'kode_guru');
@@ -25,6 +33,10 @@ class Tugas extends Model
 
     public function kelas(){
         return $this->belongsTo(Kelas::class, 'kode_kelas');
+    }
+
+    public function jawaban(){
+        return $this->hasMany(JawabanTugas::class, 'kode_tugas', 'kode_tugas');
     }
 
 

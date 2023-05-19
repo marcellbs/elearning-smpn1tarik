@@ -182,7 +182,7 @@
         </a>
       </li><!-- End Icons Nav -->
       <li class="nav-item">
-        <a class="nav-link" href="/guru/logout" class="{{ (Request::is('admin/logout')) ? 'active' : '' }}" >
+        <a class="nav-link" href="/guru/logout" class="{{ (Request::is('guru/logout')) ? 'active' : '' }}" >
           <i class="bi bi-box-arrow-right"></i><span>Keluar</span>
         </a>
       </li><!-- End Icons Nav -->

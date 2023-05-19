@@ -14,11 +14,24 @@ class MateriController extends Controller
      */
     public function index()
     {
-        $data = [
-            'materi' => \App\Models\Materi::all(),
-            'title' => 'Material',
-        ];
-        return view('materi.materi', $data);
+        // cek apakah yang login adalah admin atau guru
+        $check = \Illuminate\Support\Facades\Auth::guard('webadmin')->check() || \Illuminate\Support\Facades\Auth::guard('webguru')->check();
+        if($check){
+            $data = [
+                'materi' => \App\Models\Materi::all(),
+                'title' => 'Materi',
+            ];
+            return view('materi.materi', $data);
+        }elseif(\Illuminate\Support\Facades\Auth::guard('websiswa')->check()){
+            $data = [
+                'materi' => \App\Models\Materi::all(),
+                'title' => 'Materi',
+                'kelas_siswa' => \App\Models\KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
+            ];
+            return view('siswa.materi', $data);
+        }
+
+
     }
 
     /**
@@ -28,12 +41,18 @@ class MateriController extends Controller
      */
     public function create()
     {
-        $data = [
-            'title' => 'Tambah Materi',
-            'kelas' => \App\Models\Tingkat::all(),
-            'mapel' => \App\Models\Mapel::all(),
-        ];
-        return view('materi.addmateri', $data);
+        $check = \Illuminate\Support\Facades\Auth::guard('webadmin')->check() || \Illuminate\Support\Facades\Auth::guard('webguru')->check();
+        if($check) {
+            $data = [
+                'title' => 'Tambah Materi',
+                'kelas' => \App\Models\Tingkat::all(),
+                'mapel' => \App\Models\Mapel::all(),
+            ];
+            return view('materi.addmateri', $data);
+        }elseif(\Illuminate\Support\Facades\Auth::guard('websiswa')->check()){
+            return redirect('/siswa/materi')->with('gagal', 'Maaf, anda tidak memiliki akses ke halaman tersebut');
+        }
+        
     }
 
     /**
@@ -44,45 +63,54 @@ class MateriController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'judul' => 'required',
-            'kelas' => 'required',
-            'mapel' => 'required',
-            'file' => 'required',
+        $check = \Illuminate\Support\Facades\Auth::guard('webadmin')->check() || \Illuminate\Support\Facades\Auth::guard('webguru')->check();
+        if($check) {
+            $request->validate([
+                'judul' => 'required',
+                'kelas' => 'required',
+                'mapel' => 'required',
+                'file' => 'required',
 
-        ],[
-            'judul.required' => 'Kolom judul harus diisi',
-            'kelas.required' => 'Kolom kelas harus diisi',
-            'mapel.required' => 'Kolom pelajaran harus diisi',
-            'file.required' => 'Kolom file harus diisi',
-        ]);
+            ],[
+                'judul.required' => 'Kolom judul harus diisi',
+                'kelas.required' => 'Kolom kelas harus diisi',
+                'mapel.required' => 'Kolom pelajaran harus diisi',
+                'file.required' => 'Kolom file harus diisi',
+            ]);
 
-        $file = $request->file('file');
-        $nama_file = time()."_".$file->getClientOriginalName();
-        $tujuan_upload = 'file/materi';
-        $file->move($tujuan_upload,$nama_file);
+            $file = $request->file('file');
+            $nama_file = time()."_".$file->getClientOriginalName();
+            $tujuan_upload = 'file/materi';
+            $file->move($tujuan_upload,$nama_file);
 
-        // jika yang login berasal dari tabel admin maka kode admin yang akan disimpan
-        $check = \Illuminate\Support\Facades\Auth::guard('webadmin')->check();
-        if($check){
-            $kode_admin = \Illuminate\Support\Facades\Auth::guard('webadmin')->user()->kode_admin;
-            $kode_guru = NULL;
-        }else{
-            $kode_guru = \Illuminate\Support\Facades\Auth::guard('webguru')->user()->kode_guru;
-            $kode_admin = NULL;
+            // jika yang login berasal dari tabel admin maka kode admin yang akan disimpan
+            $check = \Illuminate\Support\Facades\Auth::guard('webadmin')->check();
+            if($check){
+                $kode_admin = \Illuminate\Support\Facades\Auth::guard('webadmin')->user()->kode_admin;
+                $kode_guru = NULL;
+            }else{
+                $kode_guru = \Illuminate\Support\Facades\Auth::guard('webguru')->user()->kode_guru;
+                $kode_admin = NULL;
+            }
+
+            Materi::create([
+                'judul_materi' => $request->judul,
+                'kode_tingkat' => $request->kelas,
+                'kode_pelajaran' => $request->mapel,
+                'keterangan' => $request->deskripsi,
+                'berkas' => $nama_file,
+                'kode_admin' => $kode_admin,
+                'kode_guru' => $kode_guru,
+            ]);
+
+            if(\Illuminate\Support\Facades\Auth::guard('webadmin')->check())
+                return redirect('/admin/materi')->with('sukses', 'Data berhasil ditambahkan');
+            else(\Illuminate\Support\Facades\Auth::guard('webguru')->check());
+                return redirect('/guru/materi')->with('sukses', 'Data berhasil ditambahkan');
+
+        }elseif(\Illuminate\Support\Facades\Auth::guard('websiswa')->check()){
+            return redirect('/siswa/materi')->with('gagal', 'Maaf, anda tidak memiliki akses ke halaman tersebut');
         }
-
-        Materi::create([
-            'judul_materi' => $request->judul,
-            'kode_tingkat' => $request->kelas,
-            'kode_pelajaran' => $request->mapel,
-            'keterangan' => $request->deskripsi,
-            'berkas' => $nama_file,
-            'kode_admin' => $kode_admin,
-            'kode_guru' => $kode_guru,
-        ]);
-
-        return redirect('/admin/materi')->with('sukses', 'Data berhasil ditambahkan');
     }
 
     /**
@@ -93,11 +121,21 @@ class MateriController extends Controller
      */
     public function show(Materi $materi)
     {
-        $data = [
-            'title' => 'Detail Materi',
-            'materi' => $materi,
-        ];
-        return view('materi.detail', $data);
+        $check = \Illuminate\Support\Facades\Auth::guard('webadmin')->check() || \Illuminate\Support\Facades\Auth::guard('webguru')->check();
+        if($check) {
+            $data = [
+                'title' => 'Detail Materi',
+                'materi' => $materi,
+            ];
+            return view('materi.detail', $data);
+        }elseif(\Illuminate\Support\Facades\Auth::guard('websiswa')->check()){
+            $data = [
+                'title' => 'Detail Materi',
+                'materi' => $materi,
+                'kelas_siswa' => \App\Models\KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
+            ];
+            return view('siswa.detailmateri', $data);
+        }
     }
 
     /**
@@ -108,14 +146,20 @@ class MateriController extends Controller
      */
     public function edit(Materi $materi)
     {
-        $data = [
-            'title' => 'Edit Materi',
-            'materi' => $materi,
-            'kelas' => \App\Models\Tingkat::all(),
-            'mapel' => \App\Models\Mapel::all(),
-        ];
-        
-        return view('materi.editmateri', $data);
+        $check = \Illuminate\Support\Facades\Auth::guard('webadmin')->check() || \Illuminate\Support\Facades\Auth::guard('webguru')->check();
+        if($check) {
+            $data = [
+                'title' => 'Edit Materi',
+                'materi' => $materi,
+                'kelas' => \App\Models\Tingkat::all(),
+                'mapel' => \App\Models\Mapel::all(),
+            ];
+            
+            return view('materi.editmateri', $data);
+
+        }elseif(\Illuminate\Support\Facades\Auth::guard('websiswa')->check()){
+            return redirect('/siswa/materi')->with('gagal', 'Maaf, anda tidak memiliki akses ke halaman tersebut');
+        }
     }
 
     /**
@@ -127,42 +171,48 @@ class MateriController extends Controller
      */
     public function update(Request $request, Materi $materi)
     {
-        $request->validate([
-            'judul_materi' => 'required',
-            'kelas' => 'required',
-            'mapel' => 'required',
-        ],[
-            'judul_materi.required' => 'Kolom judul harus diisi',
-            'kelas.required' => 'Kolom kelas harus diisi',
-            'mapel.required' => 'Kolom pelajaran harus diisi',
-        ]);
+        $check = \Illuminate\Support\Facades\Auth::guard('webadmin')->check() || \Illuminate\Support\Facades\Auth::guard('webguru')->check();
 
-        // cek apakah ada file yang diupload atau tidak, jika ada maka file lama akan dihapus dan file baru akan diupload
-        if($request->hasFile('file')){
-            $file = $request->file('file');
-            $nama_file = time()."_".$file->getClientOriginalName();
-            $tujuan_upload = 'file/materi';
-            $file->move($tujuan_upload,$nama_file);
+        if($check){
+            $request->validate([
+                'judul_materi' => 'required',
+                'kelas' => 'required',
+                'mapel' => 'required',
+            ],[
+                'judul_materi.required' => 'Kolom judul harus diisi',
+                'kelas.required' => 'Kolom kelas harus diisi',
+                'mapel.required' => 'Kolom pelajaran harus diisi',
+            ]);
 
-            // hapus file lama
-            $file_lama = $materi->berkas;
-            $path = public_path().'/file/materi/'.$file_lama;
-            unlink($path);
+            // cek apakah ada file yang diupload atau tidak, jika ada maka file lama akan dihapus dan file baru akan diupload
+            if($request->hasFile('file')){
+                $file = $request->file('file');
+                $nama_file = time()."_".$file->getClientOriginalName();
+                $tujuan_upload = 'file/materi';
+                $file->move($tujuan_upload,$nama_file);
 
-            $materi->berkas = $nama_file;
-        }
+                // hapus file lama
+                $file_lama = $materi->berkas;
+                $path = public_path().'/file/materi/'.$file_lama;
+                unlink($path);
+
+                $materi->berkas = $nama_file;
+            }
 
 
-        $materi->judul_materi = $request->judul_materi;
-        $materi->kode_tingkat = $request->kelas;
-        $materi->keterangan = $request->keterangan;
-        $materi->kode_pelajaran = $request->mapel;
-        $materi->save();
+            $materi->judul_materi = $request->judul_materi;
+            $materi->kode_tingkat = $request->kelas;
+            $materi->keterangan = $request->keterangan;
+            $materi->kode_pelajaran = $request->mapel;
+            $materi->save();
 
-        if(\Illuminate\Support\Facades\Auth::guard('webadmin')->check()){
-            return redirect('/admin/materi')->with('sukses', 'Data berhasil diubah');
-        } else {
-            return redirect('/guru/materi')->with('sukses', 'Data berhasil diubah');
+            if(\Illuminate\Support\Facades\Auth::guard('webadmin')->check()){
+                return redirect('/admin/materi')->with('sukses', 'Data berhasil diubah');
+            } else {
+                return redirect('/guru/materi')->with('sukses', 'Data berhasil diubah');
+            }
+        }elseif(\Illuminate\Support\Facades\Auth::guard('websiswa')->check()){
+            return redirect('/siswa/materi')->with('gagal', 'Maaf, anda tidak memiliki akses ke halaman tersebut');
         }
     }
 
@@ -174,12 +224,21 @@ class MateriController extends Controller
      */
     public function destroy(Materi $materi)
     {
-        $materi->delete();
-        if(\Illuminate\Support\Facades\Auth::guard('webadmin')->check()){
-            return redirect('/admin/materi')->with('sukses', 'Data berhasil dihapus');
-        } else {
-            return redirect('/guru/materi')->with('sukses', 'Data berhasil dihapus');
+        $check = \Illuminate\Support\Facades\Auth::guard('webadmin')->check() || \Illuminate\Support\Facades\Auth::guard('webguru')->check();
+        if($check){
+            $materi->delete();
+
+            if(\Illuminate\Support\Facades\Auth::guard('webadmin')->check()){
+                unlink(public_path().'/file/materi/'.$materi->berkas);
+                return redirect('/admin/materi')->with('sukses', 'Data berhasil dihapus');
+            } elseif(\Illuminate\Support\Facades\Auth::guard('webguru')->check()) {
+                unlink(public_path().'/file/materi/'.$materi->berkas);
+                return redirect('/guru/materi')->with('sukses', 'Data berhasil dihapus');
+            }
+        }else{
+            return redirect('/')->with('gagal', 'Maaf, anda tidak memiliki akses ke halaman tersebut');
         }
+        
 
     }
 

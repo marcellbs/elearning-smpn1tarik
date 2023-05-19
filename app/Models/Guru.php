@@ -37,5 +37,11 @@ class Guru extends Model implements Authenticatable
     public function materi(){
         return $this->hasMany(Materi::class, 'kode_guru', 'kode_guru');
     }
+
+    public function jawaban(){
+        return $this->hasMany(JawabanTugas::class, 'kode_guru', 'kode_guru');
+    }
+
+
     
 }

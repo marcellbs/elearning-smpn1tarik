@@ -5,11 +5,11 @@
 @include('partials.page-title', ['title' => $title])
 
 <div class="row">
-  <div class="col-lg-12">
+  <div class="col-lg-8">
     <div class="card">
       <div class="card-body">
         <div class="table-responsive mt-3">
-          <form action="" method="post">
+          <form action="/guru/tugas" method="post" enctype="multipart/form-data">
             
             @csrf
 
@@ -35,13 +35,15 @@
               @enderror
             </div>
 
+            
+
             {{-- kelas --}}
             <div class="form-group">
               <label for="kelas">Kelas</label>
               <select name="kelas" id="kelas" class="form-control">
-                <option value="">-- Pilih Kelas (Mapel)--</option>
-                @foreach ($kelasYangDiajar as $item)
-                  <option value="{{ $item->kode_kelas }}">{{ $item->kelas->tingkat->nama_tingkat . $item->kelas->nama_kelas .' '. '('.$item->mapel->nama_pelajaran.')' }}</option>
+                <option value="">-- Pilih Kelas --</option>
+                @foreach ($kelas as $item)
+                  <option value="{{ $item['kode_kelas'] }}">{{ $item['nama_tingkat'].$item['nama_kelas'] }}</option>
                 @endforeach
               </select>
               @error('kelas')
@@ -50,6 +52,24 @@
               </div>
               @enderror
             </div>
+
+            {{-- mapel --}}
+            <div class="form-group">
+              <label for="mapel">Mata Pelajaran</label>
+              <select name="mapel" id="mapel" class="form-control">
+                <option value="">-- Pilih Mata Pelajaran --</option>
+                @foreach ($mapel as $item)
+                  <option value="{{ $item['kode_pelajaran'] }}">{{ $item['nama_pelajaran'] }}</option>
+                @endforeach
+              </select>
+              @error('mapel')
+              <div class="text-danger mt-1">
+                {{ $message }}
+              </div>
+              @enderror
+            </div>
+
+            
 
             {{-- deadline --}}
             <div class="form-group">
@@ -63,12 +83,20 @@
             </div>
 
             {{-- berkas --}}
-            {{-- drag and drop files --}}
-            
-            
+            <div class="form-group">
+              <label for="berkas">Berkas</label>
+              <input type="file" name="berkas" id="berkas" class="form-control" value="{{ old('berkas') }}">
+              @error('berkas')
+              <div class="text-danger mt-1">
+                {{ $message }}
+              </div>
+              @enderror
+            </div>
 
-            
-
+            {{-- tombol submit --}}
+            <div class="form-group mt-2">
+              <button type="submit" class="btn btn-primary">Tambah</button>
+            </div>
 
           </form>
         </div>
@@ -77,5 +105,29 @@
   </div>
 </div>
 
+{{-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script>
+  $(document).ready(function(){
+    $('#pelajaran').on('change', function(){
+      let pelajaran = $(this).val();
+      if(pelajaran){
+        $.ajax ({
+          url: '/guru/tugas/create/'+ pelajaran,
+          type: 'GET',
+          dataType: 'json',
+          success: function(data){
+            // console.log(data);
+            $('#kelas').empty();
+            $.each(data, function(key, value){
+              $('#kelas').append('<option value="'+value.kode_kelas+'">'+value.kelas.tingkat.nama_tingkat+value.kelas.nama_kelas+'</option>');
+            });
+          }
+        });
+      }else{
+        $('#kelas').empty();
+      }
+    });
+  });
+</script> --}}
 
 @endsection

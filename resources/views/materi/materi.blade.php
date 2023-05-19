@@ -74,15 +74,15 @@
               </div>
 
               <div class="row">
-        
+                {{-- Edit --}}
+                
+                @if(Auth::guard('webadmin')->check())
                 <div class="col-2">
-                  @if(Auth::guard('webguru')->check())
-                    <a href="/guru/materi/{{$m->kode_materi}}/edit" class="btn mx-2 mb-2" style="background-color: white; color:orange; border: 1px solid orange;"><i class="bi bi-pen"></i></a>
-                  @elseif(Auth::guard('webadmin')->check())
                     <a href="/admin/materi/{{$m->kode_materi}}/edit" class="btn mx-2 mb-2" style="background-color: white; color:orange; border: 1px solid orange;"><i class="bi bi-pen"></i></a>
-                  @endif
                 </div>
+                @endif
 
+                {{-- View --}}
                 <div class="col-2">
                   
                   @if(Auth::guard('webguru')->check())
@@ -93,18 +93,22 @@
 
                 </div>
 
+                {{-- Download --}}
                 <div class="col-2">
-                  
-                  @if(Auth::guard('webguru')->check())
-                    <form action="/guru/materi/{{$m->kode_materi}}" method="post" class="d-inline">
-                  @elseif(Auth::guard('webadmin')->check())
-                    <form action="/admin/materi/{{$m->kode_materi}}" method="post" class="d-inline">
+                  @if(Auth::guard('websiswa')->check() || Auth::guard('webguru')->check())
+                    <a href="/file/materi/{{ $m->berkas}}" class="btn mx-2 mb-2" style="background-color: white; color: orange; border: 1px solid orange;" download><i class="bi bi-download"></i></a>
                   @endif
-                    @method('delete')
-                    @csrf
-                    <button type="submit" class="btn mx-2 mb-2" style="background-color: white; color: orange; border: 1px solid orange;" onclick="return confirm('{{ __('apakah anda yakin untuk menghapus data ini ?') }}')"><i class="bi bi-trash"></i></button>
-                  </form>
                   
+                
+                  {{-- Hapus --}}
+                  @if(Auth::guard('webadmin')->check())
+                    <form action="/admin/materi/{{$m->kode_materi}}" method="post" class="d-inline">
+                      
+                      @method('delete')
+                      @csrf
+                      <button type="submit" class="btn mx-2 mb-2" style="background-color: white; color: orange; border: 1px solid orange;" onclick="return confirm('{{ __('apakah anda yakin untuk menghapus data ini ?') }}')"><i class="bi bi-trash"></i></button>
+                    </form>
+                  @endif
                 </div>
 
                 <div class="col-2 ms-auto mx-4">

@@ -38,11 +38,11 @@
 "></script>
   <script>
     var splide = new Splide( '.splide', {
-      type   : 'loop',
+      // type   : '',
       perPage: 3,
       perMove: 1,
       gap    : '1rem',
-      arrows: false,
+      arrows : false,
       breakpoints: {
           640: {
             perPage: 1,

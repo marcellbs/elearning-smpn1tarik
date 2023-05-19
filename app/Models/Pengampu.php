@@ -14,7 +14,7 @@ class Pengampu extends Model
     public $timestamps = false;
 
     public function guru(){
-        return $this->belongsTo(Guru::class, 'kode_guru');
+        return $this->belongsTo(Guru::class, 'kode_guru', 'kode_guru');
     }
 
     public function kelas(){
@@ -22,7 +22,7 @@ class Pengampu extends Model
     }
 
     public function mapel(){
-        return $this->belongsTo(Mapel::class, 'kode_pelajaran');
+        return $this->belongsTo(Mapel::class, 'kode_pelajaran', 'kode_pelajaran');
     }
 
     public function tingkat(){

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pengampu;
 use Illuminate\Http\Request;
 use Hashids\Hashids;
+use Illuminate\Support\Facades\Auth;
 
 class PengampuController extends Controller
 {
@@ -75,6 +76,7 @@ class PengampuController extends Controller
         $data = [
             'title' => 'Detail Pengampu',
             'pengampu' => $pengampu,
+            'kelas_siswa' => \App\Models\KelasSiswa::where('kode_kelas', $pengampu->kode_kelas)->get(),
         ];
         
         return view('pengampu.detailpengampu', $data);
@@ -116,13 +118,14 @@ class PengampuController extends Controller
             'guru.required' => 'Kolom guru harus diisi',
             'kelas.required' => 'Kolom kelas harus diisi',
             'mapel.required' => 'Kolom pelajaran harus diisi',
-        ]);
+        ]); 
 
         Pengampu::where('id', $pengampu->id)
             ->update([
                 'kode_guru' => $request->guru,
                 'kode_kelas' => $request->kelas,
                 'kode_pelajaran' => $request->mapel,
+                'link' => null,
             ]);
 
         return redirect('/admin/pengampu')->with('sukses', 'Data berhasil diubah');

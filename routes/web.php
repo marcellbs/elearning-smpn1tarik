@@ -10,6 +10,9 @@ use App\Http\Controllers\ElearningController;
 use App\Http\Controllers\PelajaranController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\TugasController;
+use App\Http\Controllers\JawabantugasController;
+use App\Http\Controllers\JawabanController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -22,10 +25,12 @@ use App\Http\Controllers\TugasController;
 |
 */
 
-Route::get('/', [ElearningController::class, 'index'])->middleware('guest');
 
 
 Route::get('/admin', [AdminController::class, 'index'])->middleware('auth:webadmin');
+Route::get('/admin/login', [AdminController::class, 'login'])->name('admin')->middleware('guest');
+Route::get('/admin/register', [AdminController::class, 'register']);
+
 Route::resource('admin/materi', MateriController::class)->middleware('auth:webadmin');
 // Route::resource('admin/materi', MateriController::class)->middleware('auth:webguru');
 Route::get('/admin/pengumuman', [AdminController::class, 'pengumuman'])->middleware('auth:webadmin');
@@ -39,8 +44,6 @@ Route::get('/admin/mapel', [AdminController::class, 'mapel'])->middleware('auth:
 Route::get('/admin/profile', [AdminController::class, 'profile'])->middleware('auth:webadmin');
 Route::post('/admin/createpengumuman', [AdminController::class, 'createPengumuman'])->middleware('auth:webadmin');
 
-Route::get('/admin/register', [AdminController::class, 'register']);
-Route::get('/admin/login', [AdminController::class, 'login'])->name('login')->middleware('guest');
 Route::post('/admin/addRegister', [AdminController::class, 'addRegister']);
 Route::post('/admin/auth', [AdminController::class, 'store']);
 Route::get('/admin/logout', [AdminController::class, 'logout']);
@@ -51,17 +54,32 @@ Route::get('/siswa/create', [SiswaController::class, 'create']);
 Route::post('/siswa/store', [SiswaController::class, 'store']);
 
 Route::get('/guru', [GuruController::class, 'index'])->middleware('auth:webguru');
-Route::get('/guru/login', [GuruController::class, 'login'])->name('login')->middleware('guest');
+Route::get('/guru/login', [GuruController::class, 'login'])->name('guru')->middleware('guest');
 Route::post('/guru/auth', [GuruController::class, 'auth']);
 Route::get('/guru/register', [GuruController::class, 'register']);
 Route::post('/guru/register', [GuruController::class, 'save']);
 Route::get('/guru/logout', [GuruController::class, 'logout']);
-// route untuk menampilkan detail pengampu dari id yang sudah di hash
+
+Route::resource('/guru/tugas', TugasController::class)->middleware('auth:webguru');
 Route::get('/guru/detail/{id}', [GuruController::class, 'detail'])->middleware('auth:webguru');
 Route::resource('/guru/pengampu', PengampuController::class)->middleware('auth:webguru');
-Route::resource('/guru/tugas', TugasController::class)->middleware('auth:webguru');
 Route::get('/guru/materi/shared', [MateriController::class, 'shared'])->middleware('auth:webguru');
 Route::resource('/guru/materi', MateriController::class)->middleware('auth:webguru');
 
+Route::get('/siswa', [SiswaController::class, 'index'])->middleware('auth:websiswa');
+Route::get('/siswa/login', [SiswaController::class, 'login'])->name('siswa')->middleware('guest');
+Route::post('/siswa/auth', [SiswaController::class, 'auth'])->middleware('guest');
+Route::get('/siswa/register', [SiswaController::class, 'register']);
+Route::post('/siswa/register', [SiswaController::class, 'save']);
+Route::get('/siswa/logout', [SiswaController::class, 'logout']);
+Route::get('/siswa/detail/{id}', [SiswaController::class, 'detail'])->middleware('auth:websiswa');
+Route::resource('/siswa/materi', MateriController::class)->middleware('auth:websiswa');
+Route::get('/guru/tugas/create/{id}', [TugasController::class, 'getKelas'])->middleware('auth:webguru');
+Route::put('/guru/detail/{id}', [GuruController::class, 'updateLink'])->middleware('auth:webguru');
+Route::resource('/siswa/tugas', JawabanController::class)->middleware('auth:websiswa');
+Route::resource('/siswa/jawabantugas', JawabantugasController::class)->middleware('auth:websiswa');
+// Route::get('show' )
+
+Route::get('/', [ElearningController::class, 'index'])->middleware('guest');
 
 

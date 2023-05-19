@@ -25,6 +25,7 @@
                 <div class="invalid-feedback">{{$message}}</div>
                 @enderror
               </div>
+              
               <div class="col-md-6 mt-2">
                 <label for="mapel">Mata Pelajaran</label>
                 <select class="form-select @error('mapel') is-invalid @enderror" name="mapel" id="mapel">
@@ -39,6 +40,7 @@
                 </div>
                 @enderror
               </div>
+
               {{-- select untuk nama kelas dan kode tingkat --}}
               <div class="col-md-6 mt-2 mb-2">
                 <label for="kelas">Kelas</label>

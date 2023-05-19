@@ -92,10 +92,10 @@ class AdminController extends Controller
 
     public function siswa(){
         $data = [
+            // data siswa dan kelas siswa
             'siswa' => Siswa::all(),
-            'kelas' => Kelas::all(),
             'kelas_siswa' => KelasSiswa::all(),
-            'tingkat' => Tingkat::all(),
+            
 
             'title' => 'Data Siswa',
         ];
