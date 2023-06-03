@@ -67,5 +67,10 @@
     @endif
 </div>
 
+{{-- pagination --}}
+<div class="d-flex justify-content-center">
+  {{ $tugas->links('pagination::bootstrap-4') }}
+</div>
+
 
 @endsection

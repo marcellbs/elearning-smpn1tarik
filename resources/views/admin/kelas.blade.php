@@ -76,7 +76,7 @@
     <div class="card">
       <div class="card-body">
         <div class="table-responsive mt-3">
-          <table class="table table-striped" id="datatable">
+          <table class="table table-striped" id="datatables">
             <thead>
               <tr>
                 <th>No</th>
@@ -105,7 +105,11 @@
               @endforeach
             </tbody>
           </table>
+          
         </div>
+      </div>
+      <div class="d-flex justify-content-end">
+        {{ $kelas->links() }}
       </div>
     </div>
   </div>

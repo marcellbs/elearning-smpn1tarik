@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pengampu;
+use App\Models\Guru;
 use Illuminate\Http\Request;
 use Hashids\Hashids;
 
@@ -19,6 +20,18 @@ class GuruController extends Controller
         ];
         
         return view('guru.index', $data);
+    }
+
+    public function mapel(){
+        $hash = new Hashids('my-hash', 10);
+        $data = [
+            'guru' => \App\Models\Guru::all(),
+            'pengampu' => \App\Models\Pengampu::where('kode_guru', \Illuminate\Support\Facades\Auth::guard('webguru')->user()->kode_guru)->get(),
+            'title' => 'Mata Pelajaran',
+            'hash' => $hash,
+        ];
+
+        return view('guru.mapel', $data);
     }
 
     public function login()
@@ -119,5 +132,129 @@ class GuruController extends Controller
         $pengampu->save();
 
         return redirect('/guru/detail/'.$hash->encode($pengampu->id));
+    }
+
+    //========================================
+    //===============PROFILE==================
+    //========================================
+
+    public function profile(){
+        $hash = new Hashids('my-hash',10);
+        $data = [
+            'title' => 'Profile',
+            // 'hash' => $hash,
+            // 'guru' => \App\Models\Guru::where('kode_guru', \Illuminate\Support\Facades\Auth::guard('webguru')->user()->kode_guru)->first(),
+        ];
+
+        return view('guru.profile', $data);
+    }
+    // ubah profile
+    public function changeProfile(Request $request, $id){
+        // validasi
+        $request->validate([
+            'nip' => 'required',
+            'nama' => 'required',
+            'email' => 'required',
+            'jk' => 'required',
+            'alamat' => 'required',
+            'telepon' => 'required|numeric',
+            'agama' => 'required',
+            'foto' => 'image|mimes:jpeg,png,jpg|max:3072',
+        ],[
+            'nip.required' => 'Kolom NIP harus diisi',
+            'nama.required' => 'Kolom nama harus diisi',
+            'email.required' => 'Kolom email harus diisi',
+            'jk.required' => 'Kolom jenis kelamin harus diisi',
+            'alamat.required' => 'Kolom alamat harus diisi',
+            'telepon.required' => 'Kolom telepon harus diisi',
+            'telepon.numeric' => 'Kolom telepon harus berupa angka',
+            'agama.required' => 'Kolom agama harus diisi',
+            'foto.image' => 'Kolom foto harus berupa gambar',
+            'foto.mimes' => 'Format foto harus jpeg, jpg, atau png',
+            'foto.max' => 'Ukuran foto maksimal 3 MB',
+        ]);
+
+        // cek apakah ada file foto yang diupload atau tidak
+        // jika nama file diawali dengan avatar maka tidak ada file yang diupload
+
+        if($request->file('foto') == null){
+            // jika tidak ada file yang diupload
+            // maka update data guru tanpa foto
+
+            // dd($request->all());
+            \App\Models\Guru::where('kode_guru', $id)->update([
+                'nip' => $request->nip,
+                'nama' => $request->nama,
+                'email' => $request->email,
+                'jenis_kelamin' => $request->jk,
+                'alamat' => $request->alamat,
+                'telepon' => $request->telepon,
+                'agama' => $request->agama,
+            ]);
+
+        }else{
+            // jika ada file yang diupload
+            // maka update data guru dengan foto
+            // hapus foto lama
+            $guru = \App\Models\Guru::where('kode_guru', $id)->first();
+
+            // jika foto tidak sama dengan file avatar user di folder public/img maka hapus foto
+            if($guru->foto != auth()->user()->foto){
+                unlink(public_path('img/guru/'.$guru->foto));
+            }
+
+            // upload foto baru
+            $foto = $request->file('foto');
+            $nama_foto = time().'_'.$foto->getClientOriginalName();
+            $tujuan_upload = 'img/guru';
+            $foto->move($tujuan_upload, $nama_foto);
+
+            // hapus foto lama
+            unlink(public_path('img/guru/'.$guru->foto));
+
+            // update data guru
+            \App\Models\Guru::where('kode_guru', $id)->update([
+                'nip' => $request->nip,
+                'nama' => $request->nama,
+                'email' => $request->email,
+                'jenis_kelamin' => $request->jk,
+                'alamat' => $request->alamat,
+                'telepon' => $request->telepon,
+                'agama' => $request->agama,
+                'foto' => $nama_foto,
+            ]);
+        }
+
+        return redirect()->back()->with('sukses', 'Data berhasil diubah');
+    }
+
+    // ubah password
+    public function changePassword(Request $request, $id){
+
+        $request->validate([
+            'password' => 'required',
+            'passwordbaru' => 'required|min:8|max:100',
+            'ulangpassword' => 'required|same:passwordbaru',
+        ],[
+            'password.required' => 'Password saat ini tidak boleh kosong',
+            'passwordbaru.required' => 'Password baru tidak boleh kosong',
+            'passwordbaru.min' => 'Password minimal 8 karakter',
+            'passwordbaru.max' => 'Password maksimal 100 karakter',
+            'ulangpassword.required' => 'Konfirmasi password tidak boleh kosong',
+            'ulangpassword.same' => 'Password tidak sama',
+        ]);
+
+        // dd($request->all());
+
+        $guru = Guru::find($id);
+
+        if(\Illuminate\Support\Facades\Hash::check($request->password, $guru->password)){
+            $guru->update([
+                'password' => bcrypt($request->passwordbaru),
+            ]);
+            return redirect('/guru/profile')->with('sukses', 'Password berhasil diubah');
+        }else{
+            return redirect('/guru/profile')->with('gagal', 'Password saat ini salah');
+        }
     }
 }

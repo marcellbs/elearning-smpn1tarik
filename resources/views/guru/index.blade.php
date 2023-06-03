@@ -10,7 +10,6 @@
               <ul class="splide__list">
                 @foreach ($pengampu as $p)
                 <div class="col-md-4 splide__slide">
-                  {{-- random color in every card --}}
                   @php
                     $colo = array('#FFB3BA','#FFDFBA','#BAFFC9','#BAE1FF', '#E2BAFF', '#FFBAF2', '#FFBABA', '#e9ff7d');
                     $color = $colo[array_rand($colo)];

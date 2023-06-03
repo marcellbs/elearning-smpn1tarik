@@ -16,7 +16,7 @@ class TugasController extends Controller
     public function index()
     {
         $data = [
-            // menampilkan data tugas dari user yang login
+            // menampilkan data tugas dari user yang login pagination
             'tugas' => Tugas::where('kode_guru', auth()->user()->kode_guru)->orderBy('created_at', 'desc')->get(),
             'title' => 'Tugas',
             // menampilkan siswa yang mengumpulkan tugas dari tabel jawaban_tugas
@@ -35,7 +35,7 @@ class TugasController extends Controller
     {
         $data = [
             'title' => 'Tambah Tugas Baru',
-            // menampilkan kelas yang diajar oleh guru yang login saat ini menggunakan select distinct
+            // menampilkan kelas yang diajar oleh guru yang login saat ini menggunakan select distinct,
             'kelas' => \App\Models\Kelas::select('kelas.kode_kelas', 'kelas.nama_kelas', 'tingkat_kelas.nama_tingkat')
                 ->join('tingkat_kelas', 'tingkat_kelas.kode_tingkat', '=', 'kelas.kode_tingkat')
                 ->join('pengampu', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')

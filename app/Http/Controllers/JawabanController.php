@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\JawabanTugas;
 use App\Models\Tugas;
 
+
 class JawabanController extends Controller
 {
     /**
@@ -16,8 +17,16 @@ class JawabanController extends Controller
     public function index()
     {
         $data = [
-            // menampilkan data tugas berdasarkan kelassiswa yang login
-            'tugas' => Tugas::where('kode_kelas', \App\Models\KelasSiswa::where('kode_siswa', auth()->user()->kode_siswa)->first()->kode_kelas)->orderBy('created_at', 'desc')->get(),
+            // menampilkan data tugas berdasarkan kelassiswa yang login dan berikan pagination
+            // 'tugas' => Tugas::where('kode_kelas', \App\Models\KelasSiswa::where('kode_siswa', auth()->user()->kode_siswa)->first()->kode_kelas)->orderBy('created_at', 'desc')->get(),
+
+            'tugas' => Tugas::join('kelas', 'kelas.kode_kelas', '=', 'tugas.kode_kelas')
+                ->join('kelas_siswa', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
+                ->where('kelas_siswa.kode_siswa', auth()->user()->kode_siswa)
+                ->orderBy('tugas.created_at', 'desc')
+                // ->get()
+                ->paginate(10),
+
             'title' => 'Tugas',
             'kelas_siswa' => \App\Models\KelasSiswa::where('kode_siswa', auth()->user()->kode_siswa)->first(),
             'jawaban' => JawabanTugas::where('kode_siswa', auth()->user()->kode_siswa)->get(),

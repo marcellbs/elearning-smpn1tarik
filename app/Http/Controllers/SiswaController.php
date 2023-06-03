@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Siswa;
 use App\Models\KelasSiswa;
 use Illuminate\Http\Request;
 
@@ -128,6 +129,146 @@ class SiswaController extends Controller
         return view('siswa.detailkelas', $data);
     }
 
+    public function pengumuman(){
+        $data = [
+            'title' => 'Pengumuman',
+            'kelas_siswa' => KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
+            'pengumuman' => \App\Models\Pengumuman::orderByDesc('tgl_upload')->get(),
+        ];
+
+        return view('siswa.pengumuman', $data);
+    }
+
+    public function mapel(){
+        // $hash = new \Vinkla\Hashids\Facades\Hashids('my-hash', 10);
+        $data = [
+            'title' => 'Mata Pelajaran',
+            'kelas_siswa' => KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
+            'pengampu' => \App\Models\Pengampu::where('kode_kelas', KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first()->kode_kelas)->get(),
+        ];
+
+        return view('siswa.mapel', $data);
+    }
+
+    public function profile(){
+        $data = [
+            'title' => 'Profil',
+            'kelas_siswa' => KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
+        ];
+
+        return view('siswa.profile', $data);
+    }
+
+    public function changeProfile(Request $request, $id){
+        $request->validate([
+            'nis' => 'required',
+            'nama' => 'required',
+            'email' => 'required',
+            'jk' => 'required',
+            'alamat' => 'required',
+            'telepon' => 'required|numeric',
+            'agama' => 'required',
+            'foto' => 'image|mimes:jpeg,png,jpg|max:3072',
+        ],[
+            'nis.required' => 'Kolom NIS harus diisi',
+            'nama.required' => 'Kolom nama harus diisi',
+            'email.required' => 'Kolom email harus diisi',
+            'jk.required' => 'Kolom jenis kelamin harus diisi',
+            'alamat.required' => 'Kolom alamat harus diisi',
+            'telepon.required' => 'Kolom telepon harus diisi',
+            'telepon.numeric' => 'Kolom telepon harus berupa angka',
+            'agama.required' => 'Kolom agama harus diisi',
+            'foto.image' => 'Kolom foto harus berupa gambar',
+            'foto.mimes' => 'Format foto harus jpeg, jpg, atau png',
+            'foto.max' => 'Ukuran foto maksimal 3 MB',
+        ]);
+
+        if($request->file('foto') == null){
+            // jika tidak ada file yang diupload
+            // maka update data siswa tanpa foto
+
+            // dd($request->all());
+
+            \App\Models\Siswa::where('kode_siswa', $id)->update([
+                'nis' => $request->nis,
+                'nama_siswa' => $request->nama,
+                'email' => $request->email,
+                'jenis_kelamin' => $request->jk,
+                'alamat' => $request->alamat,
+                'telepon' => $request->telepon,
+                'agama' => $request->agama,
+            ]);
+        }else{
+            // jika ada file yang diupload
+            // maka update data siswa dengan foto
+
+            // hapus foto lama
+            $siswa = \App\Models\Siswa::where('kode_siswa', $id)->first();
+            
+            if($siswa->foto != auth()->user()->foto){
+                unlink(public_path('img/siswa/'.$siswa->foto));
+            }
+
+            // upload foto baru
+            $foto = $request->file('foto');
+            $nama_foto = time()."_".$foto->getClientOriginalName();
+            $tujuan_upload = 'img/siswa';
+            $foto->move($tujuan_upload, $nama_foto);
+            
+            unlink(public_path('img/siswa/'.$siswa->foto));
+
+            // dd($request->all());
+
+            \App\Models\Siswa::where('kode_siswa', $id)->update([
+                'nis' => $request->nis,
+                'nama_siswa' => $request->nama,
+                'email' => $request->email,
+                'jenis_kelamin' => $request->jk,
+                'alamat' => $request->alamat,
+                'telepon' => $request->telepon,
+                'agama' => $request->agama,
+                'foto' => $nama_foto,
+            ]);
+
+        }
+
+        return redirect()->back()->with('sukses', 'Data berhasil diubah');
+    }
+
+    // method untuk mengubah password
+    public function changePassword(Request $request, $id){
+
+        $request->validate([
+            'password' => 'required',
+            'passwordbaru' => 'required|min:8|max:100',
+            'ulangpassword' => 'required|same:passwordbaru',
+        ],[
+            'password.required' => 'Password saat ini tidak boleh kosong',
+            'passwordbaru.required' => 'Password baru tidak boleh kosong',
+            'passwordbaru.min' => 'Password minimal 8 karakter',
+            'passwordbaru.max' => 'Password maksimal 100 karakter',
+            'ulangpassword.required' => 'Konfirmasi password tidak boleh kosong',
+            'ulangpassword.same' => 'Password tidak sama',
+        ]);
+
+        // dd($request->all());
+
+        $siswa = Siswa::find($id);
+
+        // cek password saat ini sama atau tidak
+        if(bcrypt($request->password) != $siswa->password){
+            return redirect()->back()->with('gagal', 'Password saat ini salah');
+        } else {
+            // jika password sama
+            // maka update password
+            $siswa->update([
+                'password' => bcrypt($request->passwordbaru),
+            ]);
+
+            return redirect()->back()->with('sukses', 'Password berhasil diubah');
+        }
+
+    }
 
 
 }

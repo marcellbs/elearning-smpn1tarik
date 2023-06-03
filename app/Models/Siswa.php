@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Siswa extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 {
@@ -28,10 +28,8 @@ class Siswa extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
     // menampilkan tingkat kelas siswa dan nama kelas siswa
     public function kelas_Siswa(){
-        $query = KelasSiswa::where('kode_siswa', $this->kode_siswa)->first();
-        $kelas = Kelas::where('kode_kelas', $query->kode_kelas)->first();
-        $tingkat = Tingkat::where('kode_tingkat', $kelas->kode_tingkat)->first();
-        return $tingkat->nama_tingkat . ' ' . $kelas->nama_kelas;
+        //
+
     }
 
     public function tingkat(){

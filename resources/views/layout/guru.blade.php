@@ -134,8 +134,14 @@
   <!-- ======= Sidebar ======= -->
   <aside id="sidebar" class="sidebar">
     <div class="text-center">
-      <img src="/img/{{ auth()->user()->foto }}" alt="Profile" class="align-center rounded-circle image-profile">
-      {{-- {!! ucwords('khoirul badi S.Kom., M.T.') !!} --}}
+      {{-- <img src="/img/{{ auth()->user()->foto }}" alt="Profile" class="align-center rounded-circle image-profile"> --}}
+
+      @if (file_exists(public_path('img/guru/' . auth()->user()->foto)))
+        <img src="/img/guru/{{ auth()->user()->foto }}" alt="user-img" class="rounded-circle image-profile img-thumbnail p-0">
+      @else
+        <img src="/img/{{ auth()->user()->foto }}" alt="user-img" class="rounded-circle image-profile">
+      @endif
+
       <h5 class="mb-0 mt-3">{{ auth()->user()->nama }}</h5>
       <p class="mt-0">Guru / Pengajar</p>
     </div>
@@ -149,6 +155,12 @@
           <span>Dashboard</span>
         </a>
       </li><!-- End Dashboard Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('guru/mapel')) ? 'active' : '' }}" href="/guru/mapel">
+          <i class="bi bi-bookmarks"></i><span>Mata Pelajaran</span>
+        </a>
+      </li>
 
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('guru/materi')) ? 'active' : '' }}" href="/guru/materi">
@@ -167,12 +179,6 @@
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('guru/tugas')) ? 'active' : '' }}" href="/guru/tugas">
           <i class="bi bi-pen"></i><span>Tugas</span>
-        </a>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link {{ (Request::is('guru/mapel')) ? 'active' : '' }}" href="/guru/mapel">
-          <i class="bi bi-bookmarks"></i><span>Data Mapel</span>
         </a>
       </li>
 

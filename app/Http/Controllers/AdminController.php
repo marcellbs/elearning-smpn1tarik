@@ -3,20 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guru;
-use App\Models\Siswa;
 use App\Models\Admin;
-use App\Models\Pengumuman;
-use App\Models\Kelas;
-use App\Models\KelasSiswa;
-use App\Models\Tingkat;
 use App\Models\Mapel;
-use App\Providers\RouteServiceProvider;
+use App\Models\Siswa;
+use App\Models\KelasSiswa;
+use App\Models\Pengumuman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class AdminController extends Controller
 {
+
     public function test(){
         $admin = Admin::all();
         return response()->json($admin, 200);
@@ -41,6 +40,10 @@ class AdminController extends Controller
         ];
         return view('admin.materi', $data);
     }
+
+    // =======================================================
+    // ===================== CRUD PENGUMUMAN =================
+    // =======================================================
 
     public function pengumuman(){
         $data = [
@@ -82,24 +85,111 @@ class AdminController extends Controller
         return redirect('/admin/pengumuman')->with('sukses', 'Pengumuman berhasil dihapus');
     }
 
-    public function editPengumuman($id){
+    public function updatePengumuman(Request $request, $id){
+
+        $request->validate(
+            [
+                'judul' => 'required|min:3',
+                'deskripsi' => 'required|min:3',
+            ],
+            [
+                'judul.required' => 'Judul tidak boleh kosong',
+                'judul.min' => 'Judul minimal 3 karakter',
+                'deskripsi.required' => 'Deskripsi tidak boleh kosong',
+                'deskripsi.min' => 'Deskripsi minimal 3 karakter',
+            ]
+            );
+
+        Pengumuman::find($id)->update([
+            'judul_pengumuman' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+        ]);
+
+        return redirect('/admin/pengumuman')->with('sukses', 'Pengumuman berhasil diubah');
+
+    }
+
+    public function detailPengumuman($id){
         $data = [
             'pengumuman' => Pengumuman::find($id),
-            'title' => 'Edit Pengumuman',
+            'title' => 'Detail Pengumuman',
         ];
-        return view('admin.edit-pengumuman', $data);
+        return view('admin.detail-pengumuman', $data);
     }
+
+    
+    // =======================================================
+    // ===================== SISWA ===========================
+    // =======================================================
 
     public function siswa(){
         $data = [
-            // data siswa dan kelas siswa
-            'siswa' => Siswa::all(),
-            'kelas_siswa' => KelasSiswa::all(),
-            
-
+            // menampilkan data siswa dan kelasnya
+            'siswa' => Siswa::leftJoin('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
+            ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
+            ->leftJoin('tingkat_kelas', 'kelas.kode_tingkat', '=', 'tingkat_kelas.kode_tingkat')
+            ->select('siswa.*', 'kelas.nama_kelas', 'tingkat_kelas.nama_tingkat')
+            ->orderBy('kelas.kode_kelas', 'asc')
+            ->get(),
             'title' => 'Data Siswa',
         ];
         return view('admin.siswa', $data);
+    }
+
+
+    public function uploadsiswa(Request $request){
+    // Validasi file yang diunggah
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls'
+    ],[
+        'file.required' => 'File tidak boleh kosong',
+        'file.mimes' => 'File harus berupa file Excel'
+    ]);
+
+    // Ambil file yang diunggah
+    $file = $request->file('file');
+
+    // Baca file Excel menggunakan PhpSpreadsheet
+    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file);
+
+    // Dapatkan daftar semua sheet dalam file
+    $sheets = $spreadsheet->getAllSheets();
+
+    // Loop untuk setiap sheet
+    foreach ($sheets as $sheet) {
+        $data = $sheet->toArray(null, true, true, true);
+
+        // Hapus baris header
+        unset($data[1]);
+
+        // Loop untuk setiap baris data
+        foreach ($data as $row) {
+            $nis = $row['A'];
+            $namaSiswa = $row['B'];
+            $username = $row['C'];
+            $password = $row['D'];
+
+            // Simpan data siswa
+            $siswa = Siswa::create([
+                'nis' => $nis,
+                'nama_siswa' => $namaSiswa,
+                'username' => $username,
+                'password' => bcrypt($password)
+            ]);
+
+            $kodeKelas = $row['E'];
+
+            // Simpan data ke dalam tabel kelas_siswa
+            KelasSiswa::create([
+                'kode_siswa' => $siswa->kode_siswa,
+                'kode_kelas' => $kodeKelas
+            ]);
+        }
+    }
+
+    // Redirect ke halaman upload dengan pesan sukses
+    return redirect()->back()->with('success', '<strong>Berhasil!</strong> Data berhasil diunggah.');
+
     }
 
     public function guru(){
@@ -132,6 +222,33 @@ class AdminController extends Controller
         ];
         return view('admin.profile', $data);
     }
+
+    // =======================================================
+    // ===================== PROFILE ======================
+    // =======================================================
+
+    public function updateProfile(Request $request, $id){
+        $request->validate([
+            'nama' => 'required|min:3',
+            'email' => 'required|email:dns',
+        ],[
+            'nama.required' => 'Nama tidak boleh kosong',
+            'nama.min' => 'Nama minimal 3 karakter',
+            'email.required' => 'Email tidak boleh kosong',
+            'email.email' => 'Email tidak valid',
+        ]);
+        
+        Admin::find($id)->update([
+            'nama' => $request->nama,
+            'email' => $request->email,
+        ]);
+
+        return redirect('/admin/profile')->with('sukses', 'Profil berhasil diubah');
+    }
+
+    // =======================================================
+    // ===================== REGISTER ========================
+    // =======================================================
     
     public function register(){
         $data =[
@@ -203,5 +320,30 @@ class AdminController extends Controller
         return redirect('/admin/login');
     }
 
+    public function changePassword(Request $request, $id){
+        $request->validate([
+            'password' => 'required',
+            'passwordbaru' => 'required|min:8|max:100',
+            'ulangpassword' => 'required|same:passwordbaruJ',
+        ],[
+            'password.required' => 'Password saat ini tidak boleh kosong',
+            'passwordbaru.required' => 'Password baru tidak boleh kosong',
+            'passwordbaru.min' => 'Password minimal 8 karakter',
+            'passwordbaru.max' => 'Password maksimal 100 karakter',
+            'ulangpassword.required' => 'Konfirmasi password tidak boleh kosong',
+            'ulangpassword.same' => 'Password tidak sama',
+        ]);
+
+        $admin = Admin::find($id);
+
+        if(\Illuminate\Support\Facades\Hash::check($request->password, $admin->password)){
+            $admin->update([
+                'password' => bcrypt($request->passwordbaru),
+            ]);
+            return redirect('/admin/profile')->with('sukses', 'Password berhasil diubah');
+        }else{
+            return redirect('/admin/profile')->with('gagal', 'Password saat ini salah');
+        }
+    }
     
 }

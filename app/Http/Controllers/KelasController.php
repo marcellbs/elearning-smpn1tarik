@@ -15,7 +15,8 @@ class KelasController extends Controller
     public function index()
     {
         $data = [
-            'kelas' => \App\Models\Kelas::all(),
+            // pagination
+            'kelas' => Kelas::paginate(10),
             'title' => 'Kelas',
             'tingkat' => \App\Models\Tingkat::all(),
         ];
