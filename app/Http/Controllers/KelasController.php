@@ -43,9 +43,13 @@ class KelasController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'id' => 'required|numeric|unique:kelas,kode_kelas',
             'tingkat' => 'required',
             'kelas' => 'required|alpha|size:1|in:A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z',
         ],[
+            'id.required' => 'ID tidak boleh kosong!',
+            'id.numeric' => 'ID hanya boleh berisi angka!',
+            'id.unique' => 'ID sudah ada!',
             'tingkat.required' => 'Tingkat tidak boleh kosong!',
             'kelas.required' => 'Kelas tidak boleh kosong!',
             'kelas.alpha' => 'Kelas hanya boleh berisi huruf!',
@@ -55,6 +59,7 @@ class KelasController extends Controller
 
         Kelas::create(
             [
+                'kode_kelas' => $request->id,
                 'nama_kelas' => $request->kelas,
                 'kode_tingkat' => $request->tingkat,
                 'kode_admin' => \Illuminate\Support\Facades\Auth::user()->kode_admin,
@@ -81,9 +86,16 @@ class KelasController extends Controller
      * @param  \App\Models\Kelas  $kelas
      * @return \Illuminate\Http\Response
      */
-    public function edit(Kelas $kelas)
+    public function edit(Kelas $kela)
     {
-        //
+        $data = [
+            'kelas' => $kela,
+            'tingkat' => \App\Models\Tingkat::all(),
+            'title' => 'Edit Kelas',
+        ];
+    
+        return view('admin.editkelas', $data);
+    
     }
 
     /**
@@ -93,9 +105,30 @@ class KelasController extends Controller
      * @param  \App\Models\Kelas  $kelas
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Kelas $kelas)
+    public function update(Request $request, Kelas $kela)
     {
-        //
+        $request->validate([
+            'kode_kelas' => 'required|numeric',
+            'nama_kelas' => 'required|alpha|size:1|in:A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z',
+            'tingkat' => 'required',
+        ],[
+            'kode_kelas.required' => 'ID tidak boleh kosong!',
+            'kode_kelas.numeric' => 'ID hanya boleh berisi angka!',
+            'nama_kelas.required' => 'Kelas tidak boleh kosong!',
+            'nama_kelas.alpha' => 'Kelas hanya boleh berisi huruf!',
+            'nama_kelas.size' => 'Kelas hanya boleh berisi 1 huruf!',
+            'nama_kelas.in' => 'Kelas hanya boleh berisi huruf kapital A-Z!',
+            'tingkat.required' => 'Tingkat tidak boleh kosong!',
+        ]);
+
+        Kelas::where('kode_kelas', $kela->kode_kelas)
+            ->update([
+                'kode_kelas' => $request->kode_kelas,
+                'nama_kelas' => $request->nama_kelas,
+                'kode_tingkat' => $request->tingkat,
+            ]);
+        
+        return redirect('/admin/kelas')->with('status', 'Data Kelas Berhasil Diubah!');
     }
 
     /**
@@ -104,9 +137,10 @@ class KelasController extends Controller
      * @param  \App\Models\Kelas  $kelas
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Kelas $kelas)
+    public function destroy(Kelas $kela)
     {
-        $kelas->delete();
+        $kela->delete();
+
         return redirect('/admin/kelas')->with('status', 'Data Kelas Berhasil Dihapus!');
     }
 }

@@ -50,7 +50,7 @@ class PelajaranController extends Controller
             'nama_pelajaran' => $request->pelajaran,
         ]);
 
-        return redirect('/admin/mapel')->with('sukses', 'Data berhasil ditambahkan');
+        return redirect('/admin/mapel')->with('success', 'Data berhasil ditambahkan');
     }
 
     /**
@@ -96,7 +96,7 @@ class PelajaranController extends Controller
                 'nama_pelajaran' => $request->pelajaran,
             ]);
 
-        return redirect('/admin/mapel')->with('sukses', 'Data berhasil diubah');
+        return redirect('/admin/mapel')->with('success', 'Data berhasil diubah');
     }
 
     /**
@@ -108,6 +108,6 @@ class PelajaranController extends Controller
     public function destroy(Mapel $mapel)
     {
         $mapel->delete();
-        return redirect('/admin/mapel')->with('sukses', 'Data berhasil dihapus');
+        return redirect('/admin/mapel')->with('success', 'Data berhasil dihapus');
     }
 }

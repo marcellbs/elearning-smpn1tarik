@@ -141,7 +141,6 @@
                           <option value="">Pilih Kelas</option>
 
                           @foreach ($kelas as $k)
-                              {{-- <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option> --}}
                               <option value="{{ $k->kode_kelas }}">{{ $k->tingkat->nama_tingkat ." ".$k->nama_kelas }}</option>
                           @endforeach
                         </select>

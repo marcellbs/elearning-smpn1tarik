@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\JawabanTugas;
+use App\Models\Siswa;
 use App\Models\Tugas;
+use App\Models\KelasSiswa;
+use App\Models\JawabanTugas;
 use Illuminate\Http\Request;
 
 class TugasController extends Controller
@@ -16,10 +18,11 @@ class TugasController extends Controller
     public function index()
     {
         $data = [
-            // menampilkan data tugas dari user yang login pagination
+
             'tugas' => Tugas::where('kode_guru', auth()->user()->kode_guru)->orderBy('created_at', 'desc')->get(),
             'title' => 'Tugas',
             // menampilkan siswa yang mengumpulkan tugas dari tabel jawaban_tugas
+
             
         ];
             
@@ -107,15 +110,34 @@ class TugasController extends Controller
      */
     public function show(Tugas $tuga)
     {
+        
+            // menampilkan semua siswa baik yang sudah menerjakan tugas maupun belum mengerjakan melalui kode_kelas di tabel tugas, kemudian jika ada yang cocok dengan tabel jawaban_tugas maka tampilkan 
+            // contoh :
+            // | NIS  | Nama Siswa | Tanggal Upload | Status | berkas
+            // | 9856 | Budi       | 2021-01-01     | Sudah  |  <a href="tugas/berkas">berkas</a> 
+            // | 9857 | Andi       | 2021-01-01     | belum  |  -
+
+            $siswa = Siswa::select('siswa.nis', 'siswa.nama_siswa', 'jawaban_tugas.tgl_upload', 'jawaban_tugas.nilai', 'jawaban_tugas.berkas')
+                ->join('kelas_siswa', 'kelas_siswa.kode_siswa', '=', 'siswa.kode_siswa')
+                ->join('tugas', 'tugas.kode_kelas', '=', 'kelas_siswa.kode_kelas')
+                ->leftJoin('jawaban_tugas', 'jawaban_tugas.kode_siswa', '=', 'siswa.kode_siswa')
+                ->where('tugas.kode_tugas', $tuga->kode_tugas)
+                ->get();
+    
+        
             $tgl_indonesia = \Carbon\Carbon::parse($tuga->deadline)->locale('id');
+        
             $data = [
                 'title' => 'Detail Tugas',
                 'tugas' => $tuga,
                 'tgl_indonesia' => $tgl_indonesia->isoFormat('dddd, D MMMM Y'),
+                'siswa' => $siswa,
                 'jawaban' => JawabanTugas::where('kode_tugas', $tuga->kode_tugas)->get(),
             ];
         
             return view('tugas.detailtugas', $data);
+        
+        
     }
 
     /**

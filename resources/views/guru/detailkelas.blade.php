@@ -117,13 +117,13 @@
             <h5 class="mb-0"><strong>Daftar Siswa</strong></h5>
             <p class="text-muted mb-0">Jumlah siswa : {{$siswa->count()}}</p>
             <hr class="hr">
-            <table class="table table-bordered datatable mb-2" id="datatable"> 
+            <table class="table table-striped datatable mb-2" id="datatable"> 
               <thead>
                 <tr>
                   <th>No</th>
                   <th>NIS</th>
                   <th>Nama Siswa</th>
-                  <th>Aksi</th>
+                  <th>Jenis Kelamin</th>
                 </tr>
               </thead>
               <tbody>

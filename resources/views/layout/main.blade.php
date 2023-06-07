@@ -47,9 +47,7 @@
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
 
-    
-
-    <nav class="header-nav ms-auto">
+    {{-- <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
 
 
@@ -61,10 +59,10 @@
           </a>
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-            {{-- <li class="dropdown-header">
-              You have 4 new notifications
+            <li class="dropdown-header">
+              Anda memiliki 4 pemberitahuan
               <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-            </li> --}}
+            </li>
             <li>
               <hr class="dropdown-divider">
             </li>
@@ -117,12 +115,12 @@
               </div>
             </li>
 
-            {{-- <li>
+            <li>
               <hr class="dropdown-divider">
-            </li> --}}
-            {{-- <li class="dropdown-footer">
+            </li>
+            <li class="dropdown-footer">
               <a href="#">Show all notifications</a>
-            </li> --}}
+            </li>
 
           </ul>
 
@@ -130,7 +128,7 @@
 
 
       </ul>
-    </nav>
+    </nav> --}}
 
   </header><!-- End Header -->
 

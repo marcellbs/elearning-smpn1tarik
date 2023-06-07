@@ -32,9 +32,9 @@
 
               <p>{{ $t->keterangan }}</p>
               {{-- batas pengumpulan dimana angka bulan diganti dengan nama bulan dalam bahasa indonesia--}}
-              <p class="mb-1">Batas pengumpulan : {{ date('d F Y - H:i', strtotime($t->deadline)) }}</p>
+              <p class="mb-2">Batas pengumpulan : {{ date('d F Y - H:i', strtotime($t->deadline)) }}</p>
               {{-- <p class="mb-1">Batas pengumpulan : {{ $t->deadline }}</p> --}}
-              <p>Mengumpulkan : 28/36</p>
+              
           
               <div class="d-flex">
                 <div class="mt-2">

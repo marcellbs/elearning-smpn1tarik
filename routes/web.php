@@ -31,17 +31,37 @@ Route::get('/admin', [AdminController::class, 'index'])->middleware('auth:webadm
 Route::get('/admin/login', [AdminController::class, 'login'])->name('admin')->middleware('guest');
 Route::get('/admin/register', [AdminController::class, 'register']);
 
-Route::resource('admin/materi', MateriController::class)->middleware('auth:webadmin');
+Route::resource('/admin/materi', MateriController::class)->middleware('auth:webadmin');
 // Route::resource('admin/materi', MateriController::class)->middleware('auth:webguru');
 Route::get('/admin/pengumuman', [AdminController::class, 'pengumuman'])->middleware('auth:webadmin');
 // Route::get('/admin/kelas', [AdminController::class, 'kelas'])->middleware('auth:webadmin');
 Route::resource('/admin/kelas', KelasController::class)->middleware('auth:webadmin');
+Route::post('/admin/uploadkelas', [AdminController::class, 'uploadkelas'])->middleware('auth:webadmin');
 Route::resource('/admin/mapel', PelajaranController::class)->middleware('auth:webadmin');
 Route::resource('/admin/pengampu', PengampuController::class)->middleware('auth:webadmin');
+
 Route::get('/admin/siswa', [AdminController::class, 'siswa'])->middleware('auth:webadmin');
+Route::get('/admin/detailsiswa/{id}', [AdminController::class, 'detailsiswa'])->middleware('auth:webadmin');
+Route::get('/admin/siswa/{id}/edit', [AdminController::class, 'editsiswa'])->middleware('auth:webadmin');
+Route::patch('/admin/siswa/{id}', [AdminController::class, 'updatesiswa'])->middleware('auth:webadmin');
+Route::get('/admin/tambahsiswa', [AdminController::class, 'tambahsiswa'])->middleware('auth:webadmin');
+Route::post('/admin/tambahsiswa', [AdminController::class, 'submitsiswa'])->middleware('auth:webadmin');
 Route::post('/admin/uploadsiswa', [AdminController::class, 'uploadsiswa'])->middleware('auth:webadmin');
+Route::post('/admin/hapuskelassembilan', [AdminController::class, 'hapusSiswaKelasSembilan'])->middleware('auth:webadmin')->name('siswa.hapus.kelassembilan');
+Route::delete('/admin/siswa/{id}', [AdminController::class, 'hapussiswa'])->middleware('auth:webadmin');
+Route::post('/naik-kelas', [AdminController::class, 'naikKelas'])->name('naik-kelas');
+
 Route::get('/admin/guru', [AdminController::class, 'guru'])->middleware('auth:webadmin');
+Route::post('/admin/uploadguru', [AdminController::class, 'uploadguru'])->middleware('auth:webadmin');
+Route::delete('/admin/guru/{id}', [AdminController::class, 'hapusguru'])->middleware('auth:webadmin');
+Route::get('/admin/detailguru/{id}', [AdminController::class, 'detailguru'])->middleware('auth:webadmin');
+Route::get('/admin/guru/{id}/edit', [AdminController::class, 'editguru'])->middleware('auth:webadmin');
+Route::patch('/admin/guru/{id}', [AdminController::class, 'updateguru'])->middleware('auth:webadmin');
+Route::get('/admin/tambahguru', [AdminController::class, 'tambahguru'])->middleware('auth:webadmin');
+Route::post('/admin/tambahguru', [AdminController::class, 'submitguru'])->middleware('auth:webadmin');
+
 Route::get('/admin/mapel', [AdminController::class, 'mapel'])->middleware('auth:webadmin');
+Route::post('/admin/uploadmapel', [AdminController::class, 'uploadmapel'])->middleware('auth:webadmin');
 
 // ===========================================================
 // ===================== CRUD PROFILE ==========================
@@ -67,8 +87,11 @@ Route::post('/admin/addRegister', [AdminController::class, 'addRegister']);
 Route::post('/admin/auth', [AdminController::class, 'store']);
 Route::get('/admin/logout', [AdminController::class, 'logout']);
 Route::get('/admin/admin', [AdminController::class, 'admin'])->middleware('auth:webadmin');
-
-
+Route::get('/admin/tambah', [AdminController::class, 'tambahadmin'])->middleware('auth:webadmin');
+Route::post('/admin/tambah', [AdminController::class, 'submitadmin'])->middleware('auth:webadmin');
+Route::get('/admin/editadmin/{id}/edit', [AdminController::class, 'editadmin'])->middleware('auth:webadmin');
+Route::patch('/admin/editadmin/{id}', [AdminController::class, 'updateadmin'])->middleware('auth:webadmin');
+Route::delete('/admin/admin/{id}', [AdminController::class, 'deleteadmin'])->middleware('auth:webadmin');
 Route::get('/siswa/create', [SiswaController::class, 'create']);
 Route::post('/siswa/store', [SiswaController::class, 'store']);
 

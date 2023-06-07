@@ -9,7 +9,7 @@
   <div class="col-lg-7">
     <div class="card">
       <div class="card-header p-0 ">
-        <h4 class="text-dark fw-bold ms-3 mt-2">{{ $tugas->judul_tugas }}</h4>
+        <h4 class="text-dark fw-bold ms-3 mt-2">{{ $tugas->judul_tugas }} - {{ $tugas->kelas->tingkat->nama_tingkat . $tugas->kelas->nama_kelas }}</h4>
       </div>
       <div class="card-body table-responsive mt-3">
         <h6 class="fw-bold">Keterangan</h6>
@@ -73,14 +73,22 @@
   </div>
 </div>
 
+
 {{-- menampilkan siswa yang mengumpulkan tugas --}}
 <div class="row">
   <div class="col-lg-12">
     <div class="card">
       <div class="card-header p-0 ">
-        {{-- menampilkan jumlah yang mengumpulkan tugas --}}
-        <h4 class="text-dark fw-bold ms-3 mt-2">Siswa yang mengumpulkan ({{ $jawaban->count() }}/36)</h4>
-        {{-- <h4 class="text-dark fw-bold ms-3 mt-2">Siswa yang mengumpulkan </h4> --}}
+        {{-- count tgl_upload --}}
+        @php
+          $tgl_upload = 0;
+          foreach ($siswa as $item) {
+            if ($item->tgl_upload != null) {
+              $tgl_upload++;
+            }
+          }
+        @endphp
+        <h4 class="text-dark fw-bold ms-3 mt-2">Siswa yang mengumpulkan ({{ $tgl_upload }}/{{ $siswa->count() }})</h4>
       </div>
       <div class="card-body">
         <div class="table-responsive mt-2">
@@ -91,27 +99,46 @@
                 <th>NIS</th>
                 <th>Nama</th>
                 <th>Tanggal Upload</th>
+                <th>Nilai</th>
                 <th>Status</th>
                 <th>Aksi</th>
               </tr>
             </thead>
             <tbody>
-              @foreach ($jawaban as $item)
+              @foreach ($siswa as $item)
               <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $item->siswa->nis }}</td>
-                <td>{{ ucwords($item->siswa->nama_siswa) }}</td>
-                <td>{{ $item->tgl_upload }}</td>
+                <td>{{ $item->nis }}</td>
+                <td>{{ ucwords($item->nama_siswa) }}</td>
+                @if ($item->tgl_upload == null)
+                  <td>-</td>
+                @else
+                  <td>{{ $item->tgl_upload }}</td>
+                @endif
                 <td>
-                  @if($item->tgl_upload > $item->tugas->deadline)
-                    <span class="badge bg-danger">Terlambat</span>
+                  @if ($item->nilai == null)
+                    <span class="badge bg-danger">Belum Dinilai</span>
                   @else
-                    <span class="badge bg-success">Tepat Waktu</span>
+                    {{ $item->nilai }}
                   @endif
                 </td>
                 <td>
-                  <a href="#" class="btn btn-sm btn-primary">Download</a>
-                  <a href="#" class="btn btn-sm btn-warning">Beri Nilai</a>
+                  @if($item->tgl_upload == null)
+                    <span class="badge bg-danger">Belum Mengumpulkan</span>
+                  @elseif($item->tgl_upload > $tugas->deadline)
+                    <span class="badge bg-warning">Terlambat</span>
+                  @else
+                    <span class="badge bg-success">Sudah Mengumpulkan</span>
+                  @endif
+                </td>
+                <td>
+                  @if($item->berkas == null)
+                    <a href="#" class="btn btn-sm btn-primary"><i class="bi bi-download"></i></a>
+                  @else
+                    <a href="{{ asset('jawaban/'.$item->berkas)}}" class="btn btn-sm btn-primary" download><i class="bi bi-download"></i></a>
+                  @endif
+
+                  <a href="#" class="btn btn-sm btn-warning"><i class="bi bi-123"></i></a>
                 </td>
               </tr>
               @endforeach

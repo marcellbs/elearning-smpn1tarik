@@ -5,7 +5,7 @@
   <h1><?=$title;?></h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
       <li class="breadcrumb-item active"><?=$title;?></li>
     </ol>
   </nav>
@@ -23,19 +23,69 @@
 
     <div class="card bg-info bg-opacity-10">
       <div class="card-body">
-        <h5 class="mt-3"> <i class="bi bi-exclamation-diamond"></i> <strong class="ms-2">Informasi</strong></h5>
+        <h5 class="mt-3"> <i class="bi bi-info-circle"></i> <strong class="ms-2">Informasi</strong></h5>
         <p class="text-muted">Halaman ini digunakan untuk mengelola data kelas.</p>
         <ul>
-          <li>untuk menambahkan kelas pilih tingkat kelas antara 7, 8, dan 9</li>
-          <li>untuk menambahkan nama kelas gunakan huruf kapital antara A - Z</li>
+          <li>Kelas memiliki <i>id unique</i> berupa angka yang harus diinputkan langsung oleh admin</li>
+          <li>Ketika membuat kelas baru, pastikan kelas dibuat dengan id berurutan</li>
+          <li>Contoh : 7A, 8A, 9A id harus urut : 1, 2, 3</li>
+          <li>Perhatikan juga bahwa ID Unique tidak sama dengan yang lain</li>
+          <li>Untuk menambahkan kelas pilih tingkat kelas antara 7, 8, dan 9</li>
+          <li>Untuk menambahkan nama kelas gunakan huruf kapital antara A - Z</li>
         </ul>
+        
+        <hr>
+
+        <h5 class="mt-2 fw-bold"><i class="bi bi-upload"></i> Upload File</h5>
+        <ul>
+          <li>Anda dapat mengunggah untuk melakukan <i>insert</i> data secara massal</li>
+          <li>Sesuaikan dengan file template yang disediakan</li>
+          <li>File yang diperbolehkan adalah <strong>.xls</strong> atau <strong>.xlsx</strong></li>
+        </ul>
+
+        <div class="row">
+          <div class="col-md-12">
+            <form action="/admin/uploadkelas" method="post" enctype="multipart/form-data">
+              @csrf
+              <div class="form-group mb-3">
+
+                <div class="row">
+                  <div class="col-md-8">
+                    <input type="file" name="file" id="file" class="form-control mb-1">
+                  </div>
+                  <div class="col-sm-1">
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                  </div>
+                  <div class="col-sm-1">
+                    <a href="{{ asset('file/excel/template_upload_data_kelas.xlsx') }}" class="btn btn-success">Template</a>
+                  </div>
+
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+          
+        
       </div>
     </div>
 
     <form action="/admin/kelas" method="post" class="mb-3">
       @csrf
       <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-3">
+          <label for="id">ID Unique</label>
+          <div class="form-group">
+            {{-- old insert--}}
+            <input type="text" name="id" id="id" class="form-control @error('id')is-invalid @enderror" placeholder="angka" value="{{ old('id') }}">
+            @error('id')
+            <div class="invalid-feedback">
+              {{$message}}
+            </div>
+            @enderror
+          </div>
+        </div>
+        <div class="col-md-3">
           <label for="tingkat">Tingkat Kelas</label>
           <div class="form-group">
             <select name="tingkat" id="tingkat" class="form-select @error('tingkat')is-invalid @enderror">
@@ -63,7 +113,7 @@
             @enderror
           </div>
         </div>
-        <div class="col-md-5 mt-4 d-flex">
+        <div class="col-md-3 mt-4 d-flex">
           <button type="submit" class="btn text-white ms-auto" style="background-color: orange;"><i class="bi bi-plus"></i> Tambah Kelas</button>
         </div>
       </div>
@@ -80,6 +130,7 @@
             <thead>
               <tr>
                 <th>No</th>
+                <th>Kode Kelas</th>
                 <th>Tingkat Kelas</th>
                 <th>Nama Kelas</th>
                 <th>Aksi</th>
@@ -89,6 +140,7 @@
               @foreach ($kelas as $k)
               <tr>
                 <td>{{$loop->iteration}}</td>
+                <td>{{ $k->kode_kelas }}</td>
                 <td>{{ $k->tingkat->nama_tingkat }}</td>
                 <td>{{$k->nama_kelas}}</td>
                 <td>
@@ -97,8 +149,7 @@
                   <form action="/admin/kelas/{{$k->kode_kelas}}" method="post" class="d-inline">
                     @method('delete')
                     @csrf
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('{{ __('apakah anda yakin untuk menghapus data ini ? '. $k->kode_kelas) }}')"><i class="bi bi-trash
-                      "></i></button>
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('apakah anda yakin menghapus data ini ?')"><i class="bi bi-trash"></i></button>
                   </form>
                 </td>
               </tr>
@@ -108,10 +159,12 @@
           
         </div>
       </div>
-      <div class="d-flex justify-content-end">
-        {{ $kelas->links() }}
-      </div>
     </div>
+
+    <div class="d-flex justify-content-center">
+      {{ $kelas->links() }}
+    </div>
+
   </div>
 </div>
 

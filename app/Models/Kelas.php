@@ -13,7 +13,7 @@ class Kelas extends Model
     public $timestamps = false;
     protected $table = 'kelas';
     protected $primaryKey = 'kode_kelas';
-    protected $guarded = ['kode_kelas'];
+    protected $fillable = ['kode_kelas', 'nama_kelas', 'kode_tingkat', 'kode_admin'];
 
     // relasi ke tingkat
     public function tingkat(){

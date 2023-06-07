@@ -12,58 +12,61 @@
 
 <div class="row">
   <div class="col-lg-12">
-    <div class="card">
-      <div class="card-body">
-        <div class="mt-3 align-content-center">
-                    {{-- menambah data pengampu dropdown --}}
-                    <form action="/admin/pengampu" method="post">
-                      @csrf
-                      
-                      {{--  berisi mapel, guru, dan kelas --}}
-                      <div class="row">
-                        <div class="col-sm-4">
-                            <select class="form-select @error('guru') is-invalid @enderror" name="guru" id="guru">
-                              <option value="">Pilih Guru</option>
-                              @foreach ($guru as $g)
-                              <option value="{{$g->kode_guru}}">{{$g->nama}}</option>
-                              @endforeach
-                            </select>
-                            @error('guru')
-                            <div class="invalid-feedback">{{$message}}</div>
-                            @enderror
-                        </div>
-                        <div class="col-sm-4">
-                            <select class="form-select @error('mapel') is-invalid @enderror" name="mapel" id="mapel">
-                              <option value="">Pilih Mata Pelajaran</option>
-                              @foreach ($mapel as $m)
-                              <option value="{{$m->kode_pelajaran}}">{{$m->nama_pelajaran}}</option>
-                              @endforeach
-                            </select>
-                            @error('mapel')
-                            <div class="invalid-feedback">
-                              {{$message}}
-                            </div>
-                            @enderror
-                        </div>
-                        {{-- select untuk nama kelas dan kode tingkat --}}
-                        <div class="col-sm-4">
-                            <select name="kelas" class="form-select  @error('kelas') is-invalid @enderror"  id="kelas">
-                              <option value="">Pilih Kelas</option>
-                              @foreach ($kelas as $k)
-                              <option value="{{$k->kode_kelas}}">{{$k->tingkat->nama_tingkat}}{{$k->nama_kelas}}</option>
-                              @endforeach
-                            </select>
-                            @error('kelas')
-                            <div class="invalid-feedback">
-                              {{$message}}
-                            </div>
-                            @enderror
-                        </div>
-                      </div>
-                      
-                      <button type="submit" class="btn btn-primary mt-3">Tambah Data</button>
-                    </form>
-        </div>
+    <div class="alert alert-info" role="alert">
+      <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Informasi</h4>
+      <ul>
+        <li>Anda dapat menambahkan guru yang akan mengampu mata pelajaran dan kelas</li>
+        <li>Anda cukup menambahkan nama guru, mata pelajaran, dan kelas saja, maka data yang anda inputkan akan masuk ke dalam database</li>
+      </ul>
+      <div class="mt-3 align-content-center">
+        {{-- menambah data pengampu dropdown --}}
+        <form action="/admin/pengampu" method="post">
+          @csrf
+          
+          {{--  berisi mapel, guru, dan kelas --}}
+          <div class="row">
+            <div class="col-sm-4">
+                <select class="form-select @error('guru') is-invalid @enderror" name="guru" id="guru">
+                  <option value="">Pilih Guru</option>
+                  @foreach ($guru as $g)
+                  <option value="{{$g->kode_guru}}">{{$g->nama}}</option>
+                  @endforeach
+                </select>
+                @error('guru')
+                <div class="invalid-feedback">{{$message}}</div>
+                @enderror
+            </div>
+            <div class="col-sm-4">
+                <select class="form-select @error('mapel') is-invalid @enderror" name="mapel" id="mapel">
+                  <option value="">Pilih Mata Pelajaran</option>
+                  @foreach ($mapel as $m)
+                  <option value="{{$m->kode_pelajaran}}">{{$m->nama_pelajaran}}</option>
+                  @endforeach
+                </select>
+                @error('mapel')
+                <div class="invalid-feedback">
+                  {{$message}}
+                </div>
+                @enderror
+            </div>
+            {{-- select untuk nama kelas dan kode tingkat --}}
+            <div class="col-sm-4">
+                <select name="kelas" class="form-select  @error('kelas') is-invalid @enderror"  id="kelas">
+                  <option value="">Pilih Kelas</option>
+                  @foreach ($kelas as $k)
+                  <option value="{{$k->kode_kelas}}">{{$k->tingkat->nama_tingkat}}{{$k->nama_kelas}}</option>
+                  @endforeach
+                </select>
+                @error('kelas')
+                <div class="invalid-feedback">
+                  {{$message}}
+                </div>
+                @enderror
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary mt-3">Tambah Data</button>
+        </form>
       </div>
     </div>
   </div>

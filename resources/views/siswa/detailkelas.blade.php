@@ -117,6 +117,7 @@
                   <th>No</th>
                   <th>NIS</th>
                   <th>Nama Siswa</th>
+                  <th>Jenis Kelamin</th>
                   <th>Aksi</th>
                 </tr>
               </thead>
@@ -128,6 +129,9 @@
                   <td>{{ucwords($s->nama_siswa)}}</td>
                   <td>
                     {{ ucwords($s->jenis_kelamin) }}
+                  </td>
+                  <td>
+                    aksi
                   </td>
                 </tr>
                 @endforeach
