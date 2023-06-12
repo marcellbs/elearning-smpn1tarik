@@ -1,7 +1,8 @@
 @extends('layout.siswa')
 
 @section('content')
-@include('partials.page-title', ['title' => 'Detail Tugas'])
+
+
 
 {{-- menampilkan judul tugas --}}
 

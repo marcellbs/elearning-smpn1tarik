@@ -2,8 +2,49 @@
 
 @section('content')
   @include('partials.page-title', ['title' => $title])
+  <!-- Tambahkan kode berikut sebelum tabel -->
+  <form action="{{ '/guru' }}" method="GET" class="mb-2">
+    <div class="row">
+
+      <div class="col-lg-3 col-md-4 mb-3">
+        <div class="input-group">
+          <select name="kode_tingkat" class="form-select">
+            <option value="">-- Pilih Kelas--</option>
+            @foreach($tingkatOptions as $kodeTingkat => $namaTingkat)
+                <option value="{{ $kodeTingkat }}" {{ $kodeTingkat == request('kode_tingkat') ? 'selected' : '' }}>{{ $namaTingkat }}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-4 mb-3">
+        <div class="input-group">
+          <select name="kode_pelajaran" id="kode_pelajaran" class="form-select">
+            <option value="">-- Pilih Pelajaran --</option>
+              @foreach($pelajaranOptions as $kodePelajaran => $namaPelajaran)
+                <option value="{{ $kodePelajaran }}" {{ $kodePelajaran == request('kode_pelajaran') ? 'selected' : '' }}>{{ $namaPelajaran }}</option>
+              @endforeach
+          </select>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-4 mb-3">
+        <div class="input-group">
+          <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+      </div>
+
+    </div>
+  </form>
   
+
   <div class="container">
+
+    @if($pengampu->isEmpty())
+      <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading text-center">Tidak Kelas yang diampu</h4>
+      </div>
+    @endif
       <section class="splide">
         <div class="row">
             <div class="splide__track">

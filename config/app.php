@@ -232,6 +232,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Hashids' => Vinkla\Hashids\Facades\Hashids::class,
         'PhpOffice' => PhpOffice\PhpSpreadsheet\Spreadsheet::class,
+        'Maatwebsite' => Maatwebsite\Excel\Facades\Excel::class,
 
     ],
 

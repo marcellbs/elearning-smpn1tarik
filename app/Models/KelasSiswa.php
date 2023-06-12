@@ -25,5 +25,10 @@ class KelasSiswa extends Model
         return $this->belongsTo(Kelas::class, 'kode_kelas', 'kode_kelas');
     }
 
+    public function tugas()
+    {
+        return $this->belongsTo(Tugas::class, 'kode_kelas', 'kode_kelas');
+    }
+
     
 }

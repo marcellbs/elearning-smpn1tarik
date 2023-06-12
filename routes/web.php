@@ -13,6 +13,8 @@ use App\Http\Controllers\TugasController;
 use App\Http\Controllers\JawabantugasController;
 use App\Http\Controllers\JawabanController;
 use App\Http\Controllers\PengumumanController;
+use App\Http\Controllers\TaskStudentsController;
+use App\Http\Controllers\PresensiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -108,11 +110,22 @@ Route::get('/guru/detail/{id}', [GuruController::class, 'detail'])->middleware('
 Route::resource('/guru/pengampu', PengampuController::class)->middleware('auth:webguru');
 Route::get('/guru/materi/shared', [MateriController::class, 'shared'])->middleware('auth:webguru');
 Route::resource('/guru/materi', MateriController::class)->middleware('auth:webguru');
+Route::get('/guru/materi/{id}/edit', [MateriController::class, 'edit'])->middleware('auth:webguru');
+Route::patch('/guru/nilai/{id}', [TugasController::class, 'nilaiJawaban'])->middleware('auth:webguru');
+
 Route::get('/guru/pengumuman/shared',[PengumumanController::class,'sharedNotice'])->middleware('auth:webguru');
 Route::resource('/guru/pengumuman', PengumumanController::class)->middleware('auth:webguru');
 Route::get('/guru/profile', [GuruController::class, 'profile'])->middleware('auth:webguru');
 Route::patch('/guru/profile/{id}', [GuruController::class, 'changeProfile'])->middleware('auth:webguru');
 Route::patch('/guru/password/{id}', [GuruController::class, 'changePassword'])->middleware('auth:webguru');
+
+Route::get('/guru/presensi/{id}', [PresensiController::class, 'index'])->middleware('auth:webguru')->name('presensi.index');
+Route::post('/guru/presensi', [PresensiController::class, 'storePresensi'])->middleware('auth:webguru')->name('presensi.store');
+Route::get('/guru/presensi', [PresensiController::class, 'presensi'])->middleware('auth:webguru')->name('presensi');
+// Route::get('/guru/presensi/{tanggalPresensi}/edit/{kodeKelas}', [PresensiController::class, 'editPresensi'])->middleware('auth:webguru')->name('presensi.edit');
+Route::get('/guru/presensi/{tanggalPresensi}/edit/{kodeKelas}/{kodePelajaran}', [PresensiController::class, 'editPresensi'])->middleware('auth:webguru')->name('presensi.edit');
+Route::patch('/guru/presensi/update', [PresensiController::class,'updatePresensi'])->middleware('auth:webguru')->name('presensi.update');
+Route::get('/presensi/export/{kelas}/{mapel}/{tanggal}', [PresensiController::class, 'export'])->name('presensi.export');
 
 Route::get('/siswa', [SiswaController::class, 'index'])->middleware('auth:websiswa');
 Route::get('/siswa/login', [SiswaController::class, 'login'])->name('siswa')->middleware('guest');
@@ -124,14 +137,14 @@ Route::get('/siswa/detail/{id}', [SiswaController::class, 'detail'])->middleware
 Route::resource('/siswa/materi', MateriController::class)->middleware('auth:websiswa');
 Route::get('/guru/tugas/create/{id}', [TugasController::class, 'getKelas'])->middleware('auth:webguru');
 Route::put('/guru/detail/{id}', [GuruController::class, 'updateLink'])->middleware('auth:webguru');
-Route::resource('/siswa/tugas', JawabanController::class)->middleware('auth:websiswa');
+Route::resource('/siswa/tugas', TaskstudentsController::class)->middleware('auth:websiswa');
 Route::resource('/siswa/jawabantugas', JawabantugasController::class)->middleware('auth:websiswa');
 Route::get('/siswa/pengumuman', [SiswaController::class, 'pengumuman'])->middleware('auth:websiswa');
 Route::get('/siswa/mapel', [SiswaController::class, 'mapel'])->middleware('auth:websiswa');
 Route::get('/siswa/profile', [SiswaController::class, 'profile'])->middleware('auth:websiswa');
 Route::patch('/siswa/profile/{id}', [SiswaController::class, 'changeProfile'])->middleware('auth:websiswa');
 Route::patch('/siswa/password/{id}', [SiswaController::class, 'changePassword'])->middleware('auth:websiswa');
-// Route::get('show' )
+
 
 Route::get('/', [ElearningController::class, 'index'])->middleware('guest');
 

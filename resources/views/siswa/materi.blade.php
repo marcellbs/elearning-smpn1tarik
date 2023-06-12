@@ -26,24 +26,53 @@
             </div>
           @endif
 
-          <div class="col-xxl-4 col-md-4">
-            <div class="input-group mb-3">
-              <input type="text" class="form-control" placeholder="Cari Materi" aria-label="Cari Materi" aria-describedby="button-addon2">
-              <button class="btn btn-outline-secondary" type="button" id="button-addon2">Cari</button>
+          
+          <div class="col-xxl-6 col-md-6">
+            <div class="input-group mb-1">
+              <form action="/siswa/materi" method="get">
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" placeholder="Cari Materi" name="search" aria-label="Cari Materi" aria-describedby="button-addon2">
+                  <button class="btn text-white" style="background-color: orange;" type="submit" id="button-addon2">Cari</button>
+                </div>
+              </form>
             </div>
           </div>
 
-          {{-- <div class="col-xxl-4 col-md-4">
-            <div class="input-group mb-3">
-              <select class="form-select" id="inputGroupSelect02">
-                <option selected>Pilih Kelas</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-              </select>
-              <button class="btn btn-outline-secondary" type="button" id="button-addon2">Cari</button>
+          <form action="/siswa/materi" method="get">
+            <div class="row">
+              <div class="col-xxl-4 col-md-4">
+                <div class="input-group mb-3">
+                  <select class="form-select" name="kode_tingkat" id="inputGroupSelect02">
+                    <option value="" selected>Pilih Kelas</option>
+                    @foreach ($tingkatOptions as $kodeTingkat => $namaTingkat)
+                        <option value="{{$kodeTingkat}}" {{ $kodeTingkat == request('kode_tingkat') ? 'selected' : '' }}>
+                            {{ $namaTingkat }}
+                        </option>
+                    @endforeach
+                  </select>
+                  
+                </div>
+              </div>
+  
+              <div class="col-xxl-4 col-md-4">
+                <div class="input-group mb-3">
+                  <select class="form-select" name="kode_pelajaran" id="inputGroupSelect02">
+                    <option value="" selected>Pilih Pelajaran</option>
+                    @foreach ($pelajaranOptions as $kodePelajaran => $namaPelajaran)
+                        <option value="{{ $kodePelajaran }}" {{ $kodePelajaran == request('kode_pelajaran') ? 'selected' : '' }}>
+                            {{ $namaPelajaran }}
+                        </option>
+                    @endforeach
+                  </select>
+                  
+                </div>
+              </div>
+              <div class="col">
+                <button type="submit" class="btn btn-primary">Filter</button>
+              </div>
             </div>
-          </div> --}}
+          </form>
+
         </div>
         
         <div class="row">
@@ -91,6 +120,15 @@
       </div>
     </div>
   </section>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-center">
+        {{ $materi->links() }}
+      </div>
+    </div>
+  </div>
+  
 </div>
 
 

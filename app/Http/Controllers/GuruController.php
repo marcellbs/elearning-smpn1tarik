@@ -2,25 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pengampu;
 use App\Models\Guru;
-use Illuminate\Http\Request;
 use Hashids\Hashids;
+use App\Models\Kelas;
+use App\Models\Mapel;
+use App\Models\Tingkat;
+use App\Models\Pengampu;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GuruController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $hash = new Hashids('my-hash', 10);
+        $kodeGuru = Auth::guard('webguru')->user()->kode_guru;
+
+        $query = Pengampu::where('kode_guru', $kodeGuru);
+
+        $kodeTingkat = $request->input('kode_tingkat');
+        if ($kodeTingkat) {
+            $query->join('kelas', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
+                ->where('kelas.kode_tingkat', $kodeTingkat);
+        }
+
+        $kodePelajaran = $request->input('kode_pelajaran');
+        if ($kodePelajaran) {
+            $query->where('pengampu.kode_pelajaran', $kodePelajaran);
+        }
+
+        $pengampu = $query
+            ->join('pelajaran', 'pengampu.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
+            ->select('pengampu.*', 'pelajaran.nama_pelajaran')
+            ->distinct()
+            ->get();
+
+        $tingkatOptions = Tingkat::pluck('nama_tingkat', 'kode_tingkat');
+        $pelajaranOptions = Mapel::pluck('nama_pelajaran', 'kode_pelajaran');
+
         $data = [
-            'guru' => \App\Models\Guru::all(),
-            'pengampu' => \App\Models\Pengampu::where('kode_guru', \Illuminate\Support\Facades\Auth::guard('webguru')->user()->kode_guru)->get(),
+            'guru' => Guru::all(),
+            'pengampu' => $pengampu,
+            'tingkatOptions' => $tingkatOptions,
+            'pelajaranOptions' => $pelajaranOptions,
             'title' => 'Dashboard',
             'hash' => $hash,
         ];
-        
+
         return view('guru.index', $data);
     }
+
 
     public function mapel(){
         $hash = new Hashids('my-hash', 10);
@@ -123,6 +154,7 @@ class GuruController extends Controller
 
         return view('guru.detailkelas', $data);
     }
+
 
     // method untuk menambahkan link video conferece
     public function updateLink(Request $request, $id){

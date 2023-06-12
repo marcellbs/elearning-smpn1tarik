@@ -3,8 +3,21 @@
 @section('content')
 
 @include('partials.page-title', ['title' => $title])
+<form action="{{ '/siswa' }}" method="GET" class="mb-3">
+  <div class="row">
+    <label for="nama_pelajaran">Cari Nama Pelajaran:</label>
+    <div class="col-md-4">
+      <div class="form-group">
+          <input type="text" name="nama_pelajaran" class="form-control" id="nama_pelajaran" value="{{ request('nama_pelajaran') }}" placeholder="Masukkan Nama Pelajaran">
+      </div>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary mt-2">Cari</button>
+    </div>
+  </div>
+</form>
 
-  
+
 <div class="container">
   <section class="splide">
     <div class="row">

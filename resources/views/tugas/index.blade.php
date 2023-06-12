@@ -4,6 +4,34 @@
 
 @include('partials.page-title', ['title' => $title])
 
+<form action="{{ '/guru/tugas' }}" method="GET" class="mb-3">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+          <select name="kode_kelas" id="kode_kelas" class="form-select">
+              <option value="">Pilih Kelas</option>
+              @foreach($kelasOptions as $kodeKelas => $namaKelas)
+                  @php
+                      $selected = (request('kode_kelas') == $kodeKelas) ? 'selected' : '';
+                      $tingkatKelas = \App\Models\Kelas::where('kode_kelas', $kodeKelas)->first()->tingkat;
+                  @endphp
+                  <option value="{{ $kodeKelas }}" {{ $selected }}>
+                      {{ $tingkatKelas ? $tingkatKelas->nama_tingkat : '-' }}{{ $namaKelas }}
+                  </option>
+              @endforeach
+          </select>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <button type="submit" class="btn btn-primary">Filter</button>
+    </div>
+  </div>
+  
+</form>
+
+
+
 @if (session()->has('success'))
   <div class="alert alert-success alert-dismissible fade show" role="alert">
     {!! session('success') !!}
@@ -15,9 +43,11 @@
 
 <div class="row">
     @if (count($tugas) == 0)
-      <div class="alert alert-warning">
-        <p class="mb-0">Tidak ada tugas yang dibuat</p>
-      </div>  
+      <div class="col-lg-12">
+        <div class="alert alert-warning">
+          <p class="mb-0">Tidak ada tugas yang dibuat</p>
+        </div>  
+      </div>
     @else    
       @foreach ($tugas as $t)
         <div class="col-md-6">
@@ -27,34 +57,38 @@
                 <span class="badge text-bg-primary ms-auto ">{{ $t->mapel->nama_pelajaran }}</span>
               </div>
               <a href="/guru/tugas/{{ $t->kode_tugas }}">
-                <h5 class="mt-2"><strong>{{ $t->judul_tugas }}</strong></h5>
+                <h5 class="mt-2"><strong>{{ $t->judul_tugas }} - {{ $t->kelas->tingkat->nama_tingkat . $t->kelas->nama_kelas}}</strong></h5>
               </a>
 
               <p>{{ $t->keterangan }}</p>
-              {{-- batas pengumpulan dimana angka bulan diganti dengan nama bulan dalam bahasa indonesia--}}
+              
               <p class="mb-2">Batas pengumpulan : {{ date('d F Y - H:i', strtotime($t->deadline)) }}</p>
-              {{-- <p class="mb-1">Batas pengumpulan : {{ $t->deadline }}</p> --}}
+
+              <p class="mb-2">
+                Mengumpulkan : {{ $t->getJumlahSiswaMengumpulkanAttribute() }} / {{ $t->jumlahSiswaKelas  }}
+              </p>
+              
               
           
               <div class="d-flex">
                 <div class="mt-2">
                   <span class="badge text-bg-success"> <p class="mb-0">{{ $t->kelas->tingkat->nama_tingkat . $t->kelas->nama_kelas}}</p></span>
                 </div>
-
+                
                 @if($t->berkas != null)
-                  <div class="mt-2 ms-1">
-                    <span class="badge text-bg-warning"> <p class="mb-0"> <i class="bi bi-link-45deg"></i> Lampiran</p></span>
-                  </div>
+                <div class="mt-2 ms-1">
+                  <span class="badge text-bg-warning"> <p class="mb-0"> <i class="bi bi-link-45deg"></i> Lampiran</p></span>
+                </div>
                 @endif
 
                 {{-- delete --}}
                 <form action="/guru/tugas/{{ $t->kode_tugas }}" method="post" class="d-inline ms-auto">
                   @csrf
                   @method('delete')
-                  <button type="submit" onclick="return confirm('Apakah anda yakin menghapus tugas ini?')" class="btn btn-danger ms-auto">Hapus Tugas</button>
+                  <button type="submit" onclick="return confirm('Apakah anda yakin menghapus tugas ini?')" class="btn btn-sm btn-danger ms-auto">Hapus Tugas</button>
                 </form>
 
-                <a href="/guru/tugas/{{ $t->kode_tugas }}/edit" class="btn ms-2" style="background-color: orange;">Edit Tugas</a>
+                <a href="/guru/tugas/{{ $t->kode_tugas }}/edit" class="btn btn-sm ms-2" style="background-color: orange;">Edit Tugas</a>
 
               </div>
             </div>
@@ -62,6 +96,10 @@
         </div>
       @endforeach
     @endif
+</div>
+{{-- paginate --}}
+<div class="d-flex justify-content-center">
+  {{ $tugas->links() }}
 </div>
 
 {{-- <div class="row">

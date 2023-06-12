@@ -4,6 +4,19 @@
 
   @include ('partials.page-title', ['title' => $title])
 
+  <form action="{{ '/siswa/pengumuman' }}" method="GET">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" name="keyword" placeholder="Cari berdasarkan judul atau deskripsi">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Cari</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  
   <div class="row">
     @foreach ($pengumuman as $p)
     <div class="col-lg-6">
@@ -109,6 +122,11 @@
     </div>
     @endforeach
 
+    <div class="col-lg-12 mt-3">
+      <div class="d-flex justify-content-center">
+        {{ $pengumuman->links() }}
+      </div>
+    </div>
 </div>
 
 @endsection

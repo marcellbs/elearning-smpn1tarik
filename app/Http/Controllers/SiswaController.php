@@ -8,18 +8,34 @@ use Illuminate\Http\Request;
 
 class SiswaController extends Controller
 {
-    public function index(){
+    public function index(Request $request)
+    {
+        $siswa = \App\Models\Siswa::all();
+        $kelasSiswa = KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)->first();
+        
+        $query = \App\Models\Pengampu::query();
+        $query->where('kode_kelas', $kelasSiswa->kode_kelas);
+        
+        // Filter berdasarkan nama pelajaran jika ada pencarian
+        $namaPelajaran = $request->input('nama_pelajaran');
+        if ($namaPelajaran) {
+            $query->join('pelajaran', 'pengampu.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
+                ->where('pelajaran.nama_pelajaran', 'like', '%' . $namaPelajaran . '%');
+        }
+        
+        $pengampu = $query->get();
+        
         $data = [
             'title' => 'Dashboard',
-            'siswa' => \App\Models\Siswa::all(),
-            'kelas_siswa' => KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
-            // menampilkan pengampu pelajaran berdasar kelas siswa yang login
-            'pengampu' => \App\Models\Pengampu::where('kode_kelas', KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first()->kode_kelas)->get(),
-
-            
+            'siswa' => $siswa,
+            'kelas_siswa' => $kelasSiswa,
+            'pengampu' => $pengampu,
         ];
+        
         return view('siswa.index', $data);
     }
+
+
 
     public function login(){
         $data = [
@@ -129,15 +145,31 @@ class SiswaController extends Controller
         return view('siswa.detailkelas', $data);
     }
 
-    public function pengumuman(){
+    public function pengumuman(Request $request)
+    {
+        $query = \App\Models\Pengumuman::orderByDesc('tgl_upload');
+        $kelasSiswa = KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)->first();
+
+        // Filter berdasarkan pencarian nama pengumuman
+        $keyword = $request->input('keyword');
+        if ($keyword) {
+            $query->where(function ($query) use ($keyword) {
+                $query->where('judul_pengumuman', 'like', '%' . $keyword . '%')
+                    ->orWhere('deskripsi', 'like', '%' . $keyword . '%');
+            });
+        }
+
+        $pengumuman = $query->paginate(6);
+
         $data = [
             'title' => 'Pengumuman',
-            'kelas_siswa' => KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
-            'pengumuman' => \App\Models\Pengumuman::orderByDesc('tgl_upload')->get(),
+            'kelas_siswa' => $kelasSiswa,
+            'pengumuman' => $pengumuman,
         ];
 
         return view('siswa.pengumuman', $data);
     }
+
 
     public function mapel(){
         // $hash = new \Vinkla\Hashids\Facades\Hashids('my-hash', 10);

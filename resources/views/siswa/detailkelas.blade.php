@@ -15,7 +15,27 @@
                 <td>NIP</td>
                 <td>:</td>
                 <td>
-                  {{ $pengampu->guru->nip }}
+                  @if( $pengampu->guru->nip == null )
+                    -
+                  @endif
+                  @php
+                    // memecah string nip
+                    // 19810108 201001 2 014
+                    // 8 digit pertama adalah tanggal lahir
+                    // 6 digit berikutnya adalah tanggal masuk
+                    // 1 digit berikutnya adalah jenis kelamin
+                    // 3 digit terakhir adalah nomor urut
+                    $tgl_lahir = substr($pengampu->guru->nip, 0, 8);
+                    $tgl_masuk = substr($pengampu->guru->nip, 8, 6);
+                    $jk = substr($pengampu->guru->nip, 14, 1);
+                    $no_urut = substr($pengampu->guru->nip, 15, 3);
+
+                    // menggabungkan variabel di atas menjadi format NIP yang benar
+                    $nip = $tgl_lahir . ' ' . $tgl_masuk . ' ' . $jk . ' ' . $no_urut;
+
+                  @endphp
+
+                  {{ $nip}}
                 </td>
               </tr>
               <tr>
@@ -118,7 +138,7 @@
                   <th>NIS</th>
                   <th>Nama Siswa</th>
                   <th>Jenis Kelamin</th>
-                  <th>Aksi</th>
+                  
                 </tr>
               </thead>
               <tbody>
@@ -130,9 +150,7 @@
                   <td>
                     {{ ucwords($s->jenis_kelamin) }}
                   </td>
-                  <td>
-                    aksi
-                  </td>
+                  
                 </tr>
                 @endforeach
 

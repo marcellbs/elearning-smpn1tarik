@@ -1,11 +1,18 @@
 @extends('layout.siswa')
 
 @section('content')
-  @include ('partials.page-title', ['title' => 'Detail Tugas'])
+  <div class="row">
+    <div class="col-md-10">
+      @include('partials.page-title', ['title' => 'Detail Tugas'])
+    </div>
+    <div class="col-md-2 d-grid my-auto">
+      <a href="/siswa/tugas" class="btn btn-block gap-2 btn-primary">Kembali</a>
+    </div>
+  </div>
 
   {{-- {{ $tugas->kode_tugas_jawaban }} --}}
 
-  <div class="row">
+  <div class="row mt-3">
     <div class="col-lg-8">
       <div class="card">
         <div class="card-header p-0">
@@ -14,6 +21,9 @@
         <div class="card-body table-responsive mt-3">
           <h6 class="fw-bold">Keterangan</h6>
           <p class="fs-6 ms-3">{{ $tugas->keterangan }}</p>
+          
+          <h6 class="fw-bold">Guru</h6>
+          <p class="fs-6 ms-3">{{ $tugas->guru->nama }}</p>
           
           <h6 class="fw-bold">Mata Pelajaran</h6>
           <p class="fs-6 ms-3">{{ $tugas->mapel->nama_pelajaran }}</p>
@@ -68,7 +78,7 @@
       @endif
 
       {{-- card --}}
-      <div class="row">
+      
         <div class="card">
           <div class="card-header p-0">
             <h4 class="text-dark fw-bold mx-3 mt-2">
@@ -78,9 +88,11 @@
           <div class="card-body table-responsive mt-3">
             {{-- status --}}
             @if($jawaban == null)
-              <p class="fs-6 text-danger">Belum Mengumpulkan</p>
-            @elseif($jawaban)
-              <p class="fs-6 text-success">Mengumpulkan</p>
+              <p class="fs-6 text-danger"> <i class="bi bi-x-circle"></i> Belum Mengumpulkan</p>
+            @elseif($jawaban->tgl_upload > $tugas->deadline)
+              <p class="fs-6" style="color: orangered;"><i class="bi bi-exclamation-triangle"></i> Terlambat</p>
+            @elseif($jawaban->tgl_upload <= $tugas->deadline)
+              <p class="fs-6 text-success"><i class="bi bi-check-all"></i> Sudah Mengumpulkan</p>
             @endif
 
             {{-- catatan --}}
@@ -112,24 +124,24 @@
             
           </div>
           @if($jawaban != null)
-            <div class="d-grid gap-4 col-12 mx-auto mb-2">
+            <div class="d-grid gap-4 col-12 mx-auto mb-2 px-2">
               <a href="{{ asset('jawaban/'.$jawaban->berkas) }}" download class="btn btn-primary">Download</a>
             </div>
-            <div class="d-grid gap-4 col-12 mx-auto mb-3">
+            <div class="d-grid gap-4 col-12 mx-auto mb-3 px-2">
               <button type="button" class="btn text-white" style="background-color: orange;" data-bs-toggle="modal" data-bs-target="#exampleModal{{ $jawaban->id }}">
                 Ubah Tugas
               </button>
             </div>
           @else
-            <div class="d-grid gap-4 col-12 mx-auto mb-3">
+            <div class="d-grid gap-4 col-12 mx-auto mb-3 px-2">
               <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 Kumpulkan Tugas
               </button>
             </div>
           @endif
         </div>
-      </div>
-    </div>
+      
+
     </div>
   </div>
 

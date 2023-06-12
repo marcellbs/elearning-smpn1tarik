@@ -12,17 +12,26 @@ class PengumumanController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        
+        $search = $request->input('search');
+
+        $query = \App\Models\Pengumuman::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('judul_pengumuman', 'like', '%' . $search . '%')
+                ->orWhere('deskripsi', 'like', '%' . $search . '%');
+            });
+        }
+
+        $pengumuman = $query->orderByDesc('tgl_upload')->get();
         $data = [
-            'pengumuman' => \App\Models\Pengumuman::all()->sortByDesc('tgl_upload'),
-            // 'pengumuman' => Pengumuman::where('kode_guru', \Illuminate\Support\Facades\Auth::guard('webguru')->user()->kode_guru)->orderBy('tgl_upload', 'desc')->get(),
+            'pengumuman' => $pengumuman,
             'title' => 'Pengumuman',
         ];
         
         return view('pengumuman.index', $data);
-
     }
 
     /**

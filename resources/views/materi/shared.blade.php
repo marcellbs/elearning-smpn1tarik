@@ -1,11 +1,20 @@
 @extends('layout.guru')
 
 @section('content')
-@include('partials.page-title', ['title' => $title])
+
+<div class="row">
+  {{-- <div class="col-lg-12"></div> --}}
+  <div class="col-md-10">
+    @include('partials.page-title', ['title' => $title])
+  </div>
+  <div class="col-md-2 my-auto d-grid">
+    <a href="/guru/materi" class="gap-2 btn btn-block btn-primary">Kembali</a>
+  </div>
+</div>
 
 {{-- menampilkan materi yang dibagikan --}}
 
-<div class="row">
+<div class="row mt-3">
   {{-- jika tidak ada materi yang bagikan --}}
   @if (count($materi) == 0)
     <div class="alert alert-light" role="alert">
@@ -26,13 +35,16 @@
         <hr class="hr">
         <div class="card-body">
           <p class="card-text">{{$m->keterangan}}</p>
-          <a href="/guru/materi/{{$m->kode_materi}}" class="card-link btn text-white" style="background-color: orange;"><i class="bi bi-eye"></i></a>
+
+          <a href="/guru/materi/{{$m->kode_materi}}/edit" class="card-link btn btn-warning text-white"><i class="bi bi-pencil"></i></a>
+          
           {{-- delete --}}
           <form action="/guru/materi/{{$m->kode_materi}}" method="post" class="d-inline">
             @method('delete')
             @csrf
             <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah anda yakin?')"><i class="bi bi-trash"></i></button>
           </form>
+          <a href="/guru/materi/{{$m->kode_materi}}" class="card-link btn btn-info text-white"><i class="bi bi-eye"></i></a>
         </div>
       </div>
     </div>

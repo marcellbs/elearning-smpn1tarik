@@ -163,6 +163,12 @@
       </li>
 
       <li class="nav-item">
+        <a class="nav-link {{ (Request::is('guru/presensi')) ? 'active' : '' }}" href="/guru/presensi">
+          <i class="bi bi-people"></i><span>Rekap Presensi</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
         <a class="nav-link {{ (Request::is('guru/materi')) ? 'active' : '' }}" href="/guru/materi">
           <i class="bi bi-book"></i>
           <span>Materi</span>

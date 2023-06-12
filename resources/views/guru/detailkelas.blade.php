@@ -40,8 +40,9 @@
                 {{ $pengampu->link . " " }}
                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{ $pengampu->id }}">
                   <i class="bi bi-pencil-square"></i>
-              </button>
-            </td>
+                </button>
+              </td>
+              
             </tr>
           </table>
 
@@ -51,7 +52,7 @@
                 <a href="{{ $pengampu->link }}" class="btn btn-warning d-block text-white" target="_blank">Mulai</a>
               </div>
               <div class="col-md-6 mt-1 p-md-0 ps-1 ps-lg-0">
-                <a href="#" class="btn btn-outline-warning disabled d-block">Presensi</a>
+                <a href="/guru/presensi/{{ $hash->encode($pengampu->id)}}" class="btn btn-outline-warning d-block">Presensi</a>
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\Tugas;
 use App\Models\KelasSiswa;
@@ -15,19 +16,41 @@ class TugasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $query = Tugas::where('kode_guru', auth()->user()->kode_guru);
+
+        // Filtering berdasarkan kode_kelas
+        $kodeKelas = $request->input('kode_kelas');
+        if ($kodeKelas) {
+            $query->where('kode_kelas', $kodeKelas);
+        }
+
+        $tugas = $query->orderBy('created_at', 'desc')->paginate(6);
+
+        foreach ($tugas as $t) {
+            $kelas = Kelas::find($t->kode_kelas);
+            $t->nama_tingkat = $kelas->tingkat->nama_tingkat;
+
+            $jumlahSiswaKelas = KelasSiswa::where('kode_kelas', $t->kode_kelas)
+                ->count();
+
+            $t->jumlahSiswaKelas = $jumlahSiswaKelas;
+        }
+
+        $kelasOptions = Kelas::pluck('nama_kelas', 'kode_kelas');
+
         $data = [
-
-            'tugas' => Tugas::where('kode_guru', auth()->user()->kode_guru)->orderBy('created_at', 'desc')->get(),
+            'tugas' => $tugas,
+            'kelasOptions' => $kelasOptions,
             'title' => 'Tugas',
-            // menampilkan siswa yang mengumpulkan tugas dari tabel jawaban_tugas
-
-            
         ];
             
         return view('tugas.index', $data);
     }
+
+
+    
 
     /**
      * Show the form for creating a new resource.
@@ -108,25 +131,20 @@ class TugasController extends Controller
      * @param  \App\Models\Tugas  $tugas 
      * @return \Illuminate\Http\Response
      */
-    public function show(Tugas $tuga)
-    {
-        
-            // menampilkan semua siswa baik yang sudah menerjakan tugas maupun belum mengerjakan melalui kode_kelas di tabel tugas, kemudian jika ada yang cocok dengan tabel jawaban_tugas maka tampilkan 
-            // contoh :
-            // | NIS  | Nama Siswa | Tanggal Upload | Status | berkas
-            // | 9856 | Budi       | 2021-01-01     | Sudah  |  <a href="tugas/berkas">berkas</a> 
-            // | 9857 | Andi       | 2021-01-01     | belum  |  -
-
-            $siswa = Siswa::select('siswa.nis', 'siswa.nama_siswa', 'jawaban_tugas.tgl_upload', 'jawaban_tugas.nilai', 'jawaban_tugas.berkas')
+        public function show(Tugas $tuga)
+        {
+            $siswa = Siswa::select('siswa.nis', 'siswa.nama_siswa', 'jawaban_tugas.tgl_upload', 'jawaban_tugas.nilai', 'jawaban_tugas.berkas', 'jawaban_tugas.id')
                 ->join('kelas_siswa', 'kelas_siswa.kode_siswa', '=', 'siswa.kode_siswa')
                 ->join('tugas', 'tugas.kode_kelas', '=', 'kelas_siswa.kode_kelas')
-                ->leftJoin('jawaban_tugas', 'jawaban_tugas.kode_siswa', '=', 'siswa.kode_siswa')
+                ->leftJoin('jawaban_tugas', function ($join) use ($tuga) {
+                    $join->on('jawaban_tugas.kode_siswa', '=', 'siswa.kode_siswa')
+                        ->where('jawaban_tugas.kode_tugas', '=', $tuga->kode_tugas);
+                })
                 ->where('tugas.kode_tugas', $tuga->kode_tugas)
                 ->get();
-    
-        
+
             $tgl_indonesia = \Carbon\Carbon::parse($tuga->deadline)->locale('id');
-        
+
             $data = [
                 'title' => 'Detail Tugas',
                 'tugas' => $tuga,
@@ -134,11 +152,10 @@ class TugasController extends Controller
                 'siswa' => $siswa,
                 'jawaban' => JawabanTugas::where('kode_tugas', $tuga->kode_tugas)->get(),
             ];
-        
+
             return view('tugas.detailtugas', $data);
-        
-        
-    }
+        }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -235,6 +252,22 @@ class TugasController extends Controller
         $tuga->delete();
         return redirect('/guru/tugas')->with('success', 'Tugas berhasil dihapus');
 
+    }
+
+
+    public function nilaiJawaban(Request $request, $id)
+    {
+        $request->validate([
+            'nilai' => 'required',
+        ],[
+            'nilai.required' => 'Nilai tidak boleh kosong',
+        ]);
+
+        $jawaban = JawabanTugas::find($id);
+        $jawaban->nilai = $request->nilai;
+        $jawaban->save();
+
+        return redirect()->back()->with('success', 'Nilai berhasil disimpan');
     }
 
     public function getKelas($id)

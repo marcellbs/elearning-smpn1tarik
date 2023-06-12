@@ -562,10 +562,9 @@ class AdminController extends Controller
         // jika nip tidak kosong
         if($request->nip != null){
             $request->validate([
-                'nip' => 'required|unique:guru,nip,'.$id,
+                'nip' => 'required',
             ],[
                 'nip.required' => 'Kolom NIP tidak boleh kosong',
-                'nip.unique' => 'NIP sudah terdaftar',
             ]);
 
             $guru->nip = $request->nip;

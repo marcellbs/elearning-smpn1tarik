@@ -32,11 +32,21 @@ class Tugas extends Model
     }
 
     public function kelas(){
-        return $this->belongsTo(Kelas::class, 'kode_kelas');
+        return $this->belongsTo(Kelas::class, 'kode_kelas', 'kode_kelas');
+    }
+
+    public function getJumlahSiswaMengumpulkanAttribute()
+    {
+        return $this->jawaban()->count();
     }
 
     public function jawaban(){
         return $this->hasMany(JawabanTugas::class, 'kode_tugas', 'kode_tugas');
+    }
+
+    public function kelasSiswa()
+    {
+        return $this->hasMany(KelasSiswa::class, 'kode_kelas', 'kode_kelas');
     }
 
 

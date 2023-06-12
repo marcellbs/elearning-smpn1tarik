@@ -17,7 +17,7 @@ class Kelas extends Model
 
     // relasi ke tingkat
     public function tingkat(){
-        return $this->belongsTo(Tingkat::class, 'kode_tingkat');
+        return $this->belongsTo(Tingkat::class, 'kode_tingkat', 'kode_tingkat');
     }
 
     // relasi ke admin
@@ -30,16 +30,19 @@ class Kelas extends Model
         return $this->belongsTo(KelasSiswa::class, 'kode_kelas', 'kode_kelas');
     }
 
-    // relasi ke siswa
-    public function siswa(){
-        return $this->hasManyThrough(Siswa::class, KelasSiswa::class, 'kode_kelas', 'kode_siswa', 'kode_kelas', 'kode_siswa');
+    public function siswa()
+    {
+        return $this->belongsToMany(Siswa::class, 'kelas_siswa', 'kode_kelas', 'kode_siswa');
     }
+
 
     // relasi ke pengampu
     public function pengampu(){
         return $this->hasMany(Pengampu::class, 'kode_kelas', 'kode_kelas');
     }
 
-
+    public function tugas(){
+        return $this->hasMany(Tugas::class, 'kode_kelas', 'kode_kelas');
+    }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Materi;
+use App\Models\KelasSiswa;
 use Illuminate\Http\Request;
 
 class MateriController extends Controller
@@ -12,22 +13,100 @@ class MateriController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         // cek apakah yang login adalah admin atau guru
         $check = \Illuminate\Support\Facades\Auth::guard('webadmin')->check() || \Illuminate\Support\Facades\Auth::guard('webguru')->check();
         if($check){
+            $query = \App\Models\Materi::query();
+
+            // Pencarian
+            $search = $request->input('search');
+            if ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('materi.judul_materi', 'like', '%'.$search.'%')
+                        ->orWhere('materi.keterangan', 'like', '%'.$search.'%');
+                });
+            }
+
+            $kodeTingkat = $request->input('kode_tingkat');
+
+            if ($kodeTingkat) {
+                $query->where('materi.kode_tingkat', $kodeTingkat);
+            }
+
+            // Filtering berdasarkan kode_pelajaran
+            $kodePelajaran = $request->input('kode_pelajaran');
+
+            if ($kodePelajaran) {
+                $query->where('materi.kode_pelajaran', $kodePelajaran);
+            }
+            $materi = $query
+            ->join('tingkat_kelas', 'materi.kode_tingkat', '=', 'tingkat_kelas.kode_tingkat')
+            ->join('pelajaran', 'materi.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
+            ->select('materi.*', 'tingkat_kelas.nama_tingkat', 'pelajaran.nama_pelajaran')
+            ->get();
+
+            // Mengambil nilai unik untuk kode_tingkat dan kode_pelajaran
+            $tingkatOptions = \App\Models\Tingkat::pluck('nama_tingkat', 'kode_tingkat');
+            $pelajaranOptions = \App\Models\Mapel::pluck('nama_pelajaran', 'kode_pelajaran');
+
+
             $data = [
-                'materi' => \App\Models\Materi::all(),
+                'materi' => $materi,
+                'tingkatOptions' => $tingkatOptions,
+                'pelajaranOptions' => $pelajaranOptions,
                 'title' => 'Materi',
+                
             ];
+
             return view('materi.materi', $data);
-        }elseif(\Illuminate\Support\Facades\Auth::guard('websiswa')->check()){
+
+        } elseif(\Illuminate\Support\Facades\Auth::guard('websiswa')->check()) {
+
+            $query = \App\Models\Materi::query();
+
+            // Pencarian
+            $search = $request->input('search');
+            if ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('materi.judul_materi', 'like', '%'.$search.'%')
+                        ->orWhere('materi.keterangan', 'like', '%'.$search.'%');
+                });
+            }
+
+            $kodeTingkat = $request->input('kode_tingkat');
+
+            if ($kodeTingkat) {
+                $query->where('materi.kode_tingkat', $kodeTingkat);
+            }
+
+            // Filtering berdasarkan kode_pelajaran
+            $kodePelajaran = $request->input('kode_pelajaran');
+
+            if ($kodePelajaran) {
+                $query->where('materi.kode_pelajaran', $kodePelajaran);
+            }
+            $materi = $query
+            ->join('tingkat_kelas', 'materi.kode_tingkat', '=', 'tingkat_kelas.kode_tingkat')
+            ->join('pelajaran', 'materi.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
+            ->select('materi.*', 'tingkat_kelas.nama_tingkat', 'pelajaran.nama_pelajaran')
+            ->paginate(5);
+
+            // Mengambil nilai unik untuk kode_tingkat dan kode_pelajaran
+            $tingkatOptions = \App\Models\Tingkat::pluck('nama_tingkat', 'kode_tingkat');
+            $pelajaranOptions = \App\Models\Mapel::pluck('nama_pelajaran', 'kode_pelajaran');
+
+
             $data = [
-                'materi' => \App\Models\Materi::all(),
+                'materi' => $materi,
+                'tingkatOptions' => $tingkatOptions,
+                'pelajaranOptions' => $pelajaranOptions,
                 'title' => 'Materi',
-                'kelas_siswa' => \App\Models\KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
+                'kelas_siswa' => KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
+                
             ];
+
             return view('siswa.materi', $data);
         }
 

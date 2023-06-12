@@ -27,10 +27,11 @@ class Siswa extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     public $timestamps = false;
 
     // menampilkan tingkat kelas siswa dan nama kelas siswa
-    public function kelas_Siswa(){
-        //
-
+    public function kelas()
+    {
+        return $this->belongsToMany(Kelas::class, 'kelas_siswa', 'kode_siswa', 'kode_kelas');
     }
+
 
     public function tingkat(){
         return $this->hasManyThrough(Tingkat::class, Kelas::class, 'kode_tingkat', 'kode_kelas', 'kode_tingkat', 'kode_kelas');

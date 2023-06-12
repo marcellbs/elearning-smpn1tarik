@@ -1,11 +1,20 @@
 @extends('layout.guru')
 
 @section('content')
-@include('partials.page-title', ['title' => 'Detail Tugas'])
+<div class="row ">
+  <div class="col-md-10">
+    @include('partials.page-title', ['title' => 'Detail Tugas'])
+  </div>
+
+  <div class="col-md-2 my-auto d-grid">
+    <a href="/guru/tugas" class="gap-2 btn btn-block btn-primary">Kembali</a>
+  </div>
+  
+</div>
 
 {{-- menampilkan judul tugas --}}
 
-<div class="row">
+<div class="row mt-3">
   <div class="col-lg-7">
     <div class="card">
       <div class="card-header p-0 ">
@@ -59,7 +68,7 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-5">
+  {{-- <div class="col-lg-5">
     <div class="card">
       <div class="card-body table-responsive mt-3">
         <table class="table table-borderless">
@@ -70,9 +79,16 @@
         </table>
       </div>
     </div>
-  </div>
+  </div> --}}
 </div>
 
+{{-- alert --}}
+@if (session('success'))
+  <div class="alert alert-success alert-dismissible fade show mt-3">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+@endif
 
 {{-- menampilkan siswa yang mengumpulkan tugas --}}
 <div class="row">
@@ -90,6 +106,7 @@
         @endphp
         <h4 class="text-dark fw-bold ms-3 mt-2">Siswa yang mengumpulkan ({{ $tgl_upload }}/{{ $siswa->count() }})</h4>
       </div>
+
       <div class="card-body">
         <div class="table-responsive mt-2">
           <table class="table table-striped datatable" id="datatable">
@@ -132,16 +149,51 @@
                   @endif
                 </td>
                 <td>
-                  @if($item->berkas == null)
-                    <a href="#" class="btn btn-sm btn-primary"><i class="bi bi-download"></i></a>
-                  @else
-                    <a href="{{ asset('jawaban/'.$item->berkas)}}" class="btn btn-sm btn-primary" download><i class="bi bi-download"></i></a>
+                  @if($item->id == null)
+                    <button type="button" class="btn btn-sm btn-primary mb-2" disabled><i class="bi bi-download"></i></button>
+                  @elseif($item->id != null)
+                    <a href="{{ asset('jawaban/'.$item->berkas)}}" class="btn btn-sm btn-primary mb-2" download><i class="bi bi-download"></i></a>
                   @endif
 
-                  <a href="#" class="btn btn-sm btn-warning"><i class="bi bi-123"></i></a>
+                  @if($item->id == null)
+                    <button type="button" class="btn btn-sm btn-warning mb-2" data-bs-toggle="modal" data-bs-target="#exampleModal{{ $item->id }}" disabled>
+                      <i class="bi bi-123"></i>
+                    </button>
+                  @elseif($item->id != null)
+                    <button type="button" class="btn btn-sm btn-warning mb-2" data-bs-toggle="modal" data-bs-target="#exampleModal{{ $item->id }}">
+                      <i class="bi bi-123"></i>
+                    </button>
+                  @endif
                 </td>
               </tr>
+
+              <!-- Modal -->
+              <div class="modal fade" id="exampleModal{{ $item->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="/guru/nilai/{{ $item->id }}" method="post">
+                      <div class="modal-body">
+                        @csrf
+                        @method('patch')
+                        <div class="mb-3">
+                          <label for="nilai" class="form-label">Nilai</label>
+                          <input type="number" class="form-control" id="nilai" name="nilai" value="{{ $item->nilai }}">
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                      </div>
+                    </form>
+                </div>
+              </div>
+
               @endforeach
+              
             </tbody>
           </table>
         </div>
@@ -149,7 +201,5 @@
     </div>
   </div>
 </div>
-
-
 
 @endsection

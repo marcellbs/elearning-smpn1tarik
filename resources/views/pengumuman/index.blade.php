@@ -5,13 +5,31 @@
   @include('partials.page-title', ['title' => $title])
 
   {{-- <a href="/guru/pengumuman/create" class="btn mb-2 text-white" style="background-color:#33FF00;">Tambah Pengumuman</a> --}}
-  
+  <form action="{{ '/guru/pengumuman' }}" method="GET" class="mb-3">
+    <div class="row">
+      <div class="col-md-4">
+        <input type="text" name="search" placeholder="Cari pengumuman" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-primary">Cari</button>
+      </div>
+    </div>
+  </form>
+
   <button type="button" class="btn mb-2 text-white" data-bs-toggle="modal" data-bs-target="#exampleModal" style="background-color:#33FF00;" >
     Tambah Pengumuman
   </button>
   <a href="/guru/pengumuman/shared" class="btn mb-2 text-white" style="background-color:#ffbb00;">Pengumuman yang dibuat</a>
 
   <div class="row">
+    <div class="col-lg-12">
+      @if($pengumuman->isEmpty() )
+        <div class="alert alert-danger" role="alert">
+          <h4 class="alert-heading text-center">Tidak ada pengumuman</h4>
+        </div>
+      @endif
+    </div>
+
       @foreach ($pengumuman as $p)
       <div class="col-lg-6">
         <div class="card">
@@ -115,7 +133,7 @@
         </div>
       </div>
       @endforeach
-
+    
   </div>
   <!-- Button trigger modal -->
 

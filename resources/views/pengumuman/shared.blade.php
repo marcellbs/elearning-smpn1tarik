@@ -6,8 +6,8 @@
       @include ('partials.page-title', ['title' => 'Pengumuman yang dibuat'])
     </div>
 
-    <div class="col-md-8 my-auto">
-      <a href="/guru/pengumuman" class="btn btn-primary">Kembali</a>
+    <div class="col-md-8 d-flex my-auto">
+      <a href="/guru/pengumuman" class="ms-auto btn btn-primary">Kembali</a>
     </div>
   </div>
 
