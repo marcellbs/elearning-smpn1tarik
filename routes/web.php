@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\SiswaController;
-use App\Http\Controllers\Matericontroller;
+use App\Http\Controllers\MateriController;
 use App\Http\Controllers\PengampuController;
 use App\Http\Controllers\ElearningController;
 use App\Http\Controllers\PelajaranController;
@@ -13,7 +13,7 @@ use App\Http\Controllers\TugasController;
 use App\Http\Controllers\JawabantugasController;
 use App\Http\Controllers\JawabanController;
 use App\Http\Controllers\PengumumanController;
-use App\Http\Controllers\TaskStudentsController;
+use App\Http\Controllers\TaskstudentsController;
 use App\Http\Controllers\PresensiController;
 
 /*
@@ -126,6 +126,7 @@ Route::get('/guru/presensi', [PresensiController::class, 'presensi'])->middlewar
 Route::get('/guru/presensi/{tanggalPresensi}/edit/{kodeKelas}/{kodePelajaran}', [PresensiController::class, 'editPresensi'])->middleware('auth:webguru')->name('presensi.edit');
 Route::patch('/guru/presensi/update', [PresensiController::class,'updatePresensi'])->middleware('auth:webguru')->name('presensi.update');
 Route::get('/presensi/export/{kelas}/{mapel}/{tanggal}', [PresensiController::class, 'export'])->name('presensi.export');
+Route::get('/guru/rekappresensi', [PresensiController::class, 'generateExcel'])->middleware('auth:webguru')->name('presensi.exports');
 
 Route::get('/siswa', [SiswaController::class, 'index'])->middleware('auth:websiswa');
 Route::get('/siswa/login', [SiswaController::class, 'login'])->name('siswa')->middleware('guest');
@@ -137,6 +138,7 @@ Route::get('/siswa/detail/{id}', [SiswaController::class, 'detail'])->middleware
 Route::resource('/siswa/materi', MateriController::class)->middleware('auth:websiswa');
 Route::get('/guru/tugas/create/{id}', [TugasController::class, 'getKelas'])->middleware('auth:webguru');
 Route::put('/guru/detail/{id}', [GuruController::class, 'updateLink'])->middleware('auth:webguru');
+
 Route::resource('/siswa/tugas', TaskstudentsController::class)->middleware('auth:websiswa');
 Route::resource('/siswa/jawabantugas', JawabantugasController::class)->middleware('auth:websiswa');
 Route::get('/siswa/pengumuman', [SiswaController::class, 'pengumuman'])->middleware('auth:websiswa');

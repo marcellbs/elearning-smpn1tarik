@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Guru;
 use Hashids\Hashids;
 use App\Models\Kelas;
@@ -10,13 +11,17 @@ use App\Models\Siswa;
 use App\Models\Pengampu;
 use Illuminate\Http\Request;
 use App\Models\PresensiModel;
-use App\Exports\PresensiExport;
-use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+
 
 
 
 class PresensiController extends Controller
 {
+
+
     public function index($id){
         $hash = new Hashids('my-hash',10);
         $pengampu = Pengampu::find($hash->decode($id)[0]);
@@ -68,6 +73,12 @@ class PresensiController extends Controller
 
     public function presensi(){
         $kodeGuru = auth()->guard('webguru')->user()->kode_guru;
+        $pengampuGuru = Pengampu::where('kode_guru', $kodeGuru)->get();
+        // menampilkan kelas dari pengampu yang diampu oleh guru
+        $kelas = Kelas::whereIn('kode_kelas', $pengampuGuru->pluck('kode_kelas')->unique())->get();
+
+        // Mengambil mapel dari setiap pengampu yang diampu oleh guru dengan distinct
+        $mapelGuru = Mapel::whereIn('kode_pelajaran', $pengampuGuru->pluck('kode_pelajaran')->unique())->get();
 
         $data = [
 
@@ -76,6 +87,8 @@ class PresensiController extends Controller
                 ->with('kelas')
                 ->get()
                 ->groupBy(['tanggal_presensi', 'kode_kelas']),
+            'mapelGuru' => $mapelGuru,
+            'kelasGuru' => $kelas,
         ];
 
 
@@ -111,25 +124,225 @@ class PresensiController extends Controller
         return redirect('/guru/presensi')->with('success', 'Data presensi berhasil diperbarui');
     }
 
-public function export($kelas, $mapel, $tanggal)
-{
-    $kelasData = Kelas::where('kode_kelas', $kelas)->firstOrFail();
-    $mapelData = Mapel::where('kode_pelajaran', $mapel)->firstOrFail();
+// public function export($kelas, $mapel, $tanggal)
+// {
+//     $kelasData = Kelas::where('kode_kelas', $kelas)->firstOrFail();
+//     $mapelData = Mapel::where('kode_pelajaran', $mapel)->firstOrFail();
 
-    $presensi = PresensiModel::where('kode_kelas', $kelas)
-        ->where('kode_pelajaran', $mapel)
-        ->where('tanggal_presensi', $tanggal)
-        ->firstOrFail();
+//     $presensi = PresensiModel::where('kode_kelas', $kelas)
+//         ->where('kode_pelajaran', $mapel)
+//         ->where('tanggal_presensi', $tanggal)
+//         ->firstOrFail();
 
-    $guru = Guru::where('kode_guru', $presensi->kode_guru)->firstOrFail();
-    $export = new PresensiExport($kelas, $mapel, $tanggal, $guru->kode_guru, $kelasData->nama_kelas, $mapelData->nama_pelajaran);
-
-
-    return Excel::download($export, 'presensi_'.$kelasData->tingkat->nama_tingkat.$kelasData->nama_kelas.'_'.$mapelData->nama_pelajaran.'_'.$tanggal.'.xlsx');
-}
+//     $guru = Guru::where('kode_guru', $presensi->kode_guru)->firstOrFail();
+//     $export = new PresensiExport($kelas, $mapel, $tanggal, $guru->kode_guru, $kelasData->nama_kelas, $mapelData->nama_pelajaran);
 
 
+//     return Excel::download($export, 'presensi_'.$kelasData->tingkat->nama_tingkat.$kelasData->nama_kelas.'_'.$mapelData->nama_pelajaran.'_'.$tanggal.'.xlsx');
+// }
 
+    // public function generateExcel(Request $request)
+    // {
+    //     $kodeGuru = auth()->guard('webguru')->user()->kode_guru;
+    //     $kodePelajaran = $request->input('kode_pelajaran');
+    //     $tanggalMulai = $request->input('tanggal_mulai');
+    //     $tanggalAkhir = $request->input('tanggal_akhir');
+    //     $kodeKelas = $request->input('kode_kelas');
+
+    //     $export = new RekapPresensiExport($kodeGuru, $kodePelajaran, $tanggalMulai, $tanggalAkhir, $kodeKelas);
+
+    //     return Excel::download($export, 'Rekap_Presensi.xlsx');
+    // }
+
+//     public function generateExcel(Request $request)
+//     {
+//         $kode_guru = auth()->guard('webguru')->user()->kode_guru;
+//         $tanggal_mulai = $request->input('tanggal_mulai');
+//         $tanggal_akhir = $request->input('tanggal_akhir');
+//         $kode_pelajaran = $request->input('kode_pelajaran');
+//         $kode_kelas = $request->input('kode_kelas');
+
+//         // Validasi tanggal mulai, tanggal akhir, kode pelajaran, dan kode kelas jika diperlukan
+
+//         // Ambil informasi guru dan pelajaran
+//         $guru = Guru::where('kode_guru', $kode_guru)->first();
+//         $pelajaran = Mapel::where('kode_pelajaran', $kode_pelajaran)->first();
+//         $kelas = Kelas::where('kode_kelas', $kode_kelas)->first();
+
+//         // Ambil data presensi berdasarkan tanggal mulai, tanggal akhir, kode pelajaran, dan kode kelas
+//         $presensi = PresensiModel::whereBetween('tanggal_presensi', [$tanggal_mulai, $tanggal_akhir])
+//             ->where('kode_pelajaran', $kode_pelajaran)
+//             ->where('kode_kelas', $kode_kelas)
+//             ->get();
+
+//         // Ambil ID siswa dari presensi
+//         $siswaIds = $presensi->pluck('kode_siswa')->unique()->toArray();
+
+//         // Ambil data siswa berdasarkan ID siswa
+//         $siswa = Siswa::whereIn('kode_siswa', $siswaIds)->get()->keyBy('kode_siswa');
+//         // dd($siswa);
+//         // Membuat spreadsheet baru
+//         $spreadsheet = new Spreadsheet();
+//         $sheet = $spreadsheet->getActiveSheet();
+
+//         // Menampilkan informasi guru, pelajaran, kelas, dan rentang tanggal presensi
+//         $sheet->setCellValue('A1', 'Nama Guru: ' . $guru->nama);
+//         $sheet->setCellValue('A2', 'Mata Pelajaran: ' . $pelajaran->nama_pelajaran);
+//         $sheet->setCellValue('A3', 'Kelas: ' . $kelas->tingkat->nama_tingkat.$kelas->nama_kelas);
+//         $sheet->setCellValue('A4', 'Tanggal Presensi: ' . $tanggal_mulai . ' - ' . $tanggal_akhir);
+
+//         // Menyimpan data ke dalam spreadsheet
+//         $columnIndex = 1;
+//         $rowIndex = 6;
+
+//         // Header
+//         $sheet->setCellValue('A' . $rowIndex, 'NIS');
+//         $sheet->setCellValue('B' . $rowIndex, 'Nama Siswa');
+
+//         // Tanggal presensi
+//         $tanggalPresensi = [];
+//         $presensiData = [];
+
+//         foreach ($presensi as $row) {
+//             $tanggalPresensi[] = $row->tanggal_presensi;
+//             $presensiData[$row->kode_siswa][$row->tanggal_presensi] = $row->status;
+//         }
+
+//         $tanggalPresensi = array_unique($tanggalPresensi);
+//         sort($tanggalPresensi);
+
+//         $columnIndex = 3;
+//         foreach ($tanggalPresensi as $index => $tanggal) {
+//             $column = Coordinate::stringFromColumnIndex($columnIndex++);
+
+//             $cellCoordinate = $column . $rowIndex;
+//             $sheet->setCellValue($cellCoordinate, $tanggal);
+//         }
+
+//         // Data presensi siswa
+//         $rowIndex++;
+
+//         foreach ($siswa as $siswaData) {
+//             $columnIndex = 1;
+
+//             $sheet->setCellValue('A' . $rowIndex, $siswaData->nis);
+//             $sheet->setCellValue('B' . $rowIndex, $siswaData->nama_siswa);
+
+//             $columnIndex = 3;
+//             foreach ($tanggalPresensi as $tanggal) {
+//                 $column = Coordinate::stringFromColumnIndex($columnIndex++);
+//                 $cellCoordinate = $column . $rowIndex;
+//                 $sheet->setCellValue($cellCoordinate, $presensiData[$siswaData->kode_siswa][$tanggal] ?? '');
+//             }
+
+//             $rowIndex++;
+//         }
+
+//         // Mengatur lebar kolom agar sesuai dengan konten
+//         $sheet->getColumnDimension('A')->setAutoSize(true);
+//         $sheet->getColumnDimension('B')->setAutoSize(true);
+
+//         foreach (range('C', $sheet->getHighestColumn()) as $column) {
+//             $sheet->getColumnDimension($column)->setWidth(12);
+//         }
+
+//         // Membuat objek writer dan mengirimkan spreadsheet ke browser
+//         $writer = new Xlsx($spreadsheet);
+//         $filename = 'rekap_presensi.xlsx';
+
+//         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+//         header('Content-Disposition: attachment; filename="' . $filename . '"');
+//         $writer->save('php://output');
+//         exit();
+//     }
+
+    public function generateExcel(Request $request)
+    {
+        $kode_guru = auth()->guard('webguru')->user()->kode_guru;
+        $kode_pelajaran = $request->input('kode_pelajaran');
+        $kode_kelas = $request->input('kode_kelas');
+
+        // Ambil informasi guru, pelajaran, dan kelas
+        $guru = Guru::where('kode_guru', $kode_guru)->first();
+        $pelajaran = Mapel::where('kode_pelajaran', $kode_pelajaran)->first();
+        $kelas = Kelas::where('kode_kelas', $kode_kelas)->first();
+
+        // Ambil data presensi berdasarkan kode pelajaran dan kode kelas
+        $presensi = PresensiModel::where('kode_pelajaran', $kode_pelajaran)
+            ->where('kode_kelas', $kode_kelas)
+            ->get();
+
+        // Menghitung tanggal presensi terawal dan terakhir
+        $tanggalPresensiTerawal = $presensi->min('tanggal_presensi');
+        $tanggalPresensiTerakhir = $presensi->max('tanggal_presensi');
+
+        // Membuat spreadsheet baru
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Menampilkan informasi guru, pelajaran, kelas, dan rentang tanggal presensi
+        $sheet->setCellValue('A1', 'Nama Guru: ' . $guru->nama);
+        $sheet->setCellValue('A2', 'Mata Pelajaran: ' . $pelajaran->nama_pelajaran);
+        $sheet->setCellValue('A3', 'Kelas: ' . $kelas->tingkat->nama_tingkat.$kelas->nama_kelas);
+        $sheet->setCellValue('A4', 'Tanggal Presensi: ' . $tanggalPresensiTerawal . ' s.d. ' . $tanggalPresensiTerakhir);
+
+        // Menyimpan data ke dalam spreadsheet
+        $columnIndex = 1;
+        $rowIndex = 6;
+
+        // Header
+        $sheet->setCellValue('A' . $rowIndex, 'NIS');
+        $sheet->setCellValue('B' . $rowIndex, 'Nama Siswa');
+
+        // Tanggal presensi
+        $tanggalPresensi = $presensi->pluck('tanggal_presensi')->unique()->sort();
+        
+        $columnIndex = 3;
+        foreach ($tanggalPresensi as $index => $tanggal) {
+            $column = Coordinate::stringFromColumnIndex($columnIndex++);
+            $cellCoordinate = $column . $rowIndex;
+            $sheet->setCellValue($cellCoordinate, $tanggal);
+        }
+
+        // Data presensi siswa
+        $siswaIds = $presensi->pluck('kode_siswa')->unique()->toArray();
+        $siswa = Siswa::whereIn('kode_siswa', $siswaIds)->get()->keyBy('kode_siswa');
+
+        foreach ($siswa as $siswa) {
+            $columnIndex = 1;
+            $rowIndex++;
+
+            $sheet->setCellValue('A' . $rowIndex, $siswa->nis);
+            $sheet->setCellValue('B' . $rowIndex, $siswa->nama_siswa);
+
+            $columnIndex = 3;
+            foreach ($tanggalPresensi as $tanggal) {
+                $column = Coordinate::stringFromColumnIndex($columnIndex++);
+                $cellCoordinate = $column . $rowIndex;
+                $presensiSiswa = $presensi->where('kode_siswa', $siswa->kode_siswa)
+                    ->where('tanggal_presensi', $tanggal)
+                    ->first();
+                $sheet->setCellValue($cellCoordinate, $presensiSiswa ? $presensiSiswa->status : '');
+            }
+        }
+
+        // Mengatur lebar kolom agar sesuai dengan konten
+        $highestColumn = $sheet->getHighestColumn();
+        $columnRange = range('A', $highestColumn);
+
+        foreach ($columnRange as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        // Membuat objek writer dan mengirimkan spreadsheet ke browser
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'rekap-absen-' . str_replace(' ', '-', strtolower($pelajaran->nama_pelajaran)) . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        $writer->save('php://output');
+        exit();
+    }
 
 
 }

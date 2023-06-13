@@ -13,6 +13,34 @@
 
 {{-- dropdown untuk memilih kelas dan mapel, nantinya digunakan untuk download file export excel --}}
 
+<form action="{{ '/guru/rekappresensi'}}" method="GET" class="mb-3">
+    @csrf
+
+    <div class="row">
+        
+            <div class="col-md-4">
+                <label for="kode_pelajaran">Mata Pelajaran : </label>
+                <select name="kode_pelajaran" id="kode_pelajaran" class="form-select">
+                    @foreach($mapelGuru as $mapel)
+                        <option value="{{ $mapel->kode_pelajaran }}">{{ $mapel->nama_pelajaran }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="kode_kelas">Kelas : </label>
+                <select name="kode_kelas" id="kode_kelas" class="form-select">
+                    @foreach($kelasGuru as $kelas)
+                        <option value="{{ $kelas->kode_kelas }}">{{ $kelas->tingkat->nama_tingkat.$kelas->nama_kelas }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2 mt-4">
+                <button type="submit" class="btn btn-primary">Export</button>
+            </div>
+        
+    </div>
+</form>
+
 
 
 <div class="row">
@@ -52,7 +80,7 @@
                     </div>
                     <div class="card-footer">
                         <a href="/guru/presensi/{{ $tanggalPresensi }}/edit/{{ $kodeKelas }}/{{ $presensiPerKelas[0]->mapel->kode_pelajaran }}" class="btn btn-sm btn-primary">Edit Presensi</a>
-                        <a href="{{ route('presensi.export', ['kelas' => $presensiPerKelas[0]->kelas->kode_kelas, 'mapel' => $presensiPerKelas[0]->mapel->kode_pelajaran, 'tanggal' => $tanggalPresensi]) }}" class="btn btn-sm btn-primary">Export to Excel</a>
+                        {{-- <a href="{{ route('presensi.export', ['kelas' => $presensiPerKelas[0]->kelas->kode_kelas, 'mapel' => $presensiPerKelas[0]->mapel->kode_pelajaran, 'tanggal' => $tanggalPresensi]) }}" class="btn btn-sm btn-primary">Export to Excel</a> --}}
                     </div>
                 </div>
             </div>

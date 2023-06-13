@@ -14,9 +14,7 @@
       </nav>
     </div>
   </div>
-  <div class="col-md-2">
-    <a href="/guru/detail/{{ $hash->encode($pengampu->id)}}" class="btn btn-primary d-block mt-3 mt-md-0 mb-2">Kembali</a>
-  </div>
+  
 </div>
 
 {{-- alert --}}
@@ -108,7 +106,8 @@
             </table>
             
             <div class="col d-flex">
-              <button type="submit" class="btn btn-primary ms-auto">Kirim</button>
+              <a href="/guru/detail/{{ $hash->encode($pengampu->id)}}" class="btn btn-primary ms-auto me-2">Kembali</a>
+              <button type="submit" class="btn btn-primary">Kirim</button>
             </div>
         </form>
         

@@ -1,102 +1,60 @@
 <?php
 
 namespace App\Exports;
-
 use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\Mapel;
-use App\Models\Siswa;
 use App\Models\PresensiModel;
-use Maatwebsite\Excel\Events\AfterSheet;
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithStartRow;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Events\AfterSheet;
 
-
-class PresensiExport implements FromCollection, WithHeadings, WithEvents
+class PresensiExport implements FromView, WithEvents
 {
     /**
     * @return \Illuminate\Support\Collection
     */
+    
+    protected $startDate;
+    protected $endDate;
 
-    protected $kodeKelas;
-    protected $kodePelajaran;
-    protected $kodeGuru;
-    protected $tanggalPresensi;
-    protected $namaKelas;
-    protected $namaPelajaran;
-
-    public function __construct($kodeKelas, $kodePelajaran, $tanggalPresensi, $kodeGuru, $namaKelas, $namaPelajaran)
+    public function __construct($startDate, $endDate)
     {
-        $this->kodeKelas = $kodeKelas;
-        $this->kodePelajaran = $kodePelajaran;
-        $this->tanggalPresensi = $tanggalPresensi;
-        $this->kodeGuru = $kodeGuru;
-        $this->namaKelas = $namaKelas;
-        $this->namaPelajaran = $namaPelajaran;
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
     }
 
-    public function collection()
+    public function view(): View
     {
-        $siswaData = Siswa::whereHas('kelas', function ($query) {
-            $query->where('kelas_siswa.kode_kelas', $this->kodeKelas);
-        })->get();
+        $guru = Guru::first(); // Contoh: Mengambil data guru pertama
+        $mapel = Mapel::first(); // Contoh: Mengambil data mata pelajaran pertama
+        $kelas = Kelas::first(); // Contoh: Mengambil data kelas pertama
+        $presensiData = PresensiModel::whereBetween('tanggal_presensi', [$this->startDate, $this->endDate])->get();
 
-        $data = [];
-
-        foreach ($siswaData as $siswa) {
-            $row = [
-                'NIS' => $siswa->nis,
-                'Nama Siswa' => $siswa->nama_siswa,
-            ];
-
-            $presensi = PresensiModel::where('kode_kelas', $this->kodeKelas)
-                ->where('kode_pelajaran', $this->kodePelajaran)
-                ->where('tanggal_presensi', $this->tanggalPresensi)
-                ->where('kode_siswa', $siswa->kode_siswa)
-                ->first();
-
-            $statusPresensi = $presensi ? $presensi->status : '';
-            $row['Status Presensi'] = $statusPresensi;
-
-            $data[] = $row;
-        }
-
-        return collect($data);
-    }
-
-    public function headings(): array
-    {
-        return [
-            'NIS',
-            'Nama Siswa',
-            'Status Presensi',
-        ];
+        return view('presensi.export', [
+            'guru' => $guru,
+            'mapel' => $mapel,
+            'kelas' => $kelas,
+            'presensiData' => $presensiData,
+        ]);
     }
 
     public function registerEvents(): array
-    {
-        return [
-            AfterSheet::class => function (AfterSheet $event) {
-                $guru = Guru::where('kode_guru', $this->kodeGuru)->first();
-                $kelas = Kelas::where('kode_kelas', $this->kodeKelas)->first();
-                $mapel = Mapel::where('kode_pelajaran', $this->kodePelajaran)->first();
-
-                $event->sheet->setCellValue('D1', 'Nama Guru: ' . $guru->nama);
-                $event->sheet->setCellValue('D2', 'Kelas: ' . $kelas->tingkat->nama_tingkat.$kelas->nama_kelas);
-                $event->sheet->setCellValue('D3', 'Mata Pelajaran: ' . $mapel->nama_pelajaran);
-                $event->sheet->setCellValue('D4', 'Tanggal Presensi: ' . date('l, d-m-Y', strtotime($this->tanggalPresensi)));
-
-                $event->sheet->getStyle('D1:D4')->applyFromArray([
-                    'font' => [
-                        'bold' => true,
-                    ],
-                ]);
-            },
-        ];
-    }
-
-
+{
+    $guru = Guru::first(); // Mengambil data guru pertama
+    $mapel = Mapel::first(); // Mengambil data mata pelajaran pertama
+    $kelas = Kelas::first(); // Mengambil data kelas pertama
     
+    return [
+        AfterSheet::class => function (AfterSheet $event) use ($guru, $mapel, $kelas) {
+            $event->sheet->setCellValue('A1', 'Nama Guru: ' . $guru->nama);
+            $event->sheet->setCellValue('A2', 'Mata Pelajaran: ' . $mapel->nama_pelajaran);
+            $event->sheet->setCellValue('A3', 'Presensi: ' . $this->startDate . ' - ' . $this->endDate);
+        },
+    ];
+}
+
+
+
 }
