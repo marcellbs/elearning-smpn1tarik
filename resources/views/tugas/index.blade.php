@@ -10,14 +10,8 @@
       <div class="form-group">
           <select name="kode_kelas" id="kode_kelas" class="form-select">
               <option value="">Pilih Kelas</option>
-              @foreach($kelasOptions as $kodeKelas => $namaKelas)
-                  @php
-                      $selected = (request('kode_kelas') == $kodeKelas) ? 'selected' : '';
-                      $tingkatKelas = \App\Models\Kelas::where('kode_kelas', $kodeKelas)->first()->tingkat;
-                  @endphp
-                  <option value="{{ $kodeKelas }}" {{ $selected }}>
-                      {{ $tingkatKelas ? $tingkatKelas->nama_tingkat : '-' }}{{ $namaKelas }}
-                  </option>
+              @foreach($kelasOptions as $kodeKelas)
+                <option value="{{ $kodeKelas->kode_kelas }}" {{ request('kode_kelas') == $kodeKelas ? 'selected' : '' }}>{{ $kodeKelas->tingkat->nama_tingkat }}{{ $kodeKelas->nama_kelas }}</option>
               @endforeach
           </select>
       </div>
@@ -39,8 +33,8 @@
   </div>
 @endif
 
-<a href="/guru/tugas/create" class="btn text-white mb-3" style="background-color: #33FF00">Buat tugas baru</a>
-
+<a href="/guru/tugas/create" class="btn text-white mb-3" style="background-color: #33ff00">Buat tugas baru</a>
+<a href="/guru/tugas/report" class="btn btn-primary mb-3">Report tugas</a>
 <div class="row">
     @if (count($tugas) == 0)
       <div class="col-lg-12">

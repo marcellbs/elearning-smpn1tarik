@@ -11,7 +11,7 @@ use App\Http\Controllers\PelajaranController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\TugasController;
 use App\Http\Controllers\JawabantugasController;
-use App\Http\Controllers\JawabanController;
+use App\Http\Controllers\JadwalmengajarController;
 use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\TaskstudentsController;
 use App\Http\Controllers\PresensiController;
@@ -104,6 +104,8 @@ Route::get('/guru/register', [GuruController::class, 'register']);
 Route::post('/guru/register', [GuruController::class, 'save']);
 Route::get('/guru/logout', [GuruController::class, 'logout']);
 
+Route::get('/guru/jadwal-mengajar', [JadwalmengajarController::class, 'index'])->middleware('auth:webguru');
+Route::get('/guru/tugas/report', [TugasController::class, 'report'])->middleware('auth:webguru');
 Route::resource('/guru/tugas', TugasController::class)->middleware('auth:webguru');
 Route::get('/guru/mapel', [GuruController::class, 'mapel'])->middleware('auth:webguru');
 Route::get('/guru/detail/{id}', [GuruController::class, 'detail'])->middleware('auth:webguru');

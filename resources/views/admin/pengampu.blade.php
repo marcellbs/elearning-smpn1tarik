@@ -17,6 +17,7 @@
       <ul>
         <li>Anda dapat menambahkan guru yang akan mengampu mata pelajaran dan kelas</li>
         <li>Anda cukup menambahkan nama guru, mata pelajaran, dan kelas saja, maka data yang anda inputkan akan masuk ke dalam database</li>
+        <li>Anda dapat mengisi Jam Mulai dan Jam Berakhir dengan pemisah (:) titik dua </li>
       </ul>
       <div class="mt-3 align-content-center">
         {{-- menambah data pengampu dropdown --}}
@@ -63,9 +64,46 @@
                 </div>
                 @enderror
             </div>
+            <div class="col-sm-4 mt-1">
+                <label for="hari">Hari</label>
+                <select name="hari" class="form-select  @error('hari') is-invalid @enderror"  id="kelas">
+                  <option value="">Pilih Hari</option>
+                  <option value="Senin">Senin</option>
+                  <option value="Selasa">Selasa</option>
+                  <option value="Rabu">Rabu</option>
+                  <option value="Kamis">Kamis</option>
+                  <option value="Jumat">Jumat</option>
+                  <option value="Sabtu">Sabtu</option>
+                </select>
+                @error('hari')
+                <div class="invalid-feedback">
+                  {{$message}}
+                </div>
+                @enderror
+            </div>
+            <div class="col-sm-4 mt-1">
+              <label for="hari">Jam Mulai</label>
+                <input type="text" name="jam_mulai" class="form-control  @error('jam_mulai') is-invalid @enderror" placeholder="08:00"  id="jam_mulai">
+                @error('jam_mulai')
+                <div class="invalid-feedback">
+                  {{$message}}
+                </div>
+                @enderror
+            </div>
+            <div class="col-sm-4 mt-1">
+              <label for="hari">Jam Berakhir</label>
+                <input type="text" name="jam_berakhir" class="form-control @error('jam_berakhir') is-invalid @enderror" placeholder="08:00"  id="jam_berakhir">
+                @error('jam_berakhir')
+                <div class="invalid-feedback">
+                  {{$message}}
+                </div>
+                @enderror
+            </div>
+
           </div>
-          
-          <button type="submit" class="btn btn-primary mt-3">Tambah Data</button>
+          <div class="d-flex">
+            <button type="submit" class="btn btn-primary mt-3 ms-auto">Tambah Data</button>
+          </div>
         </form>
       </div>
     </div>
@@ -81,8 +119,9 @@
             <thead>
               <th>No</th>
               <th>Nama</th>
-              <th>Mata Pelajaran yang Diampu</th>
+              <th>Mata Pelajaran</th>
               <th>Kelas</th>
+              <th>Jadwal</th>
               <th>Aksi</th>
             </thead>
             <tbody>
@@ -93,6 +132,7 @@
                 <td>{{$p->guru->nama}}</td>
                 <td>{{$p->mapel->nama_pelajaran}}</td>
                 <td>{{$p->kelas->tingkat->nama_tingkat}}{{$p->kelas->nama_kelas}}</td>
+                <td>{{$p->hari }}, {{ $p->jam_mulai }} - {{ $p->jam_berakhir }}</td>
                 <td>
                   <a href="/admin/pengampu/{{$p->id}}/edit" class="btn btn-warning mt-1"><i class="bi bi-pencil-square"></i></a>
                   <a href="/admin/pengampu/{{$p->id}}" class="btn btn-info mt-1"><i class="bi bi-eye"></i></a>

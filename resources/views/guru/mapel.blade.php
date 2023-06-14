@@ -16,6 +16,7 @@
           <div class="card-body p-0 ps-4">
             <h5 class="mt-3"><strong>{{$p->mapel->nama_pelajaran}}</strong></h5>
             <h6 class="card-text text-muted">{{$p->kelas->tingkat->nama_tingkat}}{{$p->kelas->nama_kelas}}</h6>
+            {{-- <h6 class="card-text text-muted">{{$p->hari}}, {{$p->jam_mulai}}-{{$p->jam_berakhir}}</h6> --}}
           </div>
           <div class="card-footer p-2 m-0 d-flex border-0 me-2" style="background-color: transparent;">
             <a href="/guru/detail/{{ $hash->encode($p->id)}}" class="m-0 ms-auto text-dark">Akses Kelas <i class="bi bi-box-arrow-in-right"></i></a>

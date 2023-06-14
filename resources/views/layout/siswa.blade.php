@@ -164,12 +164,11 @@
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('siswa/pengumuman')) ? 'active' : '' }}"  href="/siswa/pengumuman">
-          <i class="bi bi-exclamation-circle"></i><span>Pengumuman</span>
+        <a class="nav-link {{ (Request::is('siswa/mapel')) ? 'active' : '' }}" href="/siswa/mapel">
+          <i class="bi bi-bookmarks"></i><span>Mata Pelajaran</span>
         </a>
-      </li><!-- End Announcements Nav -->
-
-
+      </li>
+      
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('siswa/tugas')) ? 'active' : '' }}" href="/siswa/tugas">
           <i class="bi bi-pen"></i><span>Tugas</span>
@@ -177,10 +176,11 @@
       </li>
 
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('siswa/mapel')) ? 'active' : '' }}" href="/siswa/mapel">
-          <i class="bi bi-bookmarks"></i><span>Data Mapel</span>
+        <a class="nav-link {{ (Request::is('siswa/pengumuman')) ? 'active' : '' }}"  href="/siswa/pengumuman">
+          <i class="bi bi-exclamation-circle"></i><span>Pengumuman</span>
         </a>
-      </li>
+      </li><!-- End Announcements Nav -->
+      
 
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('siswa/profile')) ? 'active' : '' }}" href="/siswa/profile" >

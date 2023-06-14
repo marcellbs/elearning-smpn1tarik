@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="col-md-2">
-      <button type="submit" class="btn btn-primary mt-2">Cari</button>
+      <button type="submit" class="btn btn-primary">Cari</button>
     </div>
   </div>
 </form>
@@ -34,6 +34,7 @@
                 <div class="card-body p-0 ps-4">
                   <h5 class="mt-3"><strong>{{$p->mapel->nama_pelajaran}}</strong></h5>
                   <h6 class="card-text mt-3">{{$p->guru->nama}}</h6>
+                  {{-- <h6 class="card-text mt-3">{{$p->hari}}, {{ $p->jam_mulai }} - {{ $p->jam_berakhir }}</h6> --}}
                   {{-- <h6 class="card-text text-muted">{{$p->kelas->tingkat->nama_tingkat}}{{$p->kelas->nama_kelas}}</h6> --}}
                 </div>
                 <div class="card-footer p-2 m-0 d-flex border-0 me-2" style="background-color: transparent;">

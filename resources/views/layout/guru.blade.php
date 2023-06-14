@@ -162,6 +162,12 @@
         </a>
       </li>
 
+      {{-- <li class="nav-item">
+        <a class="nav-link {{ (Request::is('guru/jadwal-mengajar')) ? 'active' : '' }}" href="/guru/jadwal-mengajar">
+          <i class="bi bi-calendar-week"></i><span>Jadwal Mengajar</span>
+        </a>
+      </li> --}}
+
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('guru/presensi')) ? 'active' : '' }}" href="/guru/presensi">
           <i class="bi bi-people"></i><span>Rekap Presensi</span>
@@ -176,17 +182,16 @@
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('guru/pengumuman')) ? 'active' : '' }}"  href="/guru/pengumuman">
-          <i class="bi bi-exclamation-circle"></i><span>Pengumuman</span>
-        </a>
-      </li><!-- End Announcements Nav -->
-
-
-      <li class="nav-item">
         <a class="nav-link {{ (Request::is('guru/tugas')) ? 'active' : '' }}" href="/guru/tugas">
           <i class="bi bi-pen"></i><span>Tugas</span>
         </a>
       </li>
+
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('guru/pengumuman')) ? 'active' : '' }}"  href="/guru/pengumuman">
+          <i class="bi bi-exclamation-circle"></i><span>Pengumuman</span>
+        </a>
+      </li><!-- End Announcements Nav -->
 
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('guru/profile')) ? 'active' : '' }}" href="/guru/profile" >

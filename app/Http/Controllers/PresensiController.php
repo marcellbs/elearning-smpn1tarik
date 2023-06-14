@@ -53,6 +53,15 @@ class PresensiController extends Controller
             date_default_timezone_set('Asia/Jakarta');
             $date = date('Y-m-d');
 
+            // Cek apakah presensi sudah dilakukan pada tanggal tersebut berdasarkan kode pelajaran
+            $existingPresensi = PresensiModel::where('kode_siswa', $siswaId)
+                ->where('tanggal_presensi', $date)
+                ->where('kode_pelajaran', $request->kode_pelajaran)
+                ->first();
+
+            if ($existingPresensi) {
+                return redirect()->back()->with('error', '<strong>Gagal!</strong> Presensi untuk hari ini sudah dilakukan.');
+            }
 
             // Simpan data presensi ke dalam tabel presensi
             PresensiModel::create([
@@ -74,7 +83,6 @@ class PresensiController extends Controller
     public function presensi(){
         $kodeGuru = auth()->guard('webguru')->user()->kode_guru;
         $pengampuGuru = Pengampu::where('kode_guru', $kodeGuru)->get();
-        // menampilkan kelas dari pengampu yang diampu oleh guru
         $kelas = Kelas::whereIn('kode_kelas', $pengampuGuru->pluck('kode_kelas')->unique())->get();
 
         // Mengambil mapel dari setiap pengampu yang diampu oleh guru dengan distinct
@@ -85,8 +93,9 @@ class PresensiController extends Controller
             'title' => 'Presensi',
             'presensi' => PresensiModel::where('kode_guru', $kodeGuru)
                 ->with('kelas')
+                ->orderBy('tanggal_presensi', 'desc')
                 ->get()
-                ->groupBy(['tanggal_presensi', 'kode_kelas']),
+                ->groupBy(['tanggal_presensi', 'kode_kelas', 'kode_pelajaran']),
             'mapelGuru' => $mapelGuru,
             'kelasGuru' => $kelas,
         ];
@@ -256,93 +265,129 @@ class PresensiController extends Controller
 //         exit();
 //     }
 
-    public function generateExcel(Request $request)
-    {
-        $kode_guru = auth()->guard('webguru')->user()->kode_guru;
-        $kode_pelajaran = $request->input('kode_pelajaran');
-        $kode_kelas = $request->input('kode_kelas');
 
-        // Ambil informasi guru, pelajaran, dan kelas
-        $guru = Guru::where('kode_guru', $kode_guru)->first();
-        $pelajaran = Mapel::where('kode_pelajaran', $kode_pelajaran)->first();
-        $kelas = Kelas::where('kode_kelas', $kode_kelas)->first();
+public function generateExcel(Request $request)
+{
+    $kode_guru = auth()->guard('webguru')->user()->kode_guru;
+    $kode_pelajaran = $request->input('kode_pelajaran');
+    $kode_kelas = $request->input('kode_kelas');
 
-        // Ambil data presensi berdasarkan kode pelajaran dan kode kelas
-        $presensi = PresensiModel::where('kode_pelajaran', $kode_pelajaran)
-            ->where('kode_kelas', $kode_kelas)
-            ->get();
+    // Ambil informasi guru, pelajaran, dan kelas
+    $guru = Guru::where('kode_guru', $kode_guru)->first();
+    $pelajaran = Mapel::where('kode_pelajaran', $kode_pelajaran)->first();
+    $kelas = Kelas::where('kode_kelas', $kode_kelas)->first();
 
-        // Menghitung tanggal presensi terawal dan terakhir
-        $tanggalPresensiTerawal = $presensi->min('tanggal_presensi');
-        $tanggalPresensiTerakhir = $presensi->max('tanggal_presensi');
+    // Ambil data presensi berdasarkan kode pelajaran dan kode kelas
+    $presensi = PresensiModel::where('kode_pelajaran', $kode_pelajaran)
+        ->where('kode_kelas', $kode_kelas)
+        ->get();
 
-        // Membuat spreadsheet baru
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+    // Menghitung tanggal presensi terawal dan terakhir
+    $tanggalPresensiTerawal = $presensi->min('tanggal_presensi');
+    $tanggalPresensiTerakhir = $presensi->max('tanggal_presensi');
 
-        // Menampilkan informasi guru, pelajaran, kelas, dan rentang tanggal presensi
-        $sheet->setCellValue('A1', 'Nama Guru: ' . $guru->nama);
-        $sheet->setCellValue('A2', 'Mata Pelajaran: ' . $pelajaran->nama_pelajaran);
-        $sheet->setCellValue('A3', 'Kelas: ' . $kelas->tingkat->nama_tingkat.$kelas->nama_kelas);
-        $sheet->setCellValue('A4', 'Tanggal Presensi: ' . $tanggalPresensiTerawal . ' s.d. ' . $tanggalPresensiTerakhir);
+    // Membuat spreadsheet baru
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
 
-        // Menyimpan data ke dalam spreadsheet
-        $columnIndex = 1;
-        $rowIndex = 6;
+    // Menampilkan informasi guru, pelajaran, kelas, dan rentang tanggal presensi
+    $sheet->setCellValue('A1', 'Nama Guru: ' . $guru->nama);
+    $sheet->setCellValue('A2', 'Mata Pelajaran: ' . $pelajaran->nama_pelajaran);
+    $sheet->setCellValue('A3', 'Kelas: ' . $kelas->tingkat->nama_tingkat.$kelas->nama_kelas);
+    $sheet->setCellValue('A4', 'Tanggal Presensi: ' . $tanggalPresensiTerawal . ' - ' . $tanggalPresensiTerakhir);
 
-        // Header
-        $sheet->setCellValue('A' . $rowIndex, 'NIS');
-        $sheet->setCellValue('B' . $rowIndex, 'Nama Siswa');
+    // Menyimpan data ke dalam spreadsheet
+    $columnIndex = 1;
+    $rowIndex = 6;
 
-        // Tanggal presensi
-        $tanggalPresensi = $presensi->pluck('tanggal_presensi')->unique()->sort();
-        
+    // Header
+    $sheet->setCellValue('A' . $rowIndex, 'NIS');
+    $sheet->setCellValue('B' . $rowIndex, 'Nama Siswa');
+
+    // Tanggal presensi
+    $tanggalPresensi = $presensi->pluck('tanggal_presensi')->unique()->sort();
+
+    $columnIndex = 3;
+    foreach ($tanggalPresensi as $index => $tanggal) {
+        $column = Coordinate::stringFromColumnIndex($columnIndex++);
+        $cellCoordinate = $column . $rowIndex;
+        $sheet->setCellValue($cellCoordinate, $tanggal);
+    }
+
+    // Header H, S, I, A, K
+    $headerColumnIndex = count($tanggalPresensi) + 4; // Kolom setelah tanggal presensi
+    $headerRow = $rowIndex ;
+
+    $headerColumns = ['H', 'S', 'I', 'A', 'K'];
+    foreach ($headerColumns as $headerIndex => $headerColumn) {
+        $column = Coordinate::stringFromColumnIndex($headerColumnIndex++);
+        $cellCoordinate = $column . $headerRow;
+        $sheet->setCellValue($cellCoordinate, $headerColumn);
+    }
+
+    // Data presensi siswa
+    $siswaIds = $presensi->pluck('kode_siswa')->unique()->toArray();
+    $siswa = Siswa::whereIn('kode_siswa', $siswaIds)->get()->keyBy('kode_siswa');
+
+    foreach ($siswa as $siswa) {
+        $columnIndex = count($tanggalPresensi) + 3; // Kolom setelah tanggal presensi
+        $rowIndex++;
+
+        $sheet->setCellValue('A' . $rowIndex, $siswa->nis);
+        $sheet->setCellValue('B' . $rowIndex, $siswa->nama_siswa);
+
+        // Menghitung rekap status per siswa
+        $rekapStatus = [
+            'H' => 0,
+            'S' => 0,
+            'I' => 0,
+            'A' => 0,
+            'K' => 0,
+        ];
+
         $columnIndex = 3;
-        foreach ($tanggalPresensi as $index => $tanggal) {
+        foreach ($tanggalPresensi as $tanggal) {
             $column = Coordinate::stringFromColumnIndex($columnIndex++);
             $cellCoordinate = $column . $rowIndex;
-            $sheet->setCellValue($cellCoordinate, $tanggal);
-        }
+            $presensiSiswa = $presensi->where('kode_siswa', $siswa->kode_siswa)
+                ->where('tanggal_presensi', $tanggal)
+                ->first();
+            $status = $presensiSiswa ? $presensiSiswa->status : '';
+            $sheet->setCellValue($cellCoordinate, $status);
 
-        // Data presensi siswa
-        $siswaIds = $presensi->pluck('kode_siswa')->unique()->toArray();
-        $siswa = Siswa::whereIn('kode_siswa', $siswaIds)->get()->keyBy('kode_siswa');
-
-        foreach ($siswa as $siswa) {
-            $columnIndex = 1;
-            $rowIndex++;
-
-            $sheet->setCellValue('A' . $rowIndex, $siswa->nis);
-            $sheet->setCellValue('B' . $rowIndex, $siswa->nama_siswa);
-
-            $columnIndex = 3;
-            foreach ($tanggalPresensi as $tanggal) {
-                $column = Coordinate::stringFromColumnIndex($columnIndex++);
-                $cellCoordinate = $column . $rowIndex;
-                $presensiSiswa = $presensi->where('kode_siswa', $siswa->kode_siswa)
-                    ->where('tanggal_presensi', $tanggal)
-                    ->first();
-                $sheet->setCellValue($cellCoordinate, $presensiSiswa ? $presensiSiswa->status : '');
+            // Menambahkan rekap status per siswa
+            if (array_key_exists($status, $rekapStatus)) {
+                $rekapStatus[$status]++;
             }
         }
 
-        // Mengatur lebar kolom agar sesuai dengan konten
-        $highestColumn = $sheet->getHighestColumn();
-        $columnRange = range('A', $highestColumn);
-
-        foreach ($columnRange as $column) {
-            $sheet->getColumnDimension($column)->setAutoSize(true);
+        // Menambahkan rekap status per siswa setelah tanggal presensi
+        $columnIndex++;
+        foreach ($rekapStatus as $status => $count) {
+            $column = Coordinate::stringFromColumnIndex($columnIndex++);
+            $cellCoordinate = $column . $rowIndex;
+            $sheet->setCellValue($cellCoordinate, $count);
         }
-
-        // Membuat objek writer dan mengirimkan spreadsheet ke browser
-        $writer = new Xlsx($spreadsheet);
-        $filename = 'rekap-absen-' . str_replace(' ', '-', strtolower($pelajaran->nama_pelajaran)) . '.xlsx';
-
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        $writer->save('php://output');
-        exit();
     }
+
+    // Mengatur lebar kolom agar sesuai dengan konten
+    $highestColumn = $sheet->getHighestColumn();
+    $columnRange = range('A', $highestColumn);
+
+    foreach ($columnRange as $column) {
+        $sheet->getColumnDimension($column)->setAutoSize(true);
+    }
+
+    // Membuat objek writer dan mengirimkan spreadsheet ke browser
+    $writer = new Xlsx($spreadsheet);
+    $filename = 'rekap_presensi.xlsx';
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    $writer->save('php://output');
+    exit();
+}
+
 
 
 }

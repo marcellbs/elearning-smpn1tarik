@@ -38,7 +38,12 @@ class TugasController extends Controller
             $t->jumlahSiswaKelas = $jumlahSiswaKelas;
         }
 
-        $kelasOptions = Kelas::pluck('nama_kelas', 'kode_kelas');
+        $kelasOptions = Kelas::select('kelas.kode_kelas', 'kelas.nama_kelas', 'kelas.kode_tingkat','tingkat_kelas.nama_tingkat')
+            ->join('tingkat_kelas', 'tingkat_kelas.kode_tingkat', '=', 'kelas.kode_tingkat')
+            ->join('pengampu', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
+            ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+            ->distinct()
+            ->get();
 
         $data = [
             'tugas' => $tugas,
@@ -269,6 +274,41 @@ class TugasController extends Controller
 
         return redirect()->back()->with('success', 'Nilai berhasil disimpan');
     }
+    
+    public function report(Request $request){
+        // mengambil mapel yang diajar oleh guru yang login saat ini
+        $mapel = \App\Models\Mapel::select('pelajaran.kode_pelajaran', 'pelajaran.nama_pelajaran')
+            ->join('pengampu', 'pengampu.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
+            ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+            ->distinct()
+            ->get();
+        
+        // mengambil kelas apa saja yang diajar oleh guru yang login saat ini
+        $kelas = \App\Models\Kelas::select('kelas.kode_kelas', 'kelas.nama_kelas', 'kelas.kode_tingkat')
+            ->join('tingkat_kelas', 'tingkat_kelas.kode_tingkat', '=', 'kelas.kode_tingkat')
+            ->join('pengampu', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
+            ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+            ->distinct()
+            ->get();
+        // dd($kelas);
+        $kodeKelas = $request->input('kode_kelas');
+        $kodePelajaran = $request->input('kode_pelajaran');
+
+        $tugas = Tugas::where('kode_kelas', $kodeKelas)
+            ->where('kode_pelajaran', $kodePelajaran)
+            ->where('kode_guru', auth()->user()->kode_guru)
+            ->get();
+
+        $data = [
+            'title' => 'Report Tugas',
+            'tugas' => $tugas,
+            'mapel' => $mapel,
+            'kelas' => $kelas,
+        ];
+
+        return view('tugas.reporttugas', $data);
+    }
+
 
     public function getKelas($id)
     {

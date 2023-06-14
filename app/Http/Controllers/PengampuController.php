@@ -60,6 +60,9 @@ class PengampuController extends Controller
             'kode_guru' => $request->guru,
             'kode_kelas' => $request->kelas,
             'kode_pelajaran' => $request->mapel,
+            'jam_mulai' => $request->jam_mulai ?? null,
+            'jam_berakhir' => $request->jam_berakhir ?? null,
+            'hari' => $request->hari ?? null,
         ]);
 
         return redirect('/admin/pengampu')->with('sukses', 'Data berhasil ditambahkan');
@@ -76,7 +79,8 @@ class PengampuController extends Controller
         $data = [
             'title' => 'Detail Pengampu',
             'pengampu' => $pengampu,
-            'kelas_siswa' => \App\Models\KelasSiswa::where('kode_kelas', $pengampu->kode_kelas)->get(),
+            // menampilkan siswa yang ada di kelas tersebut
+            'kelas_siswa' => $pengampu->kelas->siswa,
         ];
         
         return view('pengampu.detailpengampu', $data);
@@ -125,6 +129,9 @@ class PengampuController extends Controller
                 'kode_guru' => $request->guru,
                 'kode_kelas' => $request->kelas,
                 'kode_pelajaran' => $request->mapel,
+                'jam_mulai' => $request->jam_mulai ?? null,
+                'jam_berakhir' => $request->jam_berakhir ?? null,
+                'hari' => $request->hari ?? null,
                 'link' => null,
             ]);
 

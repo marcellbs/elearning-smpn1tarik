@@ -56,8 +56,41 @@
                 </div>
                 @enderror
               </div>
-              <a href="/admin/pengampu" class="btn btn-white mt-2" style="color:orange; border:1px solid orange;">Kembali</a>
-              <button type="submit" class="btn text-white mt-2" style="background-color: orange;">Ubah</button>
+
+              <div class="col-md-6 mt-2 mb-2">
+                <label for="hari">Hari</label>
+                <select name="hari" class="form-select  @error('hari') is-invalid @enderror"  id="hari">
+                  <option value="">Pilih Hari</option>
+                  <option value="Senin" {{ $pengampu->hari == 'Senin' ? 'selected' : '' }}>Senin</option>
+                  <option value="Selasa" {{ $pengampu->hari == 'Selasa' ? 'selected' : '' }}>Selasa</option>
+                  <option value="Rabu" {{ $pengampu->hari == 'Rabu' ? 'selected' : '' }}>Rabu</option>
+                  <option value="Kamis" {{ $pengampu->hari == 'Kamis' ? 'selected' : '' }}>Kamis</option>
+                  <option value="Jumat" {{ $pengampu->hari == 'Jumat' ? 'selected' : '' }}>Jumat</option>
+                  <option value="Sabtu" {{ $pengampu->hari == 'Sabtu' ? 'selected' : '' }}>Sabtu</option>
+                </select>
+                @error('hari')
+                <div class="invalid-feedback">
+                  {{$message}}
+                </div>
+                @enderror
+              </div>
+
+              <div class="row">
+                <div class="col-md-2 mt-2 mb-2 me-1">
+                  <label for="jam_mulai">Jam Mulai</label>
+                  <input type="text" name="jam_mulai" id="jam_mulai" value="{{ $pengampu->jam_mulai }}" class="form-control">
+                </div>
+                <div class="col-md-2 mt-2 mb-2">
+                  <label for="jam_berakhir">Jam Berakhir</label>
+                  <input type="text" name="jam_berakhir" id="jam_berakhir" value="{{ $pengampu->jam_berakhir }}" class="form-control">
+                </div>
+              </div>
+
+              <div class="d-flex">
+                <a href="/admin/pengampu" class="btn btn-white mt-2 ms-auto me-1" style="color:orange; border:1px solid orange;">Kembali</a>
+                
+                <button type="submit" class="btn text-white mt-2" style="background-color: orange;">Ubah</button>
+              </div>
 
 
 
