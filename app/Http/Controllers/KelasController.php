@@ -18,7 +18,6 @@ class KelasController extends Controller
             // pagination
             'kelas' => Kelas::paginate(10),
             'title' => 'Kelas',
-            'tingkat' => \App\Models\Tingkat::all(),
         ];
         
         return view('admin.kelas', $data);
@@ -90,7 +89,6 @@ class KelasController extends Controller
     {
         $data = [
             'kelas' => $kela,
-            'tingkat' => \App\Models\Tingkat::all(),
             'title' => 'Edit Kelas',
         ];
     

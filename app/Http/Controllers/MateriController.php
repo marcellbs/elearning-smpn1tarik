@@ -29,11 +29,11 @@ class MateriController extends Controller
                 });
             }
 
-            $kodeTingkat = $request->input('kode_tingkat');
+            // $kodeTingkat = $request->input('kode_tingkat');
 
-            if ($kodeTingkat) {
-                $query->where('materi.kode_tingkat', $kodeTingkat);
-            }
+            // if ($kodeTingkat) {
+            //     $query->where('materi.kode_tingkat', $kodeTingkat);
+            // }
 
             // Filtering berdasarkan kode_pelajaran
             $kodePelajaran = $request->input('kode_pelajaran');
@@ -42,19 +42,16 @@ class MateriController extends Controller
                 $query->where('materi.kode_pelajaran', $kodePelajaran);
             }
             $materi = $query
-            ->join('tingkat_kelas', 'materi.kode_tingkat', '=', 'tingkat_kelas.kode_tingkat')
+            // ->join('tingkat_kelas', 'materi.kode_tingkat', '=', 'tingkat_kelas.kode_tingkat')
             ->join('pelajaran', 'materi.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
-            ->select('materi.*', 'tingkat_kelas.nama_tingkat', 'pelajaran.nama_pelajaran')
+            ->select('materi.*','pelajaran.nama_pelajaran')
             ->get();
 
-            // Mengambil nilai unik untuk kode_tingkat dan kode_pelajaran
-            $tingkatOptions = \App\Models\Tingkat::pluck('nama_tingkat', 'kode_tingkat');
             $pelajaranOptions = \App\Models\Mapel::pluck('nama_pelajaran', 'kode_pelajaran');
 
 
             $data = [
                 'materi' => $materi,
-                'tingkatOptions' => $tingkatOptions,
                 'pelajaranOptions' => $pelajaranOptions,
                 'title' => 'Materi',
                 
@@ -88,19 +85,15 @@ class MateriController extends Controller
                 $query->where('materi.kode_pelajaran', $kodePelajaran);
             }
             $materi = $query
-            ->join('tingkat_kelas', 'materi.kode_tingkat', '=', 'tingkat_kelas.kode_tingkat')
             ->join('pelajaran', 'materi.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
-            ->select('materi.*', 'tingkat_kelas.nama_tingkat', 'pelajaran.nama_pelajaran')
+            ->select('materi.*', 'pelajaran.nama_pelajaran')
             ->paginate(5);
 
-            // Mengambil nilai unik untuk kode_tingkat dan kode_pelajaran
-            $tingkatOptions = \App\Models\Tingkat::pluck('nama_tingkat', 'kode_tingkat');
             $pelajaranOptions = \App\Models\Mapel::pluck('nama_pelajaran', 'kode_pelajaran');
 
 
             $data = [
                 'materi' => $materi,
-                'tingkatOptions' => $tingkatOptions,
                 'pelajaranOptions' => $pelajaranOptions,
                 'title' => 'Materi',
                 'kelas_siswa' => KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
@@ -124,10 +117,11 @@ class MateriController extends Controller
         if($check) {
             $data = [
                 'title' => 'Tambah Materi',
-                'kelas' => \App\Models\Tingkat::all(),
+                // 'kelas' => \App\Models\Tingkat::all(),
                 'mapel' => \App\Models\Mapel::all(),
             ];
             return view('materi.addmateri', $data);
+
         }elseif(\Illuminate\Support\Facades\Auth::guard('websiswa')->check()){
             return redirect('/siswa/materi')->with('gagal', 'Maaf, anda tidak memiliki akses ke halaman tersebut');
         }
@@ -174,7 +168,7 @@ class MateriController extends Controller
 
             Materi::create([
                 'judul_materi' => $request->judul,
-                'kode_tingkat' => $request->kelas,
+                'tingkat' => $request->kelas,
                 'kode_pelajaran' => $request->mapel,
                 'keterangan' => $request->deskripsi,
                 'berkas' => $nama_file,
@@ -230,7 +224,7 @@ class MateriController extends Controller
             $data = [
                 'title' => 'Edit Materi',
                 'materi' => $materi,
-                'kelas' => \App\Models\Tingkat::all(),
+                // 'kelas' => \App\Models\Tingkat::all(),
                 'mapel' => \App\Models\Mapel::all(),
             ];
             
@@ -280,7 +274,7 @@ class MateriController extends Controller
 
 
             $materi->judul_materi = $request->judul_materi;
-            $materi->kode_tingkat = $request->kelas;
+            $materi->tingkat = $request->kelas;
             $materi->keterangan = $request->keterangan;
             $materi->kode_pelajaran = $request->mapel;
             $materi->save();

@@ -30,7 +30,6 @@
           <li>Ketika membuat kelas baru, pastikan kelas dibuat dengan id berurutan</li>
           <li>Contoh : 7A, 8A, 9A id harus urut : 1, 2, 3</li>
           <li>Perhatikan juga bahwa ID Unique tidak sama dengan yang lain</li>
-          <li>Untuk menambahkan kelas pilih tingkat kelas antara 7, 8, dan 9</li>
           <li>Untuk menambahkan nama kelas gunakan huruf kapital antara A - Z</li>
         </ul>
         
@@ -85,7 +84,7 @@
             @enderror
           </div>
         </div>
-        <div class="col-md-3">
+        {{-- <div class="col-md-3">
           <label for="tingkat">Tingkat Kelas</label>
           <div class="form-group">
             <select name="tingkat" id="tingkat" class="form-select @error('tingkat')is-invalid @enderror">
@@ -100,7 +99,7 @@
             </div>
             @enderror
           </div>
-        </div>
+        </div> --}}
         <div class="col-md-3">
           <label for="kelas">Kelas</label>
           <div class="form-group">
@@ -131,7 +130,6 @@
               <tr>
                 <th>No</th>
                 <th>Kode Kelas</th>
-                <th>Tingkat Kelas</th>
                 <th>Nama Kelas</th>
                 <th>Aksi</th>
               </tr>
@@ -141,7 +139,6 @@
               <tr>
                 <td>{{$loop->iteration}}</td>
                 <td>{{ $k->kode_kelas }}</td>
-                <td>{{ $k->tingkat->nama_tingkat }}</td>
                 <td>{{$k->nama_kelas}}</td>
                 <td>
                   <a href="/admin/kelas/{{$k->kode_kelas}}/edit" class="btn btn-warning"><i class="bi bi-pen

@@ -41,7 +41,7 @@ class Tugas extends Model
     }
 
     public function jawaban(){
-        return $this->hasMany(JawabanTugas::class, 'kode_tugas', 'kode_tugas');
+        return $this->hasMany(JawabanTugas::class, 'kode_tugas');
     }
 
     public function kelasSiswa()

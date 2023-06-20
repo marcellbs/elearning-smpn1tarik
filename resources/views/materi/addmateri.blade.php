@@ -36,9 +36,9 @@
     <label for="kelas">Kelas</label>
     <select class="form-select @error('kelas') is-invalid @enderror" name="kelas" id="kelas">
       <option value="">Pilih Kelas</option>
-      @foreach ($kelas as $k)
-        <option value="{{$k->kode_tingkat}}">{{$k->nama_tingkat}}</option>
-      @endforeach
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
     </select>
       @error('kelas')
       <div class="invalid-feedback">

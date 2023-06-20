@@ -11,7 +11,7 @@
           <select name="kode_kelas" id="kode_kelas" class="form-select">
               <option value="">Pilih Kelas</option>
               @foreach($kelasOptions as $kodeKelas)
-                <option value="{{ $kodeKelas->kode_kelas }}" {{ request('kode_kelas') == $kodeKelas ? 'selected' : '' }}>{{ $kodeKelas->tingkat->nama_tingkat }}{{ $kodeKelas->nama_kelas }}</option>
+                <option value="{{ $kodeKelas->kode_kelas }}" {{ request('kode_kelas') == $kodeKelas->kode_kelas ? 'selected' : '' }}>{{ $kodeKelas->nama_kelas }}</option>
               @endforeach
           </select>
       </div>
@@ -51,7 +51,7 @@
                 <span class="badge text-bg-primary ms-auto ">{{ $t->mapel->nama_pelajaran }}</span>
               </div>
               <a href="/guru/tugas/{{ $t->kode_tugas }}">
-                <h5 class="mt-2"><strong>{{ $t->judul_tugas }} - {{ $t->kelas->tingkat->nama_tingkat . $t->kelas->nama_kelas}}</strong></h5>
+                <h5 class="mt-2"><strong>{{ $t->judul_tugas }} - {{$t->kelas->nama_kelas}}</strong></h5>
               </a>
 
               <p>{{ $t->keterangan }}</p>
@@ -66,7 +66,7 @@
           
               <div class="d-flex">
                 <div class="mt-2">
-                  <span class="badge text-bg-success"> <p class="mb-0">{{ $t->kelas->tingkat->nama_tingkat . $t->kelas->nama_kelas}}</p></span>
+                  <span class="badge text-bg-success"> <p class="mb-0">{{ $t->kelas->nama_kelas}}</p></span>
                 </div>
                 
                 @if($t->berkas != null)

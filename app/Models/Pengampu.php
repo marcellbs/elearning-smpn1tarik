@@ -38,4 +38,8 @@ class Pengampu extends Model
         return $query->where('kode_guru', $kode_guru)->get();
     }
 
+    public function tahunAjaran(){
+        return $this->belongsTo(TahunAjaran::class, 'kode_tahun_ajaran', 'kode_tahun_ajaran');
+    }
+
 }

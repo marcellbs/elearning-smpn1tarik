@@ -83,7 +83,7 @@ class PresensiController extends Controller
     public function presensi(){
         $kodeGuru = auth()->guard('webguru')->user()->kode_guru;
         $pengampuGuru = Pengampu::where('kode_guru', $kodeGuru)->get();
-        $kelas = Kelas::whereIn('kode_kelas', $pengampuGuru->pluck('kode_kelas')->unique())->get();
+        $kelas = Kelas::whereIn('kode_kelas', $pengampuGuru->pluck('kode_kelas')->unique())->paginate(6);
 
         // Mengambil mapel dari setiap pengampu yang diampu oleh guru dengan distinct
         $mapelGuru = Mapel::whereIn('kode_pelajaran', $pengampuGuru->pluck('kode_pelajaran')->unique())->get();
@@ -293,7 +293,7 @@ public function generateExcel(Request $request)
     // Menampilkan informasi guru, pelajaran, kelas, dan rentang tanggal presensi
     $sheet->setCellValue('A1', 'Nama Guru: ' . $guru->nama);
     $sheet->setCellValue('A2', 'Mata Pelajaran: ' . $pelajaran->nama_pelajaran);
-    $sheet->setCellValue('A3', 'Kelas: ' . $kelas->tingkat->nama_tingkat.$kelas->nama_kelas);
+    $sheet->setCellValue('A3', 'Kelas: ' . $kelas->nama_kelas);
     $sheet->setCellValue('A4', 'Tanggal Presensi: ' . $tanggalPresensiTerawal . ' - ' . $tanggalPresensiTerakhir);
 
     // Menyimpan data ke dalam spreadsheet
@@ -380,7 +380,7 @@ public function generateExcel(Request $request)
 
     // Membuat objek writer dan mengirimkan spreadsheet ke browser
     $writer = new Xlsx($spreadsheet);
-    $filename = 'rekap_presensi.xlsx';
+    $filename = 'rekap_presensi '.$pelajaran->nama_pelajaran." ".$kelas->nama_kelas.'.xlsx';
 
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     header('Content-Disposition: attachment; filename="' . $filename . '"');

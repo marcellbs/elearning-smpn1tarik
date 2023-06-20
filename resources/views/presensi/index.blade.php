@@ -61,7 +61,7 @@
                 <label for="kode_kelas" class="form-label">Kelas : </label>
                 <select name="kode_kelas" id="kode_kelas" class="form-control mb-3">
                   <option value="{{ $pengampu->kelas->kode_kelas  }}" selected> 
-                    {{ $pengampu->kelas->tingkat->nama_tingkat }}{{ $pengampu->kelas->nama_kelas }}
+                    {{ $pengampu->kelas->nama_kelas }}
                   </option>
                 </select>
               </div>

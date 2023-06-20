@@ -29,7 +29,7 @@
                 <label for="kode_kelas">Kelas : </label>
                 <select name="kode_kelas" id="kode_kelas" class="form-select">
                     @foreach($kelasGuru as $kelas)
-                        <option value="{{ $kelas->kode_kelas }}">{{ $kelas->tingkat->nama_tingkat.$kelas->nama_kelas }}</option>
+                        <option value="{{ $kelas->kode_kelas }}">{{$kelas->nama_kelas }}</option>
                     @endforeach
                 </select>
             </div>
@@ -52,13 +52,14 @@
                 <div class="card">
                     <div class="card-header-guru">
                         @php
+                            $tanggalPresensi = \Carbon\Carbon::parse($tanggalPresensi)->locale('id');
                             $tanggalPresensiFormatted = \Carbon\Carbon::parse($tanggalPresensi)->translatedFormat('l, d F Y');
                             $kelasData = $kelasGuru->where('kode_kelas', $kodeKelas)->first();
                             $kelasNama = $kelasData ? $kelasData->nama_kelas : 'Nama Kelas Tidak Tersedia';
-                            $tingkatNama = $kelasData ? $kelasData->tingkat->nama_tingkat : 'Nama Tingkat Tidak Tersedia';
+                            
                         @endphp
                         <h5 class="fw-bold">{{ $tanggalPresensiFormatted }}</h5>
-                        <p class="p-0">{{ $tingkatNama }}{{ $kelasNama }}</p>
+                        <p class="p-0">{{ $kelasNama }}</p>
                     </div>
                     <hr class="m-1">
                     <div class="card-body">
@@ -94,6 +95,7 @@
                                     <a href="/guru/presensi/{{ $tanggalPresensi }}/edit/{{ $kodeKelas }}/{{ $kodePelajaran }}" class="btn btn-sm btn-primary">Edit Presensi {{ $mapelNama }}</a>
                                 </div>
                             </div>
+                            <hr>
                         @endforeach
                     </div>
                 </div>

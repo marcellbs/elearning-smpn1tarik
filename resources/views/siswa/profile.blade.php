@@ -17,7 +17,7 @@
             @endif
             
             <h5 class="mt-2 mb-0 pb-0"><strong>{{ ucwords(auth()->user()->nama_siswa) }}</strong></h5>
-            <p class="mt-2">Siswa | {{ $kelas_siswa->kelas->tingkat->nama_tingkat . $kelas_siswa->kelas->nama_kelas }}</p>
+            <p class="mt-2">Siswa | {{$kelas_siswa->kelas->nama_kelas }}</p>
             
           </div>
         </div>

@@ -70,7 +70,7 @@ class SiswaController extends Controller
         $data = [
             'title' => 'Register Siswa',
             'kelas' => \App\Models\Kelas::all(),
-            'tingkat' => \App\Models\Tingkat::all(),
+            // 'tingkat' => \App\Models\Tingkat::all(),
         ];
 
         return view('siswa.register', $data);
@@ -136,7 +136,7 @@ class SiswaController extends Controller
 
         $data = [
             'kelas_siswa' => KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
-            'title' => ''.$pengampu->mapel->nama_pelajaran.' '.$pengampu->kelas->tingkat->nama_tingkat.''.$pengampu->kelas->nama_kelas.'',
+            'title' => ''.$pengampu->mapel->nama_pelajaran.' '.$pengampu->kelas->nama_kelas.'',
             'pengampu' => $pengampu,
             'materi' => $materi,
             'siswa' => \App\Models\Siswa::whereIn('kode_siswa', $kelas_siswa->pluck('kode_siswa'))->orderBy('nis', 'asc')->get(),
@@ -263,8 +263,10 @@ class SiswaController extends Controller
             ]);
 
         }
-
-        return redirect()->back()->with('sukses', 'Data berhasil diubah');
+        // jika sukses 
+        return redirect()->back()->with('pesan', 'Data berhasil diubah');
+        // jika gagal
+        // return redirect()->back()->with('pesan', 'Data gagal diubah');
     }
 
     // method untuk mengubah password

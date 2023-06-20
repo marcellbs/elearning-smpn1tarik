@@ -43,7 +43,7 @@
 
           <form action="{{ Auth::guard('webguru')->check() ? '/guru/materi' : '/admin/materi'}}" method="get">
             <div class="row">
-              <div class="col-xxl-4 col-md-4">
+              {{-- <div class="col-xxl-4 col-md-4">
                 <div class="input-group mb-3">
                   <select class="form-select" name="kode_tingkat" id="inputGroupSelect02">
                     <option value="" selected>Pilih Kelas</option>
@@ -55,7 +55,7 @@
                   </select>
                   
                 </div>
-              </div>
+              </div> --}}
   
               <div class="col-xxl-4 col-md-4">
                 <div class="input-group mb-3">
@@ -100,7 +100,7 @@
             <div class="card rounded h-100">
               <div class="card-body m-1 p-2">
                 <span class="badge rounded-pill" style="background-color: orange;">{{ $m->mapel->nama_pelajaran }}</span>
-                <span class="badge rounded-pill" style="background-color: orange;">{{ 'kelas '. $m->tingkat->nama_tingkat }}</span>
+                <span class="badge rounded-pill" style="background-color: orange;">{{ 'kelas '. $m->tingkat }}</span>
                 <h5 class="card-title">{{ $m->judul_materi }}</h5>
               </div>
 

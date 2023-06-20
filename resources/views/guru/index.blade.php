@@ -5,18 +5,18 @@
   <!-- Tambahkan kode berikut sebelum tabel -->
   <form action="{{ '/guru' }}" method="GET" class="mb-2">
     <div class="row">
-
       <div class="col-lg-3 col-md-4 mb-3">
         <div class="input-group">
-          <select name="kode_tingkat" class="form-select">
-            <option value="">-- Pilih Kelas--</option>
-            @foreach($tingkatOptions as $kodeTingkat => $namaTingkat)
-                <option value="{{ $kodeTingkat }}" {{ $kodeTingkat == request('kode_tingkat') ? 'selected' : '' }}>{{ $namaTingkat }}</option>
+          <select name="kode_kelas" id="kode_kelas" class="form-select">
+            <option value="">-- Pilih Kelas --</option>
+            @foreach($kelasOptions as $kodeKelas => $namaKelas)
+              <option value="{{ $kodeKelas }}" {{ request('kode_kelas') == $kodeKelas ? 'selected' : '' }}>
+                {{ $namaKelas }}
+              </option>
             @endforeach
           </select>
         </div>
       </div>
-
       <div class="col-lg-3 col-md-4 mb-3">
         <div class="input-group">
           <select name="kode_pelajaran" id="kode_pelajaran" class="form-select">
@@ -36,8 +36,7 @@
 
     </div>
   </form>
-  
-
+  {{-- {{ $pengampu }} --}}
   <div class="container">
 
     @if($pengampu->isEmpty())
@@ -58,7 +57,7 @@
                   <div class="card card-guru h-100" style="border: 1px solid rgb(218, 218, 218); background-color: {{ $color }};">
                     <div class="card-body p-0 ps-4">
                       <h5 class="mt-3"><strong>{{$p->mapel->nama_pelajaran}}</strong></h5>
-                      <h6 class="card-text text-muted">{{$p->kelas->tingkat->nama_tingkat}}{{$p->kelas->nama_kelas}}</h6>
+                      <h6 class="card-text text-muted">{{$p->kelas->nama_kelas}}</h6>
                       {{-- <h6 class="card-text text-muted">{{ $p->hari }}, {{$p->jam_mulai }}-{{$p->jam_berakhir}}</h6> --}}
                       
                     </div>

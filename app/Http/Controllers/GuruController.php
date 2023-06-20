@@ -20,10 +20,11 @@ class GuruController extends Controller
 
         $query = Pengampu::where('kode_guru', $kodeGuru);
 
-        $kodeTingkat = $request->input('kode_tingkat');
-        if ($kodeTingkat) {
-            $query->join('kelas', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
-                ->where('kelas.kode_tingkat', $kodeTingkat);
+        $kodeKelas = $request->input('kode_kelas');
+        if ($kodeKelas) {
+            $query->whereHas('kelas', function ($q) use ($kodeKelas) {
+                $q->where('kode_kelas', $kodeKelas);
+            });
         }
 
         $kodePelajaran = $request->input('kode_pelajaran');
@@ -33,17 +34,20 @@ class GuruController extends Controller
 
         $pengampu = $query
             ->join('pelajaran', 'pengampu.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
-            ->select('pengampu.*', 'pelajaran.nama_pelajaran')
+            ->join('kelas', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
+            ->join('tahun_ajaran', 'pengampu.kode_thajaran', '=', 'tahun_ajaran.id')
+            ->select('pengampu.*', 'pelajaran.nama_pelajaran', 'kelas.nama_kelas', 'tahun_ajaran.tahun_ajaran')
+            ->where('tahun_ajaran.status_aktif', '1')
             ->distinct()
             ->get();
 
-        $tingkatOptions = Tingkat::pluck('nama_tingkat', 'kode_tingkat');
+        $kelasOptions = Kelas::pluck('nama_kelas', 'kode_kelas');
         $pelajaranOptions = Mapel::pluck('nama_pelajaran', 'kode_pelajaran');
 
         $data = [
             'guru' => Guru::all(),
             'pengampu' => $pengampu,
-            'tingkatOptions' => $tingkatOptions,
+            'kelasOptions' => $kelasOptions,
             'pelajaranOptions' => $pelajaranOptions,
             'title' => 'Dashboard',
             'hash' => $hash,
@@ -53,17 +57,44 @@ class GuruController extends Controller
     }
 
 
-    public function mapel(){
+    public function mapel(Request $request)
+    {
         $hash = new Hashids('my-hash', 10);
-        $data = [
-            'guru' => \App\Models\Guru::all(),
-            'pengampu' => \App\Models\Pengampu::where('kode_guru', \Illuminate\Support\Facades\Auth::guard('webguru')->user()->kode_guru)->get(),
-            'title' => 'Mata Pelajaran',
-            'hash' => $hash,
-        ];
+        $kodeGuru = Auth::guard('webguru')->user()->kode_guru;
 
-        return view('guru.mapel', $data);
+        // Ambil tahun ajaran yang aktif
+        $tahunAjaranAktif = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+
+        if ($tahunAjaranAktif) {
+            $idTahunAjaranAktif = $tahunAjaranAktif->id;
+
+            $tahunAjaranOptions = \App\Models\TahunAjaran::pluck('tahun_ajaran', 'id');
+
+            $tahunAjaranId = $request->input('tahun_ajaran', $idTahunAjaranAktif); // Jika tahun ajaran tidak dipilih, gunakan tahun ajaran aktif secara default
+
+            $pengampu = \App\Models\Pengampu::where('kode_guru', $kodeGuru)
+                ->where('kode_thajaran', $tahunAjaranId)
+                ->get();
+
+            $data = [
+                'guru' => \App\Models\Guru::all(),
+                'pengampu' => $pengampu,
+                'tahunAjaranOptions' => $tahunAjaranOptions,
+                'tahunAjaranAktif' => $tahunAjaranAktif,
+                'title' => 'Mata Pelajaran',
+                'hash' => $hash,
+            ];
+
+            return view('guru.mapel', $data);
+        }
+
+        // Tindakan jika tahun ajaran aktif tidak tersedia
+        // ...
     }
+
+
+
+
 
     public function login()
     {
@@ -142,7 +173,7 @@ class GuruController extends Controller
         $materi = \App\Models\Materi::where('kode_guru', $pengampu->kode_guru)->where('kode_pelajaran', $pengampu->kode_pelajaran)->get();
 
         $data = [
-            'title' => ''.$pengampu->mapel->nama_pelajaran.' '.$pengampu->kelas->tingkat->nama_tingkat.''.$pengampu->kelas->nama_kelas.'',
+            'title' => ''.$pengampu->mapel->nama_pelajaran.' '.$pengampu->kelas->nama_kelas.'',
             'hash' => $hash,
             'pengampu' => $pengampu,
             'materi' => $materi,

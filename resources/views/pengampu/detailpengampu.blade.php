@@ -23,7 +23,7 @@
               <tr>
                 <th>Kelas </th>
                 <td>:</td>
-                <td> {{ $pengampu->kelas->tingkat->nama_tingkat }}{{ $pengampu->kelas->nama_kelas }}</td>
+                <td>{{ $pengampu->kelas->nama_kelas }}</td>
               </tr>
               <tr>
                 <th>Jadwal </th>

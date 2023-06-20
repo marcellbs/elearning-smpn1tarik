@@ -15,6 +15,7 @@ class KelasSiswa extends Model
     protected $fillable = [
         'kode_siswa',
         'kode_kelas',
+        'kode_th_ajaran'
     ];
 
     public function siswa(){
@@ -28,6 +29,10 @@ class KelasSiswa extends Model
     public function tugas()
     {
         return $this->belongsTo(Tugas::class, 'kode_kelas', 'kode_kelas');
+    }
+
+    public function tahunAjaran(){
+        return $this->belongsTo(TahunAjaran::class, 'kode_thajaran', 'id');
     }
 
     

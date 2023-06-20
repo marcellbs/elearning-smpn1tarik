@@ -40,10 +40,10 @@
             {{-- kelas --}}
             <div class="form-group">
               <label for="kelas">Kelas</label>
-              <select name="kelas" id="kelas" class="form-control">
+              <select name="kelas" id="kelas" class="form-select">
                 <option value="">-- Pilih Kelas --</option>
                 @foreach ($kelas as $item)
-                  <option value="{{ $item['kode_kelas'] }}">{{ $item['nama_tingkat'].$item['nama_kelas'] }}</option>
+                  <option value="{{ $item['kode_kelas'] }}">{{$item['nama_kelas'] }}</option>
                 @endforeach
               </select>
               @error('kelas')
@@ -56,7 +56,7 @@
             {{-- mapel --}}
             <div class="form-group">
               <label for="mapel">Mata Pelajaran</label>
-              <select name="mapel" id="mapel" class="form-control">
+              <select name="mapel" id="mapel" class="form-select">
                 <option value="">-- Pilih Mata Pelajaran --</option>
                 @foreach ($mapel as $item)
                   <option value="{{ $item['kode_pelajaran'] }}">{{ $item['nama_pelajaran'] }}</option>

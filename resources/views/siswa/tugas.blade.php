@@ -69,7 +69,7 @@
           
               <div class="d-flex">
                 <div class="mt-2">
-                  <span class="badge text-bg-success"> <p class="mb-0">{{ $t->kelas->tingkat->nama_tingkat . $t->kelas->nama_kelas}}</p></span>
+                  <span class="badge text-bg-success"> <p class="mb-0">{{ $t->kelas->nama_kelas}}</p></span>
                 </div>
 
                 @if($t->berkas != null)

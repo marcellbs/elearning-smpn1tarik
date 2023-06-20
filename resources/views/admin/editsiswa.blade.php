@@ -52,7 +52,7 @@
               <select class="form-select @error('kelas') is-invalid @enderror" id="kelas" name="kelas">
                 <option value="">-- Pilih Kelas --</option>
                 @foreach ($kelas as $k)
-                  <option value="{{ $k->kode_kelas }}" {{ $k->kode_kelas == $siswa->kode_kelas ? 'selected' : '' }}>{{ $k->tingkat->nama_tingkat ." ".$k->nama_kelas }}</option>
+                  <option value="{{ $k->kode_kelas }}" {{ $k->kode_kelas == $siswa->kode_kelas ? 'selected' : '' }}>{{$k->nama_kelas }}</option>
                 @endforeach
               </select>
               

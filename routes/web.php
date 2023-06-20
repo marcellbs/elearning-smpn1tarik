@@ -104,8 +104,10 @@ Route::get('/guru/register', [GuruController::class, 'register']);
 Route::post('/guru/register', [GuruController::class, 'save']);
 Route::get('/guru/logout', [GuruController::class, 'logout']);
 
+Route::get('/guru/tugas/report-excel', [TugasController::class, 'exportReport'])->middleware('auth:webguru')->name('tugas.export-excel');
 Route::get('/guru/jadwal-mengajar', [JadwalmengajarController::class, 'index'])->middleware('auth:webguru');
 Route::get('/guru/tugas/report', [TugasController::class, 'report'])->middleware('auth:webguru');
+Route::get('/tugas/{tuga}/download-all', [TugasController::class, 'downloadAll'])->middleware('auth:webguru')->name('tugas.download-all');
 Route::resource('/guru/tugas', TugasController::class)->middleware('auth:webguru');
 Route::get('/guru/mapel', [GuruController::class, 'mapel'])->middleware('auth:webguru');
 Route::get('/guru/detail/{id}', [GuruController::class, 'detail'])->middleware('auth:webguru');

@@ -7,7 +7,6 @@ use App\Models\Admin;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
-use App\Models\Tingkat;
 use App\Models\KelasSiswa;
 use App\Models\Pengumuman;
 use Illuminate\Http\Request;
@@ -124,38 +123,18 @@ class AdminController extends Controller
     // =======================================================
     // ===================== SISWA ===========================
     // =======================================================
-    public function naikKelas(){
-        // ambil semua dari tabel kelas_siswa
-        $kelas_siswa = KelasSiswa::all();
-
-        // looping untuk setiap kelas_siswa
-        foreach ($kelas_siswa as $kelasSiswa){
-            
-            $kelasBaru = $kelasSiswa->kode_kelas + 1;
-            $kelas = Kelas::where('kode_kelas', $kelasBaru)->first();
-
-            if($kelas){
-                $kelasSiswa->kode_kelas = $kelasBaru;
-                $kelasSiswa->save();
-            }
-        }
-        
-        return redirect('/admin/siswa')->with('success', 'Siswa berhasil naik kelas');
-    }
 
     public function siswa(){
         $jumlahData = Siswa::join('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
         ->join('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
-        ->join('tingkat_kelas', 'kelas.kode_tingkat', '=', 'tingkat_kelas.kode_tingkat')
-        ->where('tingkat_kelas.nama_tingkat', 'LIKE', '9%')
+        ->where('kelas.nama_kelas', 'LIKE', '9%')
         ->count();
 
         $data = [
             // menampilkan data siswa dan kelasnya
             'siswa' => Siswa::leftJoin('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
                 ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
-                ->leftJoin('tingkat_kelas', 'kelas.kode_tingkat', '=', 'tingkat_kelas.kode_tingkat')
-                ->select('siswa.*', 'kelas.nama_kelas', 'tingkat_kelas.nama_tingkat')
+                ->select('siswa.*', 'kelas.nama_kelas')
                 ->orderBy('kelas.kode_kelas', 'asc')
                 ->get(),
 
@@ -226,7 +205,6 @@ class AdminController extends Controller
         $data = [
             'title' => 'Tambah Siswa',
             'kelas' => Kelas::all(),
-            'tingkat'=> Tingkat::all(),
         ];
         return view('admin.tambahsiswa', $data);
     }
@@ -284,9 +262,14 @@ class AdminController extends Controller
     }
 
     public function hapussiswa($id){
-        $siswa = Siswa::find($id);
-        $siswa->delete();
+        // cari kode_siswa, hapus berdasarkan id, dan cari di tabel kelas_siswa jika ada, hapus juga
+        $siswa = Siswa::where('kode_siswa', $id)->first();
+        $kelasSiswa = KelasSiswa::where('kode_siswa', $id)->first();
 
+        if($kelasSiswa){
+            $kelasSiswa->delete();
+        }
+        $siswa->delete();
         return redirect('/admin/siswa')->with('success', '<strong>Berhasil !</strong> Siswa berhasil dihapus');
     }
 
@@ -294,8 +277,7 @@ class AdminController extends Controller
         
         $siswa = Siswa::leftJoin('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
             ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
-            ->leftJoin('tingkat_kelas', 'kelas.kode_tingkat', '=', 'tingkat_kelas.kode_tingkat')
-            ->select('siswa.*', 'kelas.nama_kelas', 'tingkat_kelas.nama_tingkat')
+            ->select('siswa.*', 'kelas.nama_kelas')
             ->where('siswa.kode_siswa', $id)
             ->first();
 
@@ -309,8 +291,7 @@ class AdminController extends Controller
     public function editsiswa($id){
         $siswa = Siswa::leftJoin('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
             ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
-            ->leftJoin('tingkat_kelas', 'kelas.kode_tingkat', '=', 'tingkat_kelas.kode_tingkat')
-            ->select('siswa.*', 'kelas.kode_kelas', 'kelas.nama_kelas', 'tingkat_kelas.nama_tingkat')
+            ->select('siswa.*', 'kelas.kode_kelas', 'kelas.nama_kelas')
             ->where('siswa.kode_siswa', $id)
             ->first();
 
@@ -318,7 +299,6 @@ class AdminController extends Controller
             'title' => 'Edit Siswa',
             'siswa' => $siswa,
             'kelas' => Kelas::all(),
-            'tingkat'=> Tingkat::all(),
         ];
         return view('admin.editsiswa', $data);
     }
@@ -376,22 +356,6 @@ class AdminController extends Controller
 
     }
 
-    public function hapusSiswaKelasSembilan(){
-        
-        $deletedRows = DB::table('siswa')
-            ->join('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
-            ->join('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
-            ->join('tingkat_kelas', 'kelas.kode_tingkat', '=', 'tingkat_kelas.kode_tingkat')
-            ->where('tingkat_kelas.nama_tingkat', '=', '9')
-            ->delete();
-
-        if ($deletedRows > 0) {
-            return redirect()->back()->with('success', '<strong>Berhasil !</strong> Siswa kelas sembilan berhasil dihapus.');
-        } else {
-            return redirect()->back()->with('error', '<strong>Gagal !</strong> Tidak ada siswa kelas sembilan yang ditemukan.');
-        }
-        
-    }
 
     // =======================================================
     // ===================== SISWA ===========================
@@ -847,8 +811,7 @@ class AdminController extends Controller
             $kelas = new Kelas();
             $kelas->kode_kelas= $row[0];
             $kelas->nama_kelas = $row[1];
-            $kelas->kode_tingkat = $row[2];
-            $kelas->kode_admin = $row[3];
+            $kelas->kode_admin = $row[2];
 
             $kelas->save();
         }

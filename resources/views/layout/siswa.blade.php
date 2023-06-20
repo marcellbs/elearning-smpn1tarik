@@ -140,7 +140,7 @@
         <img src="/img/{{ auth()->user()->foto }}" alt="user-img" class="rounded-circle image-profile">
       @endif      
       <h5 class="mb-0 mt-3">{{ ucwords(auth()->user()->nama_siswa)  }}</h5>
-      <p class="mt-0">Siswa | {{$kelas_siswa->kelas->tingkat->nama_tingkat." ".$kelas_siswa->kelas->nama_kelas }}</p>
+      <p class="mt-0">Siswa</p>
       {{-- <p class="mt-0">Siswa | {{$kelas_siswa }}</p> --}}
 
     </div>

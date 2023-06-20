@@ -56,7 +56,7 @@
                 <td>Kelas</td>
                 <td>:</td>
                 <td>
-                  {{ $pengampu->kelas->tingkat->nama_tingkat }}{{ $pengampu->kelas->nama_kelas }}
+                  {{ $pengampu->kelas->nama_kelas }}
                 </td>
               </tr>
               <tr>

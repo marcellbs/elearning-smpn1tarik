@@ -39,14 +39,14 @@
         </li> 
         <li>gunakan template file untuk menyesuaikan dengan susunan tabel database</li>
       </ul>
-      <div class="alert alert-warning" role="alert">
+      {{-- <div class="alert alert-warning" role="alert">
         <h4 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> Tahun Ajaran Baru</h4>
         <ul>
           <li>Anda dapat melakukan operasi naik kelas pada siswa dengan menekan tombol Naik Kelas</li>
           <li>Sebelum menjalankan tombol naik kelas, pastikan siswa kelas 9 lama telah dihapus dengan menggunakan tombol <span class="btn btn-sm btn-danger">Hapus Siswa Kelas 9 Lama</span></li>
           <li>Berhati - hatilah dalam menggunakan tombol naik kelas, apabila telah tombol di-klik maka operasi tidak akan bisa dibatalkan</li>
         </ul>
-      </div>
+      </div> --}}
       <hr>
 
       <div class="row">
@@ -79,12 +79,12 @@
               <a href="{{ asset('file/excel/template_upload_data_siswa.xlsx') }}" class="btn btn-success mb-1">Template Excel</a>
               
               {{-- siswa kelas 9 lama --}}
-              <button class="btn btn-danger hps mb-1">Hapus Siswa Kelas 9 Lama</button>
+              {{-- <button class="btn btn-danger hps mb-1">Hapus Siswa Kelas 9 Lama</button> --}}
               
-              <form method="POST" action="{{ route('naik-kelas') }}" class="d-inline-flex mb-1">
+              {{-- <form method="POST" action="{{ route('naik-kelas') }}" class="d-inline-flex mb-1">
                 @csrf
                 <button type="submit" class="btn btn-warning">Naik Kelas</button>
-              </form>
+              </form> --}}
             </div>
           </div>
         </div>
@@ -143,7 +143,7 @@
                 {{-- menampilkan kelas siswa--}}
                 <td>
                   @if ($s->nama_kelas)
-                    {{ $s->nama_tingkat . $s->nama_kelas }}
+                    {{ $s->nama_kelas }}
                   @else
                     {{ 'Kelas belum diatur' }}
                   @endif

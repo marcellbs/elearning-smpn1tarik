@@ -31,7 +31,7 @@
             <tr>
               <td>Kelas</td>
               <td>:</td>
-              <td>{{ $pengampu->kelas->tingkat->nama_tingkat }}{{ $pengampu->kelas->nama_kelas }}</td>
+              <td>{{$pengampu->kelas->nama_kelas }}</td>
             </tr>
             <tr>
               <td>Tautan</td>

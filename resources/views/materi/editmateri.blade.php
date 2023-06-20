@@ -38,9 +38,9 @@
     <label for="kelas">Kelas</label>
     <select class="form-select @error('kelas') is-invalid @enderror" name="kelas" id="kelas">
       <option value="">Pilih Kelas</option>
-      @foreach ($kelas as $k)
-      <option value="{{$k->kode_tingkat}}" {{$materi->kode_tingkat == $k->kode_tingkat ? 'selected' : ''}}>{{$k->nama_tingkat}}</option>
-      @endforeach
+      <option value="7" {{$materi->tingkat == '7' ? 'selected' : ''}}>7</option>
+      <option value="8" {{$materi->tingkat == '8' ? 'selected' : ''}}>8</option>
+      <option value="9" {{$materi->tingkat == '9' ? 'selected' : ''}}>9</option>
     </select>
     @error('kelas')
     <div class="invalid-feedback">

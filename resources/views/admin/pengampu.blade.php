@@ -17,8 +17,10 @@
       <ul>
         <li>Anda dapat menambahkan guru yang akan mengampu mata pelajaran dan kelas</li>
         <li>Anda cukup menambahkan nama guru, mata pelajaran, dan kelas saja, maka data yang anda inputkan akan masuk ke dalam database</li>
-        <li>Anda dapat mengisi Jam Mulai dan Jam Berakhir dengan pemisah (:) titik dua </li>
+        {{-- <li>Anda dapat mengisi Jam Mulai dan Jam Berakhir dengan pemisah (:) titik dua </li> --}}
       </ul>
+
+      <h4 class="alert-heading">Menambahkan Pengampu Mata Pelajaran</h4>
       <div class="mt-3 align-content-center">
         {{-- menambah data pengampu dropdown --}}
         <form action="/admin/pengampu" method="post">
@@ -55,7 +57,7 @@
                 <select name="kelas" class="form-select  @error('kelas') is-invalid @enderror"  id="kelas">
                   <option value="">Pilih Kelas</option>
                   @foreach ($kelas as $k)
-                  <option value="{{$k->kode_kelas}}">{{$k->tingkat->nama_tingkat}}{{$k->nama_kelas}}</option>
+                  <option value="{{$k->kode_kelas}}">{{$k->nama_kelas}}</option>
                   @endforeach
                 </select>
                 @error('kelas')
@@ -64,7 +66,7 @@
                 </div>
                 @enderror
             </div>
-            <div class="col-sm-4 mt-1">
+            {{-- <div class="col-sm-4 mt-1">
                 <label for="hari">Hari</label>
                 <select name="hari" class="form-select  @error('hari') is-invalid @enderror"  id="kelas">
                   <option value="">Pilih Hari</option>
@@ -98,7 +100,7 @@
                   {{$message}}
                 </div>
                 @enderror
-            </div>
+            </div> --}}
 
           </div>
           <div class="d-flex">
@@ -121,7 +123,7 @@
               <th>Nama</th>
               <th>Mata Pelajaran</th>
               <th>Kelas</th>
-              <th>Jadwal</th>
+              {{-- <th>Jadwal</th> --}}
               <th>Aksi</th>
             </thead>
             <tbody>
@@ -131,8 +133,8 @@
                 {{-- cek apakah ada guru dan mapel yang sama --}}
                 <td>{{$p->guru->nama}}</td>
                 <td>{{$p->mapel->nama_pelajaran}}</td>
-                <td>{{$p->kelas->tingkat->nama_tingkat}}{{$p->kelas->nama_kelas}}</td>
-                <td>{{$p->hari }}, {{ $p->jam_mulai }} - {{ $p->jam_berakhir }}</td>
+                <td>{{$p->kelas->nama_kelas}}</td>
+                {{-- <td>{{$p->hari }}, {{ $p->jam_mulai }} - {{ $p->jam_berakhir }}</td> --}}
                 <td>
                   <a href="/admin/pengampu/{{$p->id}}/edit" class="btn btn-warning mt-1"><i class="bi bi-pencil-square"></i></a>
                   <a href="/admin/pengampu/{{$p->id}}" class="btn btn-info mt-1"><i class="bi bi-eye"></i></a>
