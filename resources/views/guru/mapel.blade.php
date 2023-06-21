@@ -10,16 +10,11 @@
   <div class="mb-3">
     <label for="tahun_ajaran" class="form-label">Tahun Ajaran</label>
     <select name="tahun_ajaran" id="tahun_ajaran" class="form-select">
+      <option value="">-- Pilih Tahun Ajaran --</option>
       @foreach($tahunAjaranOptions as $tahunAjaranId => $namaTahunAjaran)
-        @if ($tahunAjaranId == $tahunAjaranAktif->id)
-          <option value="{{ $tahunAjaranId }}" selected>
-            {{ $namaTahunAjaran }}
-          </option>
-        @else
-          <option value="{{ $tahunAjaranId }}">
-            {{ $namaTahunAjaran }}
-          </option>
-        @endif
+        <option value="{{ $tahunAjaranId }}" {{ request('tahun_ajaran') == $tahunAjaranId ? 'selected' : '' }}>
+          {{ $namaTahunAjaran }}
+        </option>
       @endforeach
     </select>
   </div>

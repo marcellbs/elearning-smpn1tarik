@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Guru;
 use Hashids\Hashids;
 use App\Models\Kelas;
+use App\Models\KelasSiswa;
 use App\Models\Mapel;
 use App\Models\Tingkat;
 use App\Models\Pengampu;
@@ -41,8 +42,24 @@ class GuruController extends Controller
             ->distinct()
             ->get();
 
-        $kelasOptions = Kelas::pluck('nama_kelas', 'kode_kelas');
-        $pelajaranOptions = Mapel::pluck('nama_pelajaran', 'kode_pelajaran');
+
+        $kelasOptions = Kelas::join('kelas_siswa', 'kelas.kode_kelas', '=', 'kelas_siswa.kode_kelas')
+            ->join('pengampu', 'kelas.kode_kelas', '=', 'pengampu.kode_kelas')
+            ->join('tahun_ajaran', 'pengampu.kode_thajaran', '=', 'tahun_ajaran.id')
+            ->where('tahun_ajaran.status_aktif', '1')
+            ->where('pengampu.kode_guru', $kodeGuru)
+            ->select('kelas.kode_kelas', 'kelas.nama_kelas')
+            ->distinct()
+            ->pluck('nama_kelas', 'kode_kelas');
+    
+        $pelajaranOptions = Mapel::where('status_aktif', '1')
+            ->join('pengampu', 'pelajaran.kode_pelajaran', '=', 'pengampu.kode_pelajaran')
+            ->join('tahun_ajaran', 'pengampu.kode_thajaran', '=', 'tahun_ajaran.id')
+            ->where('tahun_ajaran.status_aktif', '1')
+            ->where('pengampu.kode_guru', $kodeGuru)
+            ->select('pelajaran.kode_pelajaran', 'pelajaran.nama_pelajaran')
+            ->distinct()
+            ->pluck('nama_pelajaran', 'kode_pelajaran');
 
         $data = [
             'guru' => Guru::all(),
@@ -177,8 +194,11 @@ class GuruController extends Controller
             'hash' => $hash,
             'pengampu' => $pengampu,
             'materi' => $materi,
-            // menampilkan siswa dari tabel siswa yang memiliki id yang sama di tabel kelassiswa dan kode kelas yang sama di tabel pengampu urutkan berdasarkan nis
-            'siswa' => \App\Models\Siswa::whereIn('kode_siswa', $kelas_siswa->pluck('kode_siswa'))->orderBy('nis', 'asc')->get(),
+            // menampilkan siswa dari tabel siswa yang memiliki id yang sama di tabel kelassiswa dan kode kelas yang sama dan tahun ajaran yang sama dengan pengampu
+            'siswa' => \App\Models\Siswa:: join('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
+            ->where('kelas_siswa.kode_kelas', $pengampu->kode_kelas)
+            ->where('kelas_siswa.kode_thajaran', $pengampu->kode_thajaran)
+            ->get(),
 
 
         ];

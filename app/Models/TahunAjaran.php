@@ -20,4 +20,17 @@ class TahunAjaran extends Model
     public function kelasSiswa(){
         return $this->hasMany(KelasSiswa::class, 'kode_thajaran', 'id');
     }
+
+    public function kelas()
+    {
+        return $this->hasManyThrough(
+            Kelas::class,
+            Pengampu::class,
+            'kode_thajaran', // Foreign key pada tabel Pengampu
+            'kode_kelas', // Foreign key pada tabel Kelas
+            'id', // Primary key pada tabel TahunAjaran
+            'kode_kelas' // Primary key pada tabel Kelas
+        );
+    }
+
 }

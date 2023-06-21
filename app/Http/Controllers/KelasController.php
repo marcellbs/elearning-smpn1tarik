@@ -141,4 +141,22 @@ class KelasController extends Controller
 
         return redirect('/admin/kelas')->with('status', 'Data Kelas Berhasil Dihapus!');
     }
+
+
+    public function getByTahunAjaran(Request $request)
+    {
+        $tahunAjaranId = $request->input('tahun_ajaran_id');
+        $kelasOptions = Kelas::select('kelas.kode_kelas', 'kelas.nama_kelas')
+            ->join('pengampu', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
+            ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+            ->where('pengampu.kode_thajaran', $tahunAjaranId)
+            ->distinct()
+            ->pluck('kelas.nama_kelas', 'kelas.kode_kelas')
+            ->toArray();
+        
+
+        return response()->json($kelasOptions);
+    }
+
+
 }

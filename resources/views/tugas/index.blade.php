@@ -4,7 +4,7 @@
 
 @include('partials.page-title', ['title' => $title])
 
-<form action="{{ '/guru/tugas' }}" method="GET" class="mb-3">
+{{-- <form action="{{ '/guru/tugas' }}" method="GET" class="mb-3">
   <div class="row">
     <div class="col-md-6">
       <div class="form-group">
@@ -22,9 +22,38 @@
     </div>
   </div>
   
+</form> --}}
+
+<form method="GET" action="/guru/tugas" id="filter-form" class="mb-3">
+  <div class="row">
+    <p>Filter Tugas</p>
+    <div class="col">
+      {{-- <label for="tahun_ajaran">Tahun Ajaran:</label> --}}
+      <div class="form-group">
+        <select name="tahun_ajaran" id="tahun_ajaran" class="form-select">
+            <option value="">-- Pilih Tahun Ajaran --</option>
+            {{-- selected --}}
+            @foreach($tahunAjaranOptions as $tahunAjaranId => $tahunAjaran)
+                <option value="{{ $tahunAjaranId }}">
+                    {{ $tahunAjaran }}
+                </option>
+            @endforeach
+        </select>
+      </div>
+    </div>
+    <div class="col">
+      {{-- <label for="kode_kelas">Kelas:</label> --}}
+      <div class="form-group">
+        <select name="kode_kelas" id="kode_kelas" class="form-select">
+            <option value="">-- Pilih Kelas --</option>
+        </select>
+      </div>
+    </div>
+    <div class="col">
+      <button type="submit" class="btn btn-primary">Filter</button>
+    </div>
+  </div>
 </form>
-
-
 
 @if (session()->has('success'))
   <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -119,6 +148,44 @@
     </div>
   </div>
 </div> --}}
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 
+<!-- Script Ajax untuk mengubah dropdown kelas -->
+<script>
+  $(document).ready(function() {
+      var kodeKelasTerpilih = '{{ $kodeKelasTerpilih }}';
+      var tahunAjaranTerpilih = '{{ $tahunAjaranTerpilih }}';
+
+      $('#tahun_ajaran').on('change', function() {
+          var tahunAjaranId = $(this).val();
+          if (tahunAjaranId) {
+              $.ajax({
+                  url: '{{ route("kelas.getByTahunAjaran") }}',
+                  type: 'GET',
+                  data: {
+                      tahun_ajaran_id: tahunAjaranId
+                  },
+                  dataType: 'json',
+                  success: function(data) {
+                      $('#kode_kelas').empty();
+                      $('#kode_kelas').append('<option value="">-- Pilih Kelas --</option>');
+                      $.each(data, function(key, value) {
+                          $('#kode_kelas').append('<option value="' + key + '">' + value + '</option>');
+                      });
+
+                      // Set kelas terpilih jika sudah dipilih sebelumnya
+                      if (tahunAjaranId === tahunAjaranTerpilih && kodeKelasTerpilih) {
+                          $('#kode_kelas').val(kodeKelasTerpilih);
+                      }
+                  },
+                  error: function(xhr, status, error) {
+                      console.log(xhr.responseText);
+                  }
+              });
+          } 
+      });
+  });
+
+</script>
 
 @endsection

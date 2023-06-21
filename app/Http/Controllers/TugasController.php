@@ -26,42 +26,122 @@ class TugasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    // public function index(Request $request)
+    // {
+    //     $tahunAjaranAktif = \App\Models\TahunAjaran::where('status_aktif', '1')->first();
+    //     $query = Tugas::where('kode_guru', auth()->user()->kode_guru);
+
+    //     // Filtering berdasarkan kode_kelas
+    //     $kodeKelas = $request->input('kode_kelas');
+    //     if ($kodeKelas) {
+    //         $query->where('kode_kelas', $kodeKelas);
+    //     }
+
+    //     $tugas = $query->where('tugas.kode_thajaran', $tahunAjaranAktif->id)
+    //     ->orderBy('created_at', 'desc')
+    //     ->paginate(6);
+
+    //     foreach ($tugas as $t) {
+    //         $kelas = Kelas::find($t->kode_kelas);
+    //         // $t->nama_tingkat = $kelas->tingkat->nama_tingkat;
+
+    //         $jumlahSiswaKelas = KelasSiswa::where('kode_kelas', $t->kode_kelas)
+    //             ->count();
+
+    //         $t->jumlahSiswaKelas = $jumlahSiswaKelas;
+    //     }
+
+    //     $kelasOptions = Kelas::select('kelas.kode_kelas', 'kelas.nama_kelas')
+    //         ->join('pengampu', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
+    //         ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+    //         ->where('pengampu.kode_thajaran', $tahunAjaranAktif->id)
+    //         ->distinct()
+    //         ->get();
+
+    //     $tahunAjaranOptions = 
+
+    //     $data = [
+    //         'tugas' => $tugas,
+    //         'kelasOptions' => $kelasOptions,
+    //         'title' => 'Tugas',
+    //     ];
+            
+    //     return view('tugas.index', $data);
+    // }
+
     public function index(Request $request)
     {
+        // Mendapatkan tahun ajaran aktif
+        $tahunAjaranAktif = \App\Models\TahunAjaran::where('status_aktif', '1')->first();
+
+        // Menginisialisasi query tugas dengan memfilter berdasarkan kode guru
         $query = Tugas::where('kode_guru', auth()->user()->kode_guru);
 
         // Filtering berdasarkan kode_kelas
-        $kodeKelas = $request->input('kode_kelas');
-        if ($kodeKelas) {
-            $query->where('kode_kelas', $kodeKelas);
+        $kodeKelasTerpilih = $request->input('kode_kelas');
+        if ($kodeKelasTerpilih) {
+            $query->where('kode_kelas', $kodeKelasTerpilih);
         }
 
-        $tugas = $query->orderBy('created_at', 'desc')->paginate(6);
+        // Filtering berdasarkan tahun ajaran, termasuk tahun ajaran sebelumnya jika dipilih
+        $tahunAjaranTerpilih = $request->input('tahun_ajaran');
+        if ($tahunAjaranTerpilih) {
+            $query->whereHas('kelas', function ($kelasQuery) use ($tahunAjaranTerpilih) {
+                $kelasQuery->where('kode_thajaran', $tahunAjaranTerpilih);
+            });
+        } elseif ($tahunAjaranAktif) {
+            $query->whereHas('kelas', function ($kelasQuery) use ($tahunAjaranAktif) {
+                $kelasQuery->where('kode_thajaran', $tahunAjaranAktif->id);
+            });
+        }
 
+        // Mengambil tugas dengan mengurutkan berdasarkan created_at secara descending dan membaginya menjadi beberapa halaman
+        $tugas = $query
+            ->orderBy('created_at', 'desc')
+            ->paginate(6);
+        
+        $tugas->appends(['tahun_ajaran' => $tahunAjaranTerpilih, 'kode_kelas' => $kodeKelasTerpilih]);
+        // Menambahkan jumlah siswa ke setiap tugas
         foreach ($tugas as $t) {
-            $kelas = Kelas::find($t->kode_kelas);
-            // $t->nama_tingkat = $kelas->tingkat->nama_tingkat;
-
             $jumlahSiswaKelas = KelasSiswa::where('kode_kelas', $t->kode_kelas)
-                ->count();
-
+            ->where('kode_thajaran', $t->kode_thajaran)
+            ->count();
             $t->jumlahSiswaKelas = $jumlahSiswaKelas;
         }
+        // Opsi kelas yang tersedia jika tahun ajaran dipilih
+        $kelasOptions = [];
+        if ($tahunAjaranTerpilih) {
+            $kelasOptions = Kelas::select('kelas.kode_kelas', 'kelas.nama_kelas')
+                ->join('pengampu', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
+                ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+                ->where('pengampu.kode_thajaran', $tahunAjaranTerpilih)
+                ->distinct()
+                ->get();
+        }
 
-        $kelasOptions = Kelas::select('kelas.kode_kelas', 'kelas.nama_kelas')
-            ->join('pengampu', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
-            ->where('pengampu.kode_guru', auth()->user()->kode_guru)
-            ->distinct()
-            ->get();
+        // Opsi tahun ajaran untuk dropdown
+        $tahunAjaranOptions = \App\Models\TahunAjaran::pluck('tahun_ajaran', 'id');
 
+        // Data yang akan dikirimkan ke view
         $data = [
             'tugas' => $tugas,
             'kelasOptions' => $kelasOptions,
+            'tahunAjaranOptions' => $tahunAjaranOptions,
+            'tahunAjaran' => $tahunAjaranAktif,
+            'kodeKelasTerpilih' => $kodeKelasTerpilih,
+            'tahunAjaranTerpilih' => $tahunAjaranTerpilih,
             'title' => 'Tugas',
         ];
-            
+
+        // Menampilkan view dengan data yang telah disiapkan
         return view('tugas.index', $data);
     }
+
+
+
+
+
+
 
 
     
@@ -75,17 +155,18 @@ class TugasController extends Controller
     {
         $data = [
             'title' => 'Tambah Tugas Baru',
-            // menampilkan kelas yang diajar oleh guru yang login saat ini menggunakan select distinct,
+            
             'kelas' => \App\Models\Kelas::select('kelas.kode_kelas', 'kelas.nama_kelas')
                 ->join('pengampu', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
                 ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+                ->where('pengampu.kode_thajaran', \App\Models\TahunAjaran::where('status_aktif', '1')->first()->id)
                 ->distinct()
                 ->get(),
             
-            // menampilkan mapel sesuai yang dipilih oleh guru yang login saat ini menggunakan distinct
             'mapel' => \App\Models\Mapel::select('pelajaran.kode_pelajaran', 'pelajaran.nama_pelajaran')
                 ->join('pengampu', 'pengampu.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
                 ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+                ->where('pengampu.kode_thajaran', \App\Models\TahunAjaran::where('status_aktif', '1')->first()->id)
                 ->distinct()
                 ->get(),
         ];
@@ -120,6 +201,7 @@ class TugasController extends Controller
         $tugas->kode_pelajaran = $request->mapel;
         $tugas->kode_guru = \Illuminate\Support\Facades\Auth::guard('webguru')->user()->kode_guru;
         $tugas->deadline = $request->deadline;
+        $tugas->kode_thajaran = \App\Models\TahunAjaran::where('status_aktif', '1')->first()->id;
         
         if($request->hasFile('berkas')){
             $file = $request->file('berkas');
@@ -154,6 +236,7 @@ class TugasController extends Controller
                         ->where('jawaban_tugas.kode_tugas', '=', $tuga->kode_tugas);
                 })
                 ->where('tugas.kode_tugas', $tuga->kode_tugas)
+                ->where('kelas_siswa.kode_thajaran', $tuga->kode_thajaran)
                 ->get();
 
             $tgl_indonesia = \Carbon\Carbon::parse($tuga->deadline)->locale('id');
@@ -233,6 +316,7 @@ class TugasController extends Controller
             'kelas' => \App\Models\Kelas::select('kelas.kode_kelas', 'kelas.nama_kelas')
                 ->join('pengampu', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
                 ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+                ->where('pengampu.kode_thajaran', $tuga->kode_thajaran)
                 ->distinct()
                 ->get(),
             
@@ -240,6 +324,7 @@ class TugasController extends Controller
             'mapel' => \App\Models\Mapel::select('pelajaran.kode_pelajaran', 'pelajaran.nama_pelajaran')
                 ->join('pengampu', 'pengampu.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
                 ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+                ->where('pengampu.kode_thajaran', $tuga->kode_thajaran)
                 ->distinct()
                 ->get(),
             
@@ -331,34 +416,41 @@ class TugasController extends Controller
         return redirect()->back()->with('success', 'Nilai berhasil disimpan');
     }
     
-
     public function report(Request $request)
     {
+        $tahunAjaranAktif = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+        $tahunAjaranOptions = \App\Models\TahunAjaran::pluck('tahun_ajaran', 'id');
+
+        $selectedTahunAjaran = $request->input('tahun_ajaran');
+        $selectedKelas = $request->input('kode_kelas');
+        $selectedPelajaran = $request->input('kode_pelajaran');
+
         $mapel = Mapel::select('pelajaran.kode_pelajaran', 'pelajaran.nama_pelajaran')
             ->join('pengampu', 'pengampu.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
             ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+            ->where('pengampu.kode_thajaran', $selectedTahunAjaran)
             ->distinct()
             ->get();
-        
+
         $kelas = Kelas::select('kelas.kode_kelas', 'kelas.nama_kelas')
             ->join('pengampu', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
             ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+            ->where('pengampu.kode_thajaran', $selectedTahunAjaran)
             ->distinct()
             ->get();
 
-        $kodeKelas = $request->input('kode_kelas');
-        $kodePelajaran = $request->input('kode_pelajaran');
-
-        $tugas = Tugas::where('kode_kelas', $kodeKelas)
-            ->where('kode_pelajaran', $kodePelajaran)
+        $tugas = Tugas::where('kode_kelas', $selectedKelas)
+            ->where('kode_pelajaran', $selectedPelajaran)
             ->where('kode_guru', auth()->user()->kode_guru)
+            ->where('kode_thajaran', $selectedTahunAjaran)
             ->get();
 
-        $siswa = Siswa::whereHas('kelasSiswa', function ($query) use ($kodeKelas) {
-            $query->where('kode_kelas', $kodeKelas);
+        $siswa = Siswa::whereHas('kelasSiswa', function ($query) use ($selectedKelas, $selectedTahunAjaran) {
+            $query->where('kode_kelas', $selectedKelas)
+                ->where('kode_thajaran', $selectedTahunAjaran);
         })->get();
 
-        $namaMapel = Mapel::where('kode_pelajaran', $kodePelajaran)->value('nama_pelajaran');
+        $namaMapel = Mapel::where('kode_pelajaran', $selectedPelajaran)->value('nama_pelajaran');
 
         $data = [
             'title' => 'Report Tugas',
@@ -366,114 +458,96 @@ class TugasController extends Controller
             'mapel' => $mapel,
             'kelas' => $kelas,
             'siswa' => $siswa,
-            'kodePelajaran' => $kodePelajaran,
-            'kodeKelas' => $kodeKelas,
+            'kodePelajaran' => $selectedPelajaran,
+            'kodeKelas' => $selectedKelas,
             'namaGuru' => auth()->user()->nama,
-            'namaMapel' => $namaMapel, // Tambahkan ini untuk nama mapel
+            'namaMapel' => $namaMapel,
+            'tahunAjaranOptions' => $tahunAjaranOptions,
+            'selectedTahunAjaran' => $selectedTahunAjaran,
         ];
 
         return view('tugas.reporttugas', $data);
     }
 
-    // public function exportReport(Request $request)
+    public function getKelas(Request $request)
+    {
+        try {
+            $tahunAjaran = $request->input('tahun_ajaran');
+    
+            $kelas = \App\Models\Pengampu::select('pengampu.kode_kelas', 'kelas.nama_kelas')
+                ->join('kelas', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
+                ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+                ->where('pengampu.kode_thajaran', $tahunAjaran)
+                ->distinct()
+                ->get();
+    
+            return response()->json($kelas);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getMapel(Request $request)
+    {
+        $tahunAjaran = $request->input('tahun_ajaran');
+        $kelas = $request->input('kode_kelas');
+
+        $mapel = \App\Models\Pengampu::select('pelajaran.kode_pelajaran', 'pelajaran.nama_pelajaran')
+            ->join('pelajaran', 'pengampu.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
+            ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+            ->where('pengampu.kode_thajaran', $tahunAjaran)
+            ->distinct()
+            ->get();
+
+        return response()->json($mapel);
+    }
+
+
+    // public function report(Request $request)
     // {
+    //     $mapel = Mapel::select('pelajaran.kode_pelajaran', 'pelajaran.nama_pelajaran')
+    //         ->join('pengampu', 'pengampu.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
+    //         ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+    //         ->where('pengampu.kode_thajaran', \App\Models\TahunAjaran::where('status_aktif', 1)->first()->id)
+    //         ->distinct()
+    //         ->get();
+        
+    //     $kelas = Kelas::select('kelas.kode_kelas', 'kelas.nama_kelas')
+    //         ->join('pengampu', 'pengampu.kode_kelas', '=', 'kelas.kode_kelas')
+    //         ->where('pengampu.kode_guru', auth()->user()->kode_guru)
+    //         ->where('pengampu.kode_thajaran', \App\Models\TahunAjaran::where('status_aktif', 1)->first()->id)
+    //         ->distinct()
+    //         ->get();
+
     //     $kodeKelas = $request->input('kode_kelas');
     //     $kodePelajaran = $request->input('kode_pelajaran');
-
-    //     $mapel = Mapel::where('kode_pelajaran', $kodePelajaran)->first();
-    //     $kelas = Kelas::where('kode_kelas', $kodeKelas)->first();
-    //     $guru = Guru::where('kode_guru', auth()->user()->kode_guru)->first();
 
     //     $tugas = Tugas::where('kode_kelas', $kodeKelas)
     //         ->where('kode_pelajaran', $kodePelajaran)
     //         ->where('kode_guru', auth()->user()->kode_guru)
+    //         ->where('kode_thajaran', \App\Models\TahunAjaran::where('status_aktif', 1)->first()->id)
     //         ->get();
 
     //     $siswa = Siswa::whereHas('kelasSiswa', function ($query) use ($kodeKelas) {
-    //         $query->where('kode_kelas', $kodeKelas);
+    //         $query->where('kode_kelas', $kodeKelas)
+    //         ->where('kode_thajaran', \App\Models\TahunAjaran::where('status_aktif', 1)->first()->id);
     //     })->get();
 
-    //     // Membuat objek Spreadsheet
-    //     $spreadsheet = new Spreadsheet();
+    //     $namaMapel = Mapel::where('kode_pelajaran', $kodePelajaran)->value('nama_pelajaran');
 
-    //     // Mengatur data ke dalam lembar kerja (worksheet)
-    //     $sheet = $spreadsheet->getActiveSheet();
+    //     $data = [
+    //         'title' => 'Report Tugas',
+    //         'tugas' => $tugas,
+    //         'mapel' => $mapel,
+    //         'kelas' => $kelas,
+    //         'siswa' => $siswa,
+    //         'kodePelajaran' => $kodePelajaran,
+    //         'kodeKelas' => $kodeKelas,
+    //         'namaGuru' => auth()->user()->nama,
+    //         'namaMapel' => $namaMapel, // Tambahkan ini untuk nama mapel
+    //     ];
 
-    //     // Judul Sheet
-    //     $sheet->setTitle('Report Tugas');
-
-    //     // Menambahkan informasi header
-    //     $sheet->setCellValue('A1', 'Nama Guru : ' . $guru->nama);
-    //     $sheet->setCellValue('A2', 'Tugas Kelas : ' . $kelas->nama_kelas);
-    //     $sheet->setCellValue('A3', 'Mapel : ' . $mapel->nama_pelajaran);
-
-    //     // Menambahkan header tabel
-    //     $sheet->setCellValue('A5', 'NIS');
-    //     $sheet->setCellValue('B5', 'Nama Siswa');
-    //     $column = 'B'; // Kolom awal
-    //     $columnIndex = 3; // Indeks kolom awal
-
-    //     foreach ($tugas as $index => $t) {
-    //         $column = chr(ord($column) + 1); // Mengambil nilai ASCII huruf dan menambahkannya dengan 1
-    //         $sheet->setCellValue($column . '5', 'Tugas ' . ($index + 1));
-    //         $columnIndex++;
-    //     }
-
-    //     // Menambahkan data siswa dan nilai tugas
-    //     $rowIndex = 6;
-
-    //     foreach ($siswa as $index => $sis) {
-    //         $sheet->setCellValue('A' . $rowIndex, $sis->nis);
-    //         $sheet->setCellValue('B' . $rowIndex, $sis->nama_siswa);
-
-    //         foreach ($tugas as $index => $t) {
-    //             $jawaban = $t->jawaban->where('kode_siswa', $sis->kode_siswa)->first();
-    //             $nilai = $jawaban ? $jawaban->nilai : '-';
-    //             $column = chr(65 + $index + 2); // Mengubah indeks kolom menjadi huruf dengan offset 2 karena ada 2 kolom sebelumnya
-    //             $sheet->setCellValue($column . $rowIndex, $nilai);
-
-    //             // Memberikan format pada sel dengan tanda minus (-)
-    //             if ($nilai == '-') {
-    //                 $cellCoordinate = $column . $rowIndex;
-    //                 $cellFill = $sheet->getStyle($cellCoordinate)->getFill();
-    //                 $cellFill->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFA500'); // Warna oranye dalam format ARGB
-    //             }
-    //         }
-
-    //         $rowIndex++;
-    //     }
-
-    //     // Menambahkan keterangan
-    //     $keteranganRow = $rowIndex + 2;
-
-    //     $sheet->setCellValue('A' . $keteranganRow, 'Keterangan');
-    //     $sheet->getStyle('A' . $keteranganRow)->applyFromArray([
-    //         'font' => [
-    //             'bold' => true
-    //         ]
-    //     ]);
-
-    //     $keteranganRow++;
-
-    //     $sheet->getStyle('A' . $keteranganRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FFA500');
-    //     $sheet->setCellValue('A' . $keteranganRow, '');
-    //     $sheet->setCellValue('B' . $keteranganRow, 'Siswa belum mengumpulkan');
-
-    //     $keteranganRow++;
-    //     $sheet->getStyle('A' . $keteranganRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FFFFFF');
-    //     $sheet->setCellValue('A' . $keteranganRow, '');
-    //     $sheet->setCellValue('B' . $keteranganRow, 'Belum dinilai');
-
-
-    //     // Menyimpan file Excel
-    //     $writer = new Xlsx($spreadsheet);
-    //     $fileName = 'Report_Tugas.xlsx';
-    //     $filePath = storage_path('app/public/' . $fileName);
-    //     $writer->save($filePath);
-
-    //     // Mengirim file Excel sebagai response
-    //     return response()->download($filePath, $fileName)->deleteFileAfterSend(true);
-
+    //     return view('tugas.reporttugas', $data);
     // }
 
     public function exportReport(Request $request)
@@ -624,11 +698,4 @@ class TugasController extends Controller
 
 
 
-
-    public function getKelas($id)
-    {
-        $kelas = \App\Models\Kelas::where('kode_kelas', $id)->where('kode_guru', \Illuminate\Support\Facades\Auth::guard('webguru')->user()->kode_guru)->first();
-        
-        return response()->json($kelas);
-    }
 }

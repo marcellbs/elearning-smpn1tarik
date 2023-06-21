@@ -151,6 +151,9 @@ Route::get('/siswa/profile', [SiswaController::class, 'profile'])->middleware('a
 Route::patch('/siswa/profile/{id}', [SiswaController::class, 'changeProfile'])->middleware('auth:websiswa');
 Route::patch('/siswa/password/{id}', [SiswaController::class, 'changePassword'])->middleware('auth:websiswa');
 
+Route::get('/kelas/getByTahunAjaran', [KelasController::class, 'getByTahunAjaran'])->middleware('auth:webguru')->name('kelas.getByTahunAjaran');
+Route::get('/get-mapel', [TugasController::class, 'getMapel'])->middleware('auth:webguru')->name('get-mapel');
+Route::get('/get-kelas', [TugasController::class,'getKelas'])->middleware('auth:webguru')->name('get-kelas');
 
 Route::get('/', [ElearningController::class, 'index'])->middleware('guest');
 

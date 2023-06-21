@@ -96,6 +96,7 @@
             {{-- tombol submit --}}
             <div class="form-group mt-2">
               <button type="submit" class="btn btn-primary">Tambah</button>
+              <a href="/guru/tugas" class="">Kembali</a>
             </div>
 
           </form>

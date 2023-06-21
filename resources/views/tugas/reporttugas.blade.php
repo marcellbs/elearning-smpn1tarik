@@ -15,26 +15,30 @@
 <form action="/guru/tugas/report" method="get">
   <div class="row">
     <p class="mb-0">Pilih Kelas dan Mata Pelajaran</p>
-    <div class="col-md-3">
-      <select name="kode_kelas" id="kode_kelas"class="form-select">
-        <option value="">Pilih Kelas</option>
-        @foreach($kelas as $k)
-          <option value="{{ $k->kode_kelas }}" {{ $k->kode_kelas == $kodeKelas ? 'selected' : '' }}>
-            {{$k->nama_kelas }}
-          </option>
-        @endforeach
-      </select>
-    </div>
-    <div class="col-md-3">
-      <select name="kode_pelajaran" id="kode_pelajaran" class="form-select">
-        <option value="">Pilih Mapel</option>
-        @foreach($mapel as $m)
-          <option value="{{ $m->kode_pelajaran }}" {{ $m->kode_pelajaran == $kodePelajaran ? 'selected' : '' }}>
-            {{ $m->nama_pelajaran }}
-          </option>
-        @endforeach
-      </select>
-    </div>
+    
+    <!-- Dropdown Tahun Ajaran -->
+<select id="tahun_ajaran" name="tahun_ajaran" onchange="populateKelas()">
+  <option value="">Pilih Tahun Ajaran</option>
+  {{-- selected dropdown--}}
+  @foreach($tahunAjaranOptions as $tahunAjaranId => $tahunAjaran)
+      <option value="{{ $tahunAjaranId }}">
+          {{ $tahunAjaran }}
+      </option>
+  @endforeach
+</select>
+
+<!-- Dropdown Kelas -->
+<select id="kode_kelas" name="kode_kelas" onchange="populateMapel()">
+  <option value="">Pilih Kelas</option>
+  <!-- Opsi kelas akan diisi melalui permintaan AJAX -->
+</select>
+
+<!-- Dropdown Mata Pelajaran -->
+<select id="kode_pelajaran" name="kode_pelajaran">
+  <option value="">Pilih Mata Pelajaran</option>
+  <!-- Opsi mata pelajaran akan diisi melalui permintaan AJAX -->
+</select>
+
     <div class="col-md-2">  
       <button type="submit" class="btn btn-primary">Submit</button>
     </div>
@@ -135,6 +139,64 @@
     </div>
   </div>
 </div>
+
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+<script>
+   // Fungsi untuk mengisi opsi kelas berdasarkan tahun ajaran yang dipilih
+  function populateKelas() {
+        var selectedTahunAjaran = $("#tahun_ajaran").val();
+
+        $.ajax({
+            url: "/get-kelas",
+            type: "GET",
+            data: { 
+              tahun_ajaran: selectedTahunAjaran 
+            },
+            success: function(data) {
+                console.log(data);
+                // Bersihkan opsi kelas sebelumnya
+                $("#kode_kelas").empty();
+                $("#kode_kelas").append('<option value="">Pilih Kelas</option>');
+
+                // Tambahkan opsi kelas dari data yang diterima
+                $.each(data, function(key, value) {
+                    $("#kode_kelas").append('<option value="' + value.kode_kelas + '">' + value.nama_kelas + '</option>');
+                });
+
+                populateMapel(); 
+            }
+        });
+    }
+
+    function populateMapel() {
+        var selectedTahunAjaran = $("#tahun_ajaran").val();
+        var selectedKelas = $("#kode_kelas").val();
+
+        $.ajax({
+            url: "/get-mapel",
+            type: "GET",
+            data: { 
+              tahun_ajaran: selectedTahunAjaran, 
+              kelas: selectedKelas 
+            },
+            success: function(data) {
+                console.log(data); 
+                // Bersihkan opsi mata pelajaran sebelumnya
+                $("#kode_pelajaran").empty();
+                $("#kode_pelajaran").append('<option value="">Pilih Mata Pelajaran</option>');
+
+                // Tambahkan opsi mata pelajaran dari data yang diterima
+                $.each(data, function(key, value) {
+                    $("#kode_pelajaran").append('<option value="' + value.kode_pelajaran + '">' + value.nama_pelajaran + '</option>');
+                });
+            }
+            
+        });
+    }
+
+</script>
 
 
 

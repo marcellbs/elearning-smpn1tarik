@@ -52,7 +52,7 @@
             </div> --}}
             <div class="form-group">
               <label for="kelas">Kelas</label>
-              <select name="kelas" id="kelas" class="form-control">
+              <select name="kelas" id="kelas" class="form-select">
                 <option value="">-- Pilih Kelas --</option>
                 @foreach ($kelas as $item)
                   <option value="{{ $item['kode_kelas'] }}" {{ $item['kode_kelas'] == $tugas->kode_kelas ? 'selected' : '' }}>{{ $item['nama_tingkat'].$item['nama_kelas'] }}</option>
@@ -83,7 +83,7 @@
 
             <div class="form-group">
               <label for="mapel">Mata Pelajaran</label>
-              <select name="mapel" id="mapel" class="form-control">
+              <select name="mapel" id="mapel" class="form-select">
                 <option value="">-- Pilih Mata Pelajaran --</option>
                 @foreach ($mapel as $item)
                   <option value="{{ $item['kode_pelajaran'] }}" {{ $item['kode_pelajaran'] == $tugas->kode_pelajaran ? 'selected' : '' }}>{{ $item['nama_pelajaran'] }}</option>
@@ -121,6 +121,7 @@
             {{-- tombol submit --}}
             <div class="form-group mt-3">
               <button type="submit" class="btn btn-primary">Ubah Tugas</button>
+              <a href="/guru/tugas">Kembali</a>
             </div>
 
           </form>
