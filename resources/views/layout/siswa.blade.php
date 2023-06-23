@@ -46,7 +46,7 @@
 
     
 
-    <nav class="header-nav ms-auto">
+    {{-- <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
 
 
@@ -127,7 +127,7 @@
 
 
       </ul>
-    </nav>
+    </nav> --}}
 
   </header><!-- End Header -->
 
@@ -139,9 +139,9 @@
       @else
         <img src="/img/{{ auth()->user()->foto }}" alt="user-img" class="rounded-circle image-profile">
       @endif      
-      <h5 class="mb-0 mt-3">{{ ucwords(auth()->user()->nama_siswa)  }}</h5>
-      <p class="mt-0">Siswa</p>
-      {{-- <p class="mt-0">Siswa | {{$kelas_siswa }}</p> --}}
+      <h5 class="mb-0 mt-3 fw-bold">{{ ucwords(auth()->user()->nama_siswa)  }}</h5>
+      {{-- <p class="mt-0">Siswa</p> --}}
+      <p class="mt-0">Siswa | {{$kelas_siswa->kelas->nama_kelas }}</p>
 
     </div>
     
@@ -157,17 +157,24 @@
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
+        <a class="nav-link {{ (Request::is('siswa/mapel')) ? 'active' : '' }}" href="/siswa/mapel">
+          <i class="bi bi-bookmarks"></i><span>Mata Pelajaran</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('siswa/jadwal-online')) ? 'active' : '' }}" href="/siswa/jadwal-online">
+          <i class="bi bi-calendar-week"></i><span>Jadwal Online</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
         <a class="nav-link {{ (Request::is('siswa/materi')) ? 'active' : '' }}" href="/siswa/materi">
           <i class="bi bi-book"></i>
           <span>Materi</span>
         </a>
       </li><!-- End Dashboard Nav -->
 
-      <li class="nav-item">
-        <a class="nav-link {{ (Request::is('siswa/mapel')) ? 'active' : '' }}" href="/siswa/mapel">
-          <i class="bi bi-bookmarks"></i><span>Mata Pelajaran</span>
-        </a>
-      </li>
       
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('siswa/tugas')) ? 'active' : '' }}" href="/siswa/tugas">

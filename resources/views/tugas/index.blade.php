@@ -85,14 +85,17 @@
 
               <p>{{ $t->keterangan }}</p>
               
-              <p class="mb-2">Batas pengumpulan : {{ date('d F Y - H:i', strtotime($t->deadline)) }}</p>
+              @php
+                $deadline = $t->deadline;
+                \Carbon\Carbon::setLocale('id');
+                $deadline = \Carbon\Carbon::parse($deadline)->translatedFormat('l, d F Y');
+              @endphp
+              <p class="mb-2">Batas pengumpulan : {{ $deadline }}</p>
 
               <p class="mb-2">
                 Mengumpulkan : {{ $t->getJumlahSiswaMengumpulkanAttribute() }} / {{ $t->jumlahSiswaKelas  }}
               </p>
               
-              
-          
               <div class="d-flex">
                 <div class="mt-2">
                   <span class="badge text-bg-success"> <p class="mb-0">{{ $t->kelas->nama_kelas}}</p></span>

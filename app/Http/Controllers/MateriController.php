@@ -29,11 +29,11 @@ class MateriController extends Controller
                 });
             }
 
-            // $kodeTingkat = $request->input('kode_tingkat');
+            $kodeTingkat = $request->input('tingkat');
 
-            // if ($kodeTingkat) {
-            //     $query->where('materi.kode_tingkat', $kodeTingkat);
-            // }
+            if ($kodeTingkat) {
+                $query->where('materi.tingkat', $kodeTingkat);
+            }
 
             // Filtering berdasarkan kode_pelajaran
             $kodePelajaran = $request->input('kode_pelajaran');
@@ -41,6 +41,7 @@ class MateriController extends Controller
             if ($kodePelajaran) {
                 $query->where('materi.kode_pelajaran', $kodePelajaran);
             }
+
             $materi = $query
             // ->join('tingkat_kelas', 'materi.kode_tingkat', '=', 'tingkat_kelas.kode_tingkat')
             ->join('pelajaran', 'materi.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
@@ -72,10 +73,10 @@ class MateriController extends Controller
                 });
             }
 
-            $kodeTingkat = $request->input('kode_tingkat');
+            $kodeTingkat = $request->input('tingkat');
 
             if ($kodeTingkat) {
-                $query->where('materi.kode_tingkat', $kodeTingkat);
+                $query->where('materi.tingkat', $kodeTingkat);
             }
 
             // Filtering berdasarkan kode_pelajaran
@@ -84,6 +85,7 @@ class MateriController extends Controller
             if ($kodePelajaran) {
                 $query->where('materi.kode_pelajaran', $kodePelajaran);
             }
+            
             $materi = $query
             ->join('pelajaran', 'materi.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
             ->select('materi.*', 'pelajaran.nama_pelajaran')

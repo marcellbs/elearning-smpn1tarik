@@ -5,149 +5,194 @@
   <h1>{{ $title }}</h1>
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/guru">Home</a></li>
-      <li class="breadcrumb-item active"><a href="/guru">Rekap Presensi</a></li>
+        <li class="breadcrumb-item"><a href="/guru">Home</a></li>
+        <li class="breadcrumb-item active"><a href="/guru">Rekap Presensi</a></li>
     </ol>
   </nav>
 </div>
 
-{{-- dropdown untuk memilih kelas dan mapel, nantinya digunakan untuk download file export excel --}}
 <h4 class="fw-bold">Export Rekap Presensi</h4>
-<form action="{{ '/guru/rekappresensi'}}" method="GET" class="mb-3">
-    @csrf
-
+<form action="/guru/rekappresensi" method="get">
     <div class="row">
-            <div class="col-md-4">
-                <label for="kode_pelajaran">Mata Pelajaran : </label>
-                <select name="kode_pelajaran" id="kode_pelajaran" class="form-select">
-                    @foreach($mapelGuru as $mapel)
-                        <option value="{{ $mapel->kode_pelajaran }}">{{ $mapel->nama_pelajaran }}</option>
+        <div class="col">
+            <!-- Tahun Ajaran Dropdown -->
+            <div class="mb-3">
+                <label for="tahunAjaranDropdown" class="form-label">Tahun Ajaran:</label>
+                <select id="tahunAjaranDropdown" class="form-select" onchange="loadKelasMapelOptions(this.value)">
+                    <option value="">Pilih Tahun Ajaran</option>
+                    @foreach ($tahunAjaranOptions as $id => $tahunAjaran)
+                        <option value="{{ $id }}">{{ $tahunAjaran }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-4">
-                <label for="kode_kelas">Kelas : </label>
-                <select name="kode_kelas" id="kode_kelas" class="form-select">
-                    @foreach($kelasGuru as $kelas)
-                        <option value="{{ $kelas->kode_kelas }}">{{$kelas->nama_kelas }}</option>
-                    @endforeach
-                </select>
+        </div>
+        <div class="col">
+                <!-- Kelas Dropdown -->
+                <div class="mb-3">
+                    <label for="kelasDropdown" class="form-label">Kelas:</label>
+                    <select id="kelasDropdown" name="kode_kelas" class="form-select"></select>
+                </div>
+        </div>
+        <div class="col">
+            <!-- Mapel Dropdown -->
+            <div class="mb-3">
+                <label for="mapelDropdown" class="form-label">Mata Pelajaran:</label>
+                <select id="mapelDropdown" name="kode_pelajaran" class="form-select"></select>
             </div>
-            <div class="col-md-2 mt-4">
-                <button type="submit" class="btn btn-success">Export Excel</button>
+        </div>
+        <div class="col">
+            <!-- Submit Button -->
+            <div class="mb-3">
+                <label for="submitBtn" class="form-label">&nbsp;</label>
+                <button id="submitBtn" type="submit" class="btn btn-success form-control">Export Excel</button>
             </div>
-        
+        </div>
     </div>
+
 </form>
 
 
+
+
+<form action="{{ route('presensi') }}" method="GET" class="mb-2">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="tahun_ajaran">Filter</label>
+                <select name="tahun_ajaran" id="tahun_ajaran" class="form-select">
+                    <option value="">-- Pilih Tahun Ajaran --</option>
+                    @foreach ($tahunAjaranOptions as $tahunAjaranId => $tahunAjaran)
+                        <option value="{{ $tahunAjaranId }}">{{ $tahunAjaran }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="col-md-1">
+            {{-- button --}}
+            <div class="form-group">
+                <label for="submitBtn">&nbsp;</label>
+                <button id="submitBtn" type="submit" class="btn btn-success form-control">Filter</button>
+            </div>
+        </div>
+    </div>
+</form>
+
 <h5 class="fw-bold">Semua Presensi yang pernah dilakukan</h5>
 
-<div class="row">
-    {{-- {{ $presensi }} --}}
 
-    @foreach ($presensi as $tanggalPresensi => $presensiPerTanggal)
-        @foreach ($presensiPerTanggal as $kodeKelas => $presensiPerKelas)
+
+
+
+    <div class="row">
+        @foreach ($groupedPresensi as $kelas => $mapel)
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header-guru">
-                        @php
-                            $tanggalPresensi = \Carbon\Carbon::parse($tanggalPresensi)->locale('id');
-                            $tanggalPresensiFormatted = \Carbon\Carbon::parse($tanggalPresensi)->translatedFormat('l, d F Y');
-                            $kelasData = $kelasGuru->where('kode_kelas', $kodeKelas)->first();
-                            $kelasNama = $kelasData ? $kelasData->nama_kelas : 'Nama Kelas Tidak Tersedia';
-                            
-                        @endphp
-                        <h5 class="fw-bold">{{ $tanggalPresensiFormatted }}</h5>
-                        <p class="p-0">{{ $kelasNama }}</p>
+                        <h5 class="fw-bold">{{ $kelas }}</h5>
+                        @foreach ($mapel as $namaMapel => $tahunAjaran)
+                            @foreach ($tahunAjaran as $tahun => $presensi)
+                                @if ($loop->first)
+                                    <p class="m-0">{{ $tahun }}</p>
+                                    @php 
+                                        $tanggalPresensi = $presensi[0]['tanggal_presensi'];
+                                        \Carbon\Carbon::setLocale('id');
+                                        $tanggalPresensi = \Carbon\Carbon::parse($tanggalPresensi)->translatedFormat('l, d F Y');
+                                    @endphp
+                                    <h5 class="fw-bold">{{ $tanggalPresensi}}</h5>
+                                    <hr>
+                                @endif
+                            @endforeach
+                            @break
+                        @endforeach
                     </div>
-                    <hr class="m-1">
                     <div class="card-body">
-                        @foreach ($presensiPerKelas as $kodePelajaran => $presensiPerPelajaran)
-                            @php
-                                $mapelData = $mapelGuru->where('kode_pelajaran', $kodePelajaran)->first();
-                                $mapelNama = $mapelData ? $mapelData->nama_pelajaran : 'Nama Mapel Tidak Tersedia';
-                            @endphp
-                            <div class="row">
-                                <div class="col-3">
-                                    S = {{ $presensiPerPelajaran->where('status', 'S')->count() }}
-                                </div>
-                                <div class="col-3">
-                                    H = {{ $presensiPerPelajaran->where('status', 'H')->count() }}
-                                </div>
-                                <div class="col-3">
-                                    I = {{ $presensiPerPelajaran->where('status', 'I')->count() }}
-                                </div>
-                                <div class="col-3">
-                                    A = {{ $presensiPerPelajaran->where('status', 'A')->count() }}
-                                </div>
-                                <div class="col-3">
-                                    K = {{ $presensiPerPelajaran->where('status', 'K')->count() }}
-                                </div>
-                            </div>
-                            <div class="row mt-2">
-                                <div class="col-12">
-                                    Total Siswa: {{ $presensiPerPelajaran->count() }}
-                                </div>
-                            </div>
-                            <div class="row mt-2">
-                                <div class="col-12">
-                                    <a href="/guru/presensi/{{ $tanggalPresensi }}/edit/{{ $kodeKelas }}/{{ $kodePelajaran }}" class="btn btn-sm btn-primary">Edit Presensi {{ $mapelNama }}</a>
-                                </div>
-                            </div>
-                            <hr>
+                        @foreach ($mapel as $namaMapel => $tahunAjaran)
+                            @foreach ($tahunAjaran as $presensi)
+                                
+                                    <p class="m-0">{{ $namaMapel }}</p>
+                                    @php
+                                        $statusCounts = [
+                                            'S' => 0,
+                                            'H' => 0,
+                                            'I' => 0,
+                                            'A' => 0,
+                                            'K' => 0,
+                                        ];
+                                    @endphp
+                                    @foreach ($presensi as $data)
+                                        @php
+                                            $statusCounts[$data['status']]++;
+                                        @endphp
+                                    @endforeach
+                                    <p>S: {{ $statusCounts['S'] }}, H: {{ $statusCounts['H'] }}, I: {{ $statusCounts['I'] }}, A: {{ $statusCounts['A'] }}, K: {{ $statusCounts['K'] }}</p>
+                                    <p>Total: {{ count($presensi) }}</p>
+                                    <hr>
+
+                                    <!-- Tombol Ubah Data -->
+                                    @php
+                                        $tanggalPresensi = $presensi[0]['tanggal_presensi'];
+                                        $kodeKelas = $presensi[0]['kode_kelas'];
+                                        $kodePelajaran = $presensi[0]['kode_pelajaran'];
+                                    @endphp
+                                    <a href="/guru/presensi/{{ $tanggalPresensi }}/edit/{{  $kodeKelas }}/{{ $kodePelajaran }}" class="btn btn-primary">Ubah Data</a>
+                                    <hr>
+                                
+                            @endforeach
                         @endforeach
                     </div>
                 </div>
             </div>
         @endforeach
-    @endforeach
 
-
-    {{-- @foreach($presensi as $tanggalPresensi => $presensiPerTanggal)
-        @foreach($presensiPerTanggal as $kodeKelas => $presensiPerKelas)
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header-guru">      
-                        @php
-                            $tanggalPresensi = \Carbon\Carbon::parse($tanggalPresensi)->locale('id');
-                            
-                        @endphp                
-                        <h5 class="fw-bold">{{ \Carbon\Carbon::parse($tanggalPresensi)->translatedFormat('l, d F Y') }}</h5>
-                        <p class="p-0">{{ $presensiPerKelas[2]->mapel->nama_pelajaran }} | {{ $presensiPerKelas[0]->kelas->tingkat->nama_tingkat }}{{ $presensiPerKelas[0]->kelas->nama_kelas }}</p>
-                    </div>
-                    <hr class="m-1">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-3">
-                                S = {{ $presensiPerKelas->where('status', 'S')->count() }}
-                            </div>
-                            <div class="col-3">
-                                H = {{ $presensiPerKelas->where('status', 'H')->count() }}
-                            </div>
-                            <div class="col-3">
-                                I = {{ $presensiPerKelas->where('status', 'I')->count() }}
-                            </div>
-                            <div class="col-3">
-                                A = {{ $presensiPerKelas->where('status', 'A')->count() }}
-                            </div>
-                            <div class="col-3">
-                                K = {{ $presensiPerKelas->where('status', 'K')->count() }}
-                            </div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-12">
-                                Total Siswa: {{ $presensiPerKelas->count() }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <a href="/guru/presensi/{{ $tanggalPresensi }}/edit/{{ $kodeKelas }}/{{ $presensiPerKelas[0]->mapel->kode_pelajaran }}" class="btn btn-sm btn-primary">Edit Presensi</a>
-                        
-                    </div>
-                </div>
+        <div class="col-md-12">
+            <div class="d-flex justify-content-center">
+                {{ $groupedPresensi->links() }}
             </div>
-        @endforeach
-    @endforeach --}}
-</div>
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+    <script>
+        function loadKelasMapelOptions(tahunAjaranId) {
+            // Hapus pilihan kelas dan mapel yang ada
+            $('#kelasDropdown').empty();
+            $('#mapelDropdown').empty();
+    
+            // Jika tidak ada tahun ajaran yang dipilih, hentikan eksekusi
+            if (!tahunAjaranId) {
+                return;
+            }
+    
+            // Kirim permintaan AJAX untuk mendapatkan opsi kelas dan mapel
+            $.ajax({
+                url: "{{ route('loadOptions') }}",
+                method: "GET",
+                data: {
+                    tahun_ajaran: tahunAjaranId
+                },
+                success: function (response) {
+                    // Tambahkan opsi kelas ke dropdown
+                    var kelasDropdown = $('#kelasDropdown');
+                    kelasDropdown.append('<option value="">Pilih Kelas</option>');
+                    $.each(response.kelasOptions, function (index, kelasOption) {
+                        kelasDropdown.append('<option value="' + kelasOption.kode_kelas + '">' + kelasOption.nama_kelas + '</option>');
+                    });
+    
+                    // Tambahkan opsi mapel ke dropdown
+                    var mapelDropdown = $('#mapelDropdown');
+                    mapelDropdown.append('<option value="">Pilih Mata Pelajaran</option>');
+                    $.each(response.mapelOptions, function (index, mapelOption) {
+                        mapelDropdown.append('<option value="' + mapelOption.kode_pelajaran + '">' + mapelOption.nama_pelajaran + '</option>');
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+
+
 @endsection

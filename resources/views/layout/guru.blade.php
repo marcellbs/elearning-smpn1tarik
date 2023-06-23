@@ -162,11 +162,11 @@
         </a>
       </li>
 
-      {{-- <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link {{ (Request::is('guru/jadwal-mengajar')) ? 'active' : '' }}" href="/guru/jadwal-mengajar">
           <i class="bi bi-calendar-week"></i><span>Jadwal Mengajar</span>
         </a>
-      </li> --}}
+      </li>
 
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('guru/presensi')) ? 'active' : '' }}" href="/guru/presensi">

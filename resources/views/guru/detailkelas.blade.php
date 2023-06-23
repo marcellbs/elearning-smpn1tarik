@@ -26,7 +26,11 @@
             <tr>
               <td>Jadwal</td>
               <td>:</td>
-              <td>-</td>
+              <td>
+                @foreach($pengampu->jadwal as $jadwal)
+                  <li>{{$jadwal->hari}}, {{$jadwal->jam_mulai}} - {{$jadwal->jam_berakhir}}</li>
+                @endforeach
+              </td>
             </tr>
             <tr>
               <td>Kelas</td>

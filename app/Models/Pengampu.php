@@ -42,4 +42,8 @@ class Pengampu extends Model
         return $this->belongsTo(TahunAjaran::class, 'kode_tahun_ajaran', 'kode_tahun_ajaran');
     }
 
+    public function jadwal(){
+        return $this->hasMany(Jadwal::class, 'kode_pengampu');
+    }
+
 }

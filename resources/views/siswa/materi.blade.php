@@ -40,19 +40,17 @@
 
           <form action="/siswa/materi" method="get">
             <div class="row">
-              {{-- <div class="col-xxl-4 col-md-4">
+              <div class="col-xxl-4 col-md-4">
                 <div class="input-group mb-3">
-                  <select class="form-select" name="kode_tingkat" id="inputGroupSelect02">
+                  <select class="form-select" name="tingkat" id="inputGroupSelect02">
                     <option value="" selected>Pilih Kelas</option>
-                    @foreach ($tingkatOptions as $kodeTingkat => $namaTingkat)
-                        <option value="{{$kodeTingkat}}" {{ $kodeTingkat == request('kode_tingkat') ? 'selected' : '' }}>
-                            {{ $namaTingkat }}
-                        </option>
-                    @endforeach
+                    <option value="7" {{ Request::get('tingkat') == '7' ? 'selected' : '' }}>Kelas 7</option>
+                    <option value="8" {{ Request::get('tingkat') == '8' ? 'selected' : '' }}>Kelas 8</option>
+                    <option value="9" {{ Request::get('tingkat') == '9' ? 'selected' : '' }}>Kelas 9</option>
                   </select>
                   
                 </div>
-              </div> --}}
+              </div>
   
               <div class="col-xxl-4 col-md-4">
                 <div class="input-group mb-3">
@@ -76,45 +74,53 @@
         </div>
         
         <div class="row">
-          @foreach($materi as $m)
-          <div class="col-md-4 mb-3">
-
-            <div class="card rounded h-100">
-              <div class="card-body m-1 p-2">
-                <span class="badge rounded-pill" style="background-color: orange;">{{ $m->mapel->nama_pelajaran }}</span>
-                {{-- <span class="badge rounded-pill" style="background-color: orange;">{{ 'kelas '. $m->tingkat->nama_tingkat }}</span> --}}
-                <h5 class="card-title">{{ $m->judul_materi }}</h5>
+          @if($materi->isEmpty())
+            <div class="col-md-12">
+              <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">Tidak ada materi</h4>
               </div>
-
-              <div class="row">
-                <div class="col-2">
-                    <a href="/siswa/materi/{{ $m->kode_materi }}" class="btn mx-2 mb-2" style="background-color: white; color: orange; border: 1px solid orange;"><i class="bi bi-eye"></i></a>
-                </div>
-
-                <div class="col-2 ms-auto mx-4">
-                  @php
-                    $ext = pathinfo($m->berkas, PATHINFO_EXTENSION);
-                    if ($ext == 'pdf') {
-                      echo '<p><i class="bi bi-file-earmark-pdf" style="font-size: 1.5rem; color: red;"></i></p>';
-                    } else if ($ext == 'docx') {
-                      echo '<i class="bi bi-file-earmark-word" style="font-size: 1.5rem; color: blue;"></i>';
-                    } else if ($ext == 'pptx') {
-                      echo '<i class="bi bi-file-earmark-ppt" style="font-size: 1.5rem; color: rgb(255, 94, 0);"></i>';
-                    } else if ($ext == 'xlsx') {
-                      echo '<i class="bi bi-file-earmark-excel" style="font-size: 1.5rem; color: green;"></i>';
-                    }else if ($ext == 'zip' || $ext == 'rar'){
-                      echo '<i class="bi bi-file-earmark-zip" style="font-size: 1.5rem; color: rgb(0, 0, 0);"></i>';
-                    } else {
-                      echo '<i class="bi bi-file-earmark" style="font-size: 1.5rem; color: black;"></i>';
-                    }
-                  @endphp
-                </div>
-
-              </div>
-            
             </div>
-            
-          </div>
+          @endif
+
+          @foreach($materi as $m)
+            <div class="col-md-4 mb-3">
+
+              <div class="card rounded h-100">
+                <div class="card-body m-1 p-2">
+                  <span class="badge rounded-pill" style="background-color: orange;">{{ $m->mapel->nama_pelajaran }}</span>
+                  <span class="badge rounded-pill" style="background-color: orange;">{{ 'kelas '. $m->tingkat }}</span>
+                  <h5 class="card-title">{{ $m->judul_materi }}</h5>
+                </div>
+
+                <div class="row">
+                  <div class="col-2">
+                      <a href="/siswa/materi/{{ $m->kode_materi }}" class="btn mx-2 mb-2" style="background-color: white; color: orange; border: 1px solid orange;"><i class="bi bi-eye"></i></a>
+                  </div>
+
+                  <div class="col-2 ms-auto mx-4">
+                    @php
+                      $ext = pathinfo($m->berkas, PATHINFO_EXTENSION);
+                      if ($ext == 'pdf') {
+                        echo '<p><i class="bi bi-file-earmark-pdf" style="font-size: 1.5rem; color: red;"></i></p>';
+                      } else if ($ext == 'docx') {
+                        echo '<i class="bi bi-file-earmark-word" style="font-size: 1.5rem; color: blue;"></i>';
+                      } else if ($ext == 'pptx') {
+                        echo '<i class="bi bi-file-earmark-ppt" style="font-size: 1.5rem; color: rgb(255, 94, 0);"></i>';
+                      } else if ($ext == 'xlsx') {
+                        echo '<i class="bi bi-file-earmark-excel" style="font-size: 1.5rem; color: green;"></i>';
+                      }else if ($ext == 'zip' || $ext == 'rar'){
+                        echo '<i class="bi bi-file-earmark-zip" style="font-size: 1.5rem; color: rgb(0, 0, 0);"></i>';
+                      } else {
+                        echo '<i class="bi bi-file-earmark" style="font-size: 1.5rem; color: black;"></i>';
+                      }
+                    @endphp
+                  </div>
+
+                </div>
+              
+              </div>
+              
+            </div>
           @endforeach
         </div>
       </div>

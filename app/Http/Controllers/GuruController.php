@@ -90,8 +90,8 @@ class GuruController extends Controller
             $tahunAjaranId = $request->input('tahun_ajaran', $idTahunAjaranAktif); // Jika tahun ajaran tidak dipilih, gunakan tahun ajaran aktif secara default
 
             $pengampu = \App\Models\Pengampu::where('kode_guru', $kodeGuru)
-                ->where('kode_thajaran', $tahunAjaranId)
-                ->get();
+            ->where('kode_thajaran', $tahunAjaranId)
+            ->get();
 
             $data = [
                 'guru' => \App\Models\Guru::all(),
@@ -103,10 +103,9 @@ class GuruController extends Controller
             ];
 
             return view('guru.mapel', $data);
+        }else{
+            return redirect('/guru')->with('gagal', 'Tidak ada tahun ajaran aktif');
         }
-
-        // Tindakan jika tahun ajaran aktif tidak tersedia
-        // ...
     }
 
 

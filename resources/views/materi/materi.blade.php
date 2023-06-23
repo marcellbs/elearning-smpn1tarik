@@ -33,33 +33,34 @@
           <div class="col-xxl-6 col-md-6">
 
             @if (Auth::guard('webguru')->check())
-              <a href="/guru/materi/create" class="btn text-light mb-2" style="background-color:orange;">Tambah Materi</a>
-              <a href="/guru/materi/shared" class="btn text-light mb-2" style="background-color:orange;">Materi yang dibagikan</a>
+              <a href="/guru/materi/create" class="btn text-light mb-3" style="background-color:orange;">Tambah Materi</a>
+              <a href="/guru/materi/shared" class="btn text-light mb-3" style="background-color:orange;">Materi yang dibagikan</a>
             @elseif(Auth::guard('webadmin')->check())
-              <a href="/admin/materi/create" class="btn text-light mb-2" style="background-color:orange;">Tambah Materi</a>
+              <a href="/admin/materi/create" class="btn text-light mb-3" style="background-color:orange;">Tambah Materi</a>
             @endif
 
           </div>
 
-          <form action="{{ Auth::guard('webguru')->check() ? '/guru/materi' : '/admin/materi'}}" method="get">
+          <form action="{{ Auth::guard('webguru')->check() ? '/guru/materi' : '/admin/materi'}}" method="get" class="mb-3">
             <div class="row">
-              {{-- <div class="col-xxl-4 col-md-4">
-                <div class="input-group mb-3">
-                  <select class="form-select" name="kode_tingkat" id="inputGroupSelect02">
+              <div class="col-md-4 mb-3">
+                <div class="form-group">
+                  {{-- <label for="inputGroupSelect02" class="form-label">Pilih Kelas</label> --}}
+                  <select class="form-select" name="tingkat" id="inputGroupSelect02">
                     <option value="" selected>Pilih Kelas</option>
-                    @foreach ($tingkatOptions as $kodeTingkat => $namaTingkat)
-                        <option value="{{$kodeTingkat}}" {{ $kodeTingkat == request('kode_tingkat') ? 'selected' : '' }}>
-                            {{ $namaTingkat }}
-                        </option>
-                    @endforeach
+                    <option value="7" {{ Request::get('tingkat') == '7' ? 'selected' : '' }}>Kelas 7</option>
+                    <option value="8" {{ Request::get('tingkat') == '8' ? 'selected' : '' }}>Kelas 8</option>
+                    <option value="9" {{ Request::get('tingkat') == '9' ? 'selected' : '' }}>Kelas 9</option>
+                    
                   </select>
                   
                 </div>
-              </div> --}}
+              </div>
   
-              <div class="col-xxl-4 col-md-4">
-                <div class="input-group mb-3">
-                  <select class="form-select" name="kode_pelajaran" id="inputGroupSelect02">
+              <div class="col-md-4 mb-3">
+                <div class="form-group">
+                  {{-- <label for="inputGroupSelect03" class="form-label">Pilih Pelajaran</label> --}}
+                  <select class="form-select" name="kode_pelajaran" id="inputGroupSelect03">
                     <option value="" selected>Pilih Pelajaran</option>
                     @foreach ($pelajaranOptions as $kodePelajaran => $namaPelajaran)
                         <option value="{{ $kodePelajaran }}" {{ $kodePelajaran == request('kode_pelajaran') ? 'selected' : '' }}>
@@ -70,11 +71,15 @@
                   
                 </div>
               </div>
-              <div class="col">
-                <button type="submit" class="btn btn-primary">Filter</button>
+              <div class="col-1">
+                <div class="form-group">
+                  {{-- <label for="sB">&nbsp;</label> --}}
+                  <button type="submit" id="sB" class="btn text-white" style="background-color: orange;">Filter</button>
+                </div>
               </div>
+
             </div>
-          </form>
+          </form> 
 
         </div>
 

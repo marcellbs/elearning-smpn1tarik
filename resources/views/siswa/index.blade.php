@@ -3,6 +3,9 @@
 @section('content')
 
 @include('partials.page-title', ['title' => $title])
+
+<h5 class="fw-bold"><i>Tahun Ajaran {{ $tahunAjaran }}</i></h5>
+
 <form action="{{ '/siswa' }}" method="GET" class="mb-3">
   <div class="row">
     <label for="nama_pelajaran">Cari Nama Pelajaran:</label>
@@ -34,8 +37,11 @@
                 <div class="card-body p-0 ps-4">
                   <h5 class="mt-3"><strong>{{$p->mapel->nama_pelajaran}}</strong></h5>
                   <h6 class="card-text mt-3">{{$p->guru->nama}}</h6>
-                  {{-- <h6 class="card-text mt-3">{{$p->hari}}, {{ $p->jam_mulai }} - {{ $p->jam_berakhir }}</h6> --}}
-                  {{-- <h6 class="card-text text-muted">{{$p->kelas->tingkat->nama_tingkat}}{{$p->kelas->nama_kelas}}</h6> --}}
+                  <ul>
+                    @foreach ($p->jadwal as $j)
+                      <li class="card-text">{{ $j->hari }}, {{ $j->jam_mulai }} - {{ $j->jam_berakhir }}</li>
+                    @endforeach
+                  </ul>
                 </div>
                 <div class="card-footer p-2 m-0 d-flex border-0 me-2" style="background-color: transparent;">
                   <a href="/siswa/detail/{{($p->id)}}" class="m-0 ms-auto text-dark">Akses Kelas <i class="bi bi-box-arrow-in-right"></i></a>

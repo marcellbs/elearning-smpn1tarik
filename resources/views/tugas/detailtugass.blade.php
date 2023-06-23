@@ -150,6 +150,7 @@
                 @else
                   <td>{{ $item->tgl_upload }}</td>
                 @endif
+
                 <td>
                   @if ($item->nilai == null)
                     <span class="badge bg-danger">Belum Dinilai</span>
@@ -182,6 +183,7 @@
                       <i class="bi bi-123"></i>
                     </button>
                   @endif
+
                 </td>
               </tr>
 
@@ -209,6 +211,8 @@
                     </form>
                 </div>
               </div>
+
+              
 
               @endforeach
               

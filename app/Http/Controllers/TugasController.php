@@ -9,6 +9,7 @@ use App\Models\Mapel;
 use App\Models\Siswa;
 use App\Models\Tugas;
 use App\Models\KelasSiswa;
+use App\Models\TahunAjaran;
 use App\Models\JawabanTugas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
@@ -228,7 +229,7 @@ class TugasController extends Controller
      */
     public function show(Tugas $tuga)
     {
-            $siswa = Siswa::select('siswa.nis', 'siswa.nama_siswa', 'jawaban_tugas.tgl_upload', 'jawaban_tugas.nilai', 'jawaban_tugas.berkas', 'jawaban_tugas.id')
+            $siswa = Siswa::select('siswa.nis', 'siswa.nama_siswa', 'jawaban_tugas.tgl_upload', 'jawaban_tugas.nilai', 'jawaban_tugas.berkas', 'jawaban_tugas.id', 'jawaban_tugas.keterangan')
                 ->join('kelas_siswa', 'kelas_siswa.kode_siswa', '=', 'siswa.kode_siswa')
                 ->join('tugas', 'tugas.kode_kelas', '=', 'kelas_siswa.kode_kelas')
                 ->leftJoin('jawaban_tugas', function ($join) use ($tuga) {
@@ -396,7 +397,7 @@ class TugasController extends Controller
         }
 
         $tuga->delete();
-        return redirect('/guru/tugas')->with('success', 'Tugas berhasil dihapus');
+        return redirect()->back()->with('success', 'Tugas berhasil dihapus');
 
     }
 
@@ -464,6 +465,7 @@ class TugasController extends Controller
             'namaMapel' => $namaMapel,
             'tahunAjaranOptions' => $tahunAjaranOptions,
             'selectedTahunAjaran' => $selectedTahunAjaran,
+            
         ];
 
         return view('tugas.reporttugas', $data);
@@ -554,10 +556,12 @@ class TugasController extends Controller
     {
         $kodeKelas = $request->input('kode_kelas');
         $kodePelajaran = $request->input('kode_pelajaran');
+        $selectedTahunAjaran = $request->input('tahun_ajaran');
 
         $mapel = Mapel::where('kode_pelajaran', $kodePelajaran)->first();
         $kelas = Kelas::where('kode_kelas', $kodeKelas)->first();
         $guru = Guru::where('kode_guru', auth()->user()->kode_guru)->first();
+        $tahunAjaran = TahunAjaran::where('id', $selectedTahunAjaran)->first();
 
         $tugas = Tugas::where('kode_kelas', $kodeKelas)
             ->where('kode_pelajaran', $kodePelajaran)
@@ -578,21 +582,27 @@ class TugasController extends Controller
         $spreadsheet->getActiveSheet()->setCellValue('A1', 'Nama Guru : ' . $guru->nama);
         $spreadsheet->getActiveSheet()->setCellValue('A2', 'Tugas Kelas : '. $kelas->nama_kelas);
         $spreadsheet->getActiveSheet()->setCellValue('A3', 'Mapel : ' . $mapel->nama_pelajaran);
+        $spreadsheet->getActiveSheet()->setCellValue('A4', 'Tahun Ajaran : ' . $tahunAjaran->tahun_ajaran);
 
         // Menambahkan header tabel pada lembar kerja utama
-        $spreadsheet->getActiveSheet()->setCellValue('A5', 'NIS');
-        $spreadsheet->getActiveSheet()->setCellValue('B5', 'Nama Siswa');
+        $spreadsheet->getActiveSheet()->setCellValue('A6', 'NIS');
+        $spreadsheet->getActiveSheet()->setCellValue('B6', 'Nama Siswa');
+
+        //Mengatur lebar kolom
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+
         $column = 'B'; // Kolom awal pada lembar kerja utama
         $columnIndex = 3; // Indeks kolom awal pada lembar kerja utama
 
         foreach ($tugas as $index => $t) {
             $column = chr(ord($column) + 1); // Mengambil nilai ASCII huruf dan menambahkannya dengan 1
-            $spreadsheet->getActiveSheet()->setCellValue($column . '5', 'Tugas ' . ($index + 1));
+            $spreadsheet->getActiveSheet()->setCellValue($column . '6', 'Tugas ' . ($index + 1));
             $columnIndex++;
         }
 
         // Menambahkan data siswa dan nilai tugas pada lembar kerja utama
-        $rowIndex = 6;
+        $rowIndex = 7;
 
         foreach ($siswa as $index => $sis) {
             $spreadsheet->getActiveSheet()->setCellValue('A' . $rowIndex, $sis->nis);
@@ -641,12 +651,13 @@ class TugasController extends Controller
             $worksheet->setCellValue('A2', 'Kelas: ' . $kelas->nama_kelas);
             $worksheet->setCellValue('A3', 'Mapel: ' . $mapel->nama_pelajaran);
             $worksheet->setCellValue('A4', 'Tugas: ' . $t->judul_tugas);
-            $worksheet->setCellValue('A5', 'Deskripsi: ' . $t->keterangan);
+            $worksheet->setCellValue('A5', 'Deskripsi Tugas: ' . $t->keterangan);
 
             // Menambahkan header tabel pada sheet tugas dan nilai
             $worksheet->setCellValue('A7', 'NIS');
             $worksheet->setCellValue('B7', 'Nama Siswa');
             $worksheet->setCellValue('C7', 'Nilai');
+            $worksheet->setCellValue('D7', 'Keterangan');
 
             // Menambahkan data siswa dan nilai tugas pada sheet tugas dan nilai
             $rowIndex = 8;
@@ -654,6 +665,10 @@ class TugasController extends Controller
             foreach ($siswa as $index => $sis) {
                 $worksheet->setCellValue('A' . $rowIndex, $sis->nis);
                 $worksheet->setCellValue('B' . $rowIndex, $sis->nama_siswa);
+
+                // mengatur lebar kolom
+                $worksheet->getColumnDimension('A')->setWidth(30);
+                $worksheet->getColumnDimension('B')->setAutoSize(true);
 
                 $jawaban = $t->jawaban->where('kode_siswa', $sis->kode_siswa)->first();
                 $nilai = $jawaban ? $jawaban->nilai : '-';
@@ -666,8 +681,14 @@ class TugasController extends Controller
                     $cellFill->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFA500'); // Warna oranye dalam format ARGB
                 }
 
+                $keterangan = $jawaban ? $jawaban->keterangan : '-';
+                $worksheet->setCellValue('D' . $rowIndex, $keterangan);
+                $worksheet->getColumnDimension('D')->setAutoSize(true);
+
                 $rowIndex++;
             }
+
+
             // menambahkan keterangan
             $keteranganRow = $rowIndex + 2;
             $worksheet->setCellValue('A' . $keteranganRow, 'Keterangan');

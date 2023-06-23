@@ -15,6 +15,7 @@ use App\Http\Controllers\JadwalmengajarController;
 use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\TaskstudentsController;
 use App\Http\Controllers\PresensiController;
+use App\Http\Controllers\JadwalOnlineController;
 
 /*
 |--------------------------------------------------------------------------
@@ -126,6 +127,7 @@ Route::patch('/guru/password/{id}', [GuruController::class, 'changePassword'])->
 Route::get('/guru/presensi/{id}', [PresensiController::class, 'index'])->middleware('auth:webguru')->name('presensi.index');
 Route::post('/guru/presensi', [PresensiController::class, 'storePresensi'])->middleware('auth:webguru')->name('presensi.store');
 Route::get('/guru/presensi', [PresensiController::class, 'presensi'])->middleware('auth:webguru')->name('presensi');
+Route::get('/load-options', [PresensiController::class, 'loadOptions'])->middleware('auth:webguru')->name('loadOptions');
 // Route::get('/guru/presensi/{tanggalPresensi}/edit/{kodeKelas}', [PresensiController::class, 'editPresensi'])->middleware('auth:webguru')->name('presensi.edit');
 Route::get('/guru/presensi/{tanggalPresensi}/edit/{kodeKelas}/{kodePelajaran}', [PresensiController::class, 'editPresensi'])->middleware('auth:webguru')->name('presensi.edit');
 Route::patch('/guru/presensi/update', [PresensiController::class,'updatePresensi'])->middleware('auth:webguru')->name('presensi.update');
@@ -148,6 +150,7 @@ Route::resource('/siswa/jawabantugas', JawabantugasController::class)->middlewar
 Route::get('/siswa/pengumuman', [SiswaController::class, 'pengumuman'])->middleware('auth:websiswa');
 Route::get('/siswa/mapel', [SiswaController::class, 'mapel'])->middleware('auth:websiswa');
 Route::get('/siswa/profile', [SiswaController::class, 'profile'])->middleware('auth:websiswa');
+Route::get('/siswa/jadwal-online', [JadwalOnlineController::class, 'index'])->middleware('auth:websiswa');
 Route::patch('/siswa/profile/{id}', [SiswaController::class, 'changeProfile'])->middleware('auth:websiswa');
 Route::patch('/siswa/password/{id}', [SiswaController::class, 'changePassword'])->middleware('auth:websiswa');
 

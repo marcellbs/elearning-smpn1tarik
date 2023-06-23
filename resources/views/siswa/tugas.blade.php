@@ -6,24 +6,38 @@
 
   <form action="{{ '/siswa/tugas' }}" method="GET" class="mb-3">
     <div class="row">
-      <label for="kode_pelajaran">Filter berdasarkan Mata Pelajaran:</label>
-      <div class="col-md-6">
-        <div class="form-group">
-            <select name="kode_pelajaran" id="kode_pelajaran" class="form-select">
-                <option value="">Semua Mata Pelajaran</option>
-                @foreach ($pelajaranOptions as $kodePelajaran => $namaPelajaran)
-                    <option value="{{ $kodePelajaran }}" {{ $kodePelajaran == Request::get('kode_pelajaran') ? 'selected' : '' }}>
-                        {{ $namaPelajaran }}
-                    </option>
-                @endforeach
-            </select>
+        <div class="col-md-4">
+          <div class="form-group">
+                  <label for="kode_pelajaran">Filter berdasarkan Mata Pelajaran:</label>
+                  <select name="kode_pelajaran" id="kode_pelajaran" class="form-select">
+                      <option value="">Semua Mata Pelajaran</option>
+                      @foreach ($pelajaranOptions as $kodePelajaran => $namaPelajaran)
+                          <option value="{{ $kodePelajaran }}" {{ $kodePelajaran == Request::get('kode_pelajaran') ? 'selected' : '' }}>
+                              {{ $namaPelajaran }}
+                          </option>
+                      @endforeach
+                  </select>
+          </div>
         </div>
-      </div>
-      <div class="col-md-2">
-        <button type="submit" class="btn btn-primary">Filter</button>
-      </div>
+        
+        <div class="col-md-4">
+          <div class="form-group">
+                <label for="tahun_ajaran">Filter berdasarkan Tahun Ajaran:</label>
+                <select name="tahun_ajaran" id="tahun_ajaran" class="form-select">
+                    <option value="">Semua Tahun Ajaran</option>
+                    @foreach ($listTahunAjaran as $id => $nama)
+                        <option value="{{ $nama }}" {{ $tahun_ajaran_id == $nama ? 'selected' : '' }}>{{ $nama }}</option>
+                    @endforeach
+                </select>
+          </div>
+        </div>
+        <div class="col-1">
+          <label for="submitButton">&nbsp;</label>
+          <button type="submit" id="submitButton" class="btn btn-primary">Filter</button>
+        </div>
     </div>
   </form>
+
 
 
 

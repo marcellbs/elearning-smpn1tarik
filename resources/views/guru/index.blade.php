@@ -58,7 +58,11 @@
                     <div class="card-body p-0 ps-4">
                       <h5 class="mt-3"><strong>{{$p->mapel->nama_pelajaran}}</strong></h5>
                       <h6 class="card-text text-muted">{{$p->kelas->nama_kelas}}</h6>
-                      {{-- <h6 class="card-text text-muted">{{ $p->hari }}, {{$p->jam_mulai }}-{{$p->jam_berakhir}}</h6> --}}
+                      <ul>
+                        @foreach($p->jadwal as $j)
+                          <li class="card-text text-muted">{{$j->hari}} {{$j->jam_mulai}} - {{$j->jam_berakhir}}</li>
+                        @endforeach
+                      </ul>
                       
                     </div>
                     <div class="card-footer p-2 m-0 d-flex border-0 me-2" style="background-color: transparent;">

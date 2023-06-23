@@ -11,10 +11,17 @@ class SiswaController extends Controller
     public function index(Request $request)
     {
         $siswa = \App\Models\Siswa::all();
-        $kelasSiswa = KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)->first();
+        $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+        // dd($tahunAjaran->id);
+
+        // mengambil kode siswa dari kode_kelas di kelas _siswa yang memiliki kode_thajaran yang sama dengan tahun ajaran yang aktif
+        $kelasSiswa = \App\Models\KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
+            ->where('kode_thajaran', $tahunAjaran->id)
+            ->first();
+
         
         $query = \App\Models\Pengampu::query();
-        $query->where('kode_kelas', $kelasSiswa->kode_kelas);
+        $query->where('kode_kelas', $kelasSiswa->kode_kelas)->where('kode_thajaran', $tahunAjaran->id);
         
         // Filter berdasarkan nama pelajaran jika ada pencarian
         $namaPelajaran = $request->input('nama_pelajaran');
@@ -30,6 +37,7 @@ class SiswaController extends Controller
             'siswa' => $siswa,
             'kelas_siswa' => $kelasSiswa,
             'pengampu' => $pengampu,
+            'tahunAjaran' => $tahunAjaran->tahun_ajaran,
         ];
         
         return view('siswa.index', $data);
@@ -171,49 +179,139 @@ class SiswaController extends Controller
     }
 
 
-    public function mapel(){
-        // $hash = new \Vinkla\Hashids\Facades\Hashids('my-hash', 10);
+    // public function mapel()
+    // {
+    //     // $hash = new \Vinkla\Hashids\Facades\Hashids('my-hash', 10);
+    //     $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+
+    //     $kelasSiswa = KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
+    //     ->where('kode_thajaran', $tahunAjaran->id)
+    //     ->first();
+
+    //     $query = \App\Models\Pengampu::where('kode_kelas', $kelasSiswa->kode_kelas)->where('kode_thajaran', $tahunAjaran->id)->orderBy('kode_pelajaran', 'asc');
+        
+    //     $pengampu = $query->get();
+
+    //     $data = [
+    //         'title' => 'Mata Pelajaran',
+    //         'kelas_siswa' => $kelasSiswa,
+    //         'pengampu' => $pengampu
+    //     ];
+
+    //     return view('siswa.mapel', $data);
+    // }
+
+    // public function mapel(Request $request)
+    // {
+    //     $listTahunAjaran = \App\Models\TahunAjaran::pluck('tahun_ajaran', 'id');
+
+    //     $tahunAjaranId = $request->input('tahun_ajaran');
+
+    //     // Jika tidak ada filter tahun ajaran yang dipilih, ambil tahun ajaran aktif
+    //     if (empty($tahunAjaranId)) {
+    //         $tahunAjaranAktif = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+    //         $tahunAjaranId = $tahunAjaranAktif->id;
+    //     }
+
+    //     $kelasSiswa = KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
+    //         ->where('kode_thajaran', $tahunAjaranId)
+    //         ->first();
+
+    //     $query = \App\Models\Pengampu::where('kode_kelas', $kelasSiswa->kode_kelas)
+    //         ->where('kode_thajaran', $tahunAjaranId)
+    //         ->orderBy('kode_pelajaran', 'asc');
+
+    //     $pengampu = $query->get();
+
+    //     $data = [
+    //         'title' => 'Mata Pelajaran',
+    //         'kelas_siswa' => $kelasSiswa,
+    //         'pengampu' => $pengampu,
+    //         'listTahunAjaran' => $listTahunAjaran,
+    //         'tahun_ajaran_id' => $tahunAjaranId
+    //     ];
+
+    //     return view('siswa.mapel', $data);
+    // }
+
+    public function mapel(Request $request)
+    {
+        $listTahunAjaran = \App\Models\TahunAjaran::pluck('tahun_ajaran', 'id');
+
+        $namaTahunAjaran = $request->input('tahun_ajaran');
+
+        // Jika tidak ada filter tahun ajaran yang dipilih, ambil tahun ajaran aktif
+        if (empty($namaTahunAjaran)) {
+            $tahunAjaranAktif = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+            $namaTahunAjaran = $tahunAjaranAktif->tahun_ajaran;
+        }
+
+        $tahunAjaran = \App\Models\TahunAjaran::where('tahun_ajaran', $namaTahunAjaran)->first();
+
+        $kelasSiswa = KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
+            ->where('kode_thajaran', $tahunAjaran->id)
+            ->first();
+
+        $query = \App\Models\Pengampu::where('kode_kelas', $kelasSiswa->kode_kelas)
+            ->where('kode_thajaran', $tahunAjaran->id)
+            ->orderBy('kode_pelajaran', 'asc');
+
+        $pengampu = $query->get();
+
         $data = [
             'title' => 'Mata Pelajaran',
-            'kelas_siswa' => KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
-            'pengampu' => \App\Models\Pengampu::where('kode_kelas', KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first()->kode_kelas)->get(),
+            'kelas_siswa' => $kelasSiswa,
+            'pengampu' => $pengampu,
+            'listTahunAjaran' => $listTahunAjaran,
+            'tahun_ajaran_id' => $namaTahunAjaran
         ];
 
         return view('siswa.mapel', $data);
     }
 
+
+
+
+
     public function profile(){
+        $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+
+        $kelasSiswa = KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
+        ->where('kode_thajaran', $tahunAjaran->id)
+        ->first();
+
         $data = [
             'title' => 'Profil',
-            'kelas_siswa' => KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
+            'kelas_siswa' => $kelasSiswa,
+            'tahun_ajaran' => $tahunAjaran,
         ];
 
         return view('siswa.profile', $data);
     }
 
     public function changeProfile(Request $request, $id){
-        $request->validate([
-            'nis' => 'required',
-            'nama' => 'required',
-            'email' => 'required',
-            'jk' => 'required',
-            'alamat' => 'required',
-            'telepon' => 'required|numeric',
-            'agama' => 'required',
-            'foto' => 'image|mimes:jpeg,png,jpg|max:3072',
-        ],[
-            'nis.required' => 'Kolom NIS harus diisi',
-            'nama.required' => 'Kolom nama harus diisi',
-            'email.required' => 'Kolom email harus diisi',
-            'jk.required' => 'Kolom jenis kelamin harus diisi',
-            'alamat.required' => 'Kolom alamat harus diisi',
-            'telepon.required' => 'Kolom telepon harus diisi',
-            'telepon.numeric' => 'Kolom telepon harus berupa angka',
-            'agama.required' => 'Kolom agama harus diisi',
-            'foto.image' => 'Kolom foto harus berupa gambar',
-            'foto.mimes' => 'Format foto harus jpeg, jpg, atau png',
-            'foto.max' => 'Ukuran foto maksimal 3 MB',
-        ]);
+        // $request->validate([
+        //     'nis' => 'required',
+        //     'nama' => 'required',
+        //     'email' => 'required',
+        //     'jk' => 'required',
+        //     'alamat' => 'required',
+        //     'telepon' => 'required|numeric',
+        //     'agama' => 'required',
+        //     'foto' => 'image|mimes:jpeg,png,jpg|max:3072',
+        // ],[
+        //     'nis.required' => 'Kolom NIS harus diisi',
+        //     'nama.required' => 'Kolom nama harus diisi',
+        //     'email.required' => 'Kolom email harus diisi',
+        //     'jk.required' => 'Kolom jenis kelamin harus diisi',
+        //     'alamat.required' => 'Kolom alamat harus diisi',
+        //     'telepon.required' => 'Kolom telepon harus diisi',
+        //     'telepon.numeric' => 'Kolom telepon harus berupa angka',
+        //     'agama.required' => 'Kolom agama harus diisi',
+        //     'foto.image' => 'Kolom foto harus berupa gambar',
+        //     'foto.mimes' => 'Format foto harus jpeg, jpg, atau png',
+        //     'foto.max' => 'Ukuran foto maksimal 3 MB',
+        // ]);
 
         if($request->file('foto') == null){
             // jika tidak ada file yang diupload
@@ -264,9 +362,8 @@ class SiswaController extends Controller
 
         }
         // jika sukses 
-        return redirect()->back()->with('pesan', 'Data berhasil diubah');
-        // jika gagal
-        // return redirect()->back()->with('pesan', 'Data gagal diubah');
+        return redirect()->back()->with('sukses', 'Data berhasil diubah');
+
     }
 
     // method untuk mengubah password
@@ -290,8 +387,10 @@ class SiswaController extends Controller
         $siswa = Siswa::find($id);
 
         // cek password saat ini sama atau tidak
-        if(bcrypt($request->password) != $siswa->password){
+        if(! \Illuminate\Support\Facades\Hash::check($request->password, $siswa->password)){
+            // jika password tidak sama
             return redirect()->back()->with('gagal', 'Password saat ini salah');
+
         } else {
             // jika password sama
             // maka update password

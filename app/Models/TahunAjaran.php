@@ -33,4 +33,14 @@ class TahunAjaran extends Model
         );
     }
 
+    public function pengampu()
+    {
+        return $this->hasMany(Pengampu::class, 'kode_thajaran', 'id');
+    }
+
+    public function presensi()
+    {
+        return $this->hasMany(Presensi::class, 'kode_thajaran', 'id');
+    }
+
 }

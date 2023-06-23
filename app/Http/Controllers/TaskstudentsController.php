@@ -15,12 +15,45 @@ class TaskstudentsController extends Controller
      * @return \Illuminate\Http\Response
      */
     
+    // public function index(Request $request)
+    // {
+    //     $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+    //     $query = Tugas::with('guru')
+    //         ->join('kelas', 'kelas.kode_kelas', '=', 'tugas.kode_kelas')
+    //         ->join('kelas_siswa', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
+    //         ->where('kelas_siswa.kode_siswa', auth()->user()->kode_siswa)
+    //         ->where('tugas.kode_thajaran', $tahunAjaran->id)
+    //         ->orderBy('tugas.created_at', 'desc');
+
+    //     $kodePelajaran = $request->input('kode_pelajaran');
+    //     if ($kodePelajaran) {
+    //         $query->where('tugas.kode_pelajaran', $kodePelajaran);
+    //     }
+
+    //     $tugas = $query->paginate(6);
+
+    //     $kelasSiswa = \App\Models\KelasSiswa::where('kode_siswa', auth()->user()->kode_siswa)->first();
+    //     $pelajaranOptions = Mapel::pluck('nama_pelajaran', 'kode_pelajaran');
+
+    //     $data = [
+    //         'tugas' => $tugas,
+    //         'title' => 'Tugas',
+    //         'kelas_siswa' => $kelasSiswa,
+    //         'pelajaranOptions' => $pelajaranOptions,
+    //     ];
+
+    //     return view('siswa.tugas', $data);
+    // }
+
     public function index(Request $request)
     {
+        $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+
         $query = Tugas::with('guru')
             ->join('kelas', 'kelas.kode_kelas', '=', 'tugas.kode_kelas')
             ->join('kelas_siswa', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
             ->where('kelas_siswa.kode_siswa', auth()->user()->kode_siswa)
+            ->where('tugas.kode_thajaran', $tahunAjaran->id)
             ->orderBy('tugas.created_at', 'desc');
 
         $kodePelajaran = $request->input('kode_pelajaran');
@@ -28,20 +61,30 @@ class TaskstudentsController extends Controller
             $query->where('tugas.kode_pelajaran', $kodePelajaran);
         }
 
+        $namaTahunAjaran = $request->input('tahun_ajaran');
+        if ($namaTahunAjaran) {
+            $tahunAjaran = \App\Models\TahunAjaran::where('tahun_ajaran', $namaTahunAjaran)->first();
+            $query->where('tugas.kode_thajaran', $tahunAjaran->id);
+        }
+
         $tugas = $query->paginate(6);
 
         $kelasSiswa = \App\Models\KelasSiswa::where('kode_siswa', auth()->user()->kode_siswa)->first();
         $pelajaranOptions = Mapel::pluck('nama_pelajaran', 'kode_pelajaran');
+        $listTahunAjaran = \App\Models\TahunAjaran::pluck('tahun_ajaran', 'id');
 
         $data = [
             'tugas' => $tugas,
             'title' => 'Tugas',
             'kelas_siswa' => $kelasSiswa,
             'pelajaranOptions' => $pelajaranOptions,
+            'listTahunAjaran' => $listTahunAjaran,
+            'tahun_ajaran_id' => $namaTahunAjaran
         ];
 
         return view('siswa.tugas', $data);
     }
+
 
 
 

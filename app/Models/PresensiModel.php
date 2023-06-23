@@ -38,6 +38,8 @@ class PresensiModel extends Model
         return $this->belongsTo(KelasSiswa::class, 'kode_kelas', 'kode_kelas');
     }
 
-    
-
+    public function tahunAjaran()
+    {
+        return $this->belongsTo(TahunAjaran::class, 'kode_thajaran');
+    }
 }

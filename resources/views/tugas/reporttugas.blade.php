@@ -15,32 +15,36 @@
 <form action="/guru/tugas/report" method="get">
   <div class="row">
     <p class="mb-0">Pilih Kelas dan Mata Pelajaran</p>
-    
-    <!-- Dropdown Tahun Ajaran -->
-<select id="tahun_ajaran" name="tahun_ajaran" onchange="populateKelas()">
-  <option value="">Pilih Tahun Ajaran</option>
-  {{-- selected dropdown--}}
-  @foreach($tahunAjaranOptions as $tahunAjaranId => $tahunAjaran)
-      <option value="{{ $tahunAjaranId }}">
-          {{ $tahunAjaran }}
-      </option>
-  @endforeach
-</select>
-
-<!-- Dropdown Kelas -->
-<select id="kode_kelas" name="kode_kelas" onchange="populateMapel()">
-  <option value="">Pilih Kelas</option>
-  <!-- Opsi kelas akan diisi melalui permintaan AJAX -->
-</select>
-
-<!-- Dropdown Mata Pelajaran -->
-<select id="kode_pelajaran" name="kode_pelajaran">
-  <option value="">Pilih Mata Pelajaran</option>
-  <!-- Opsi mata pelajaran akan diisi melalui permintaan AJAX -->
-</select>
-
-    <div class="col-md-2">  
-      <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="row">
+      <div class="col mt-1">
+        <!-- Dropdown Tahun Ajaran -->
+        <select id="tahun_ajaran" class="form-select" name="tahun_ajaran" onchange="populateKelas()">
+          <option value="">Pilih Tahun Ajaran</option>
+          {{-- selected dropdown--}}
+          @foreach($tahunAjaranOptions as $tahunAjaranId => $tahunAjaran)
+              <option value="{{ $tahunAjaranId }}">
+                  {{ $tahunAjaran }}
+              </option>
+          @endforeach
+        </select>
+      </div>
+      <div class="col mt-1">
+        <!-- Dropdown Kelas -->
+        <select id="kode_kelas" class="form-select" name="kode_kelas" onchange="populateMapel()">
+          <option value="">Pilih Kelas</option>
+          <!-- Opsi kelas akan diisi melalui permintaan AJAX -->
+        </select>
+      </div>
+      <div class="col mt-1">
+        <!-- Dropdown Mata Pelajaran -->
+        <select id="kode_pelajaran" class="form-select" name="kode_pelajaran">
+          <option value="">Pilih Mata Pelajaran</option>
+          <!-- Opsi mata pelajaran akan diisi melalui permintaan AJAX -->
+        </select>
+      </div>
+      <div class="col-md-2 mt-1">  
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
     </div>
   </div>
 </form>
@@ -52,9 +56,16 @@
       <div class="card-body">
         <div class="table-responsive my-3">
 
-          @if($kodeKelas && $kodePelajaran)
+          @if($kodeKelas && $kodePelajaran && $selectedTahunAjaran)
+            
             <h4 class="header-title fw-bold">Summary Tugas</h4>
-            <a href="{{ route('tugas.export-excel', ['kode_kelas' => $kodeKelas, 'kode_pelajaran' => $kodePelajaran]) }}" class="btn btn-success mt-3">Export Excel</a>
+
+            <a href="{{ route('tugas.export-excel', [
+              'kode_kelas' => $kodeKelas, 
+              'kode_pelajaran' => $kodePelajaran, 
+              'tahun_ajaran' => $selectedTahunAjaran,
+              ]) }}" class="btn btn-success mt-3">Export Excel</a>
+
             <table class="table table-borderless">
               <tr>
                 <td style="width: 150px">Nama Guru</td>
@@ -70,6 +81,11 @@
                 <td style="width: 150px">Kelas</td>
                 <td>:</td>
                 <td class="fw-bold">{{ $kelas->where('kode_kelas', $kodeKelas)->first()->nama_kelas }}</td>
+              </tr>
+              <tr>
+                <td style="width: 150px">Tahun Ajaran</td>
+                <td>:</td>
+                <td class="fw-bold">{{ $tahunAjaranOptions[$selectedTahunAjaran] }}</td>
               </tr>
 
             </table>
