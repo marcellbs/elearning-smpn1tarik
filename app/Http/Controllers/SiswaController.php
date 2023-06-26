@@ -30,6 +30,7 @@ class SiswaController extends Controller
                 ->where('pelajaran.nama_pelajaran', 'like', '%' . $namaPelajaran . '%');
         }
         
+        $pengumuman = \App\Models\Pengumuman::orderBy('tgl_upload', 'desc')->limit(3)->get();
         $pengampu = $query->get();
         
         $data = [
@@ -38,6 +39,7 @@ class SiswaController extends Controller
             'kelas_siswa' => $kelasSiswa,
             'pengampu' => $pengampu,
             'tahunAjaran' => $tahunAjaran->tahun_ajaran,
+            'pengumuman' => $pengumuman,
         ];
         
         return view('siswa.index', $data);
