@@ -24,20 +24,20 @@
                 </div>
                 <div class="card-body mt-3">
                     @php
-                          $jadwalHariIni = $jadwal->where('hari', ucfirst($hari) );
+                        $jadwalHariIni = $jadwal->where('hari', ucfirst($hari) );
                     @endphp
 
                     @if ($jadwalHariIni->count() > 0)
                         @foreach ($jadwalHariIni as $j)
                             <div class="mb-3">
-                                <h6 class="card-subtitle">{{ $j->nama_pelajaran }}</h6>
-                                <p class="card-text">Guru: {{ $j->nama }}</p>
+                                <h5 class="card-subtitle mb-3 fw-bold">{{ $j->nama_pelajaran }}</h5>
+                                <p class="card-text m-0">Guru: {{ $j->nama }}</p>
                                 <p class="card-text">Jam: {{ $j->jam_mulai }} - {{ $j->jam_berakhir }}</p>
                             </div>
                             <hr>
                         @endforeach
                     @else
-                        <p class="card-text">Tidak ada jadwal mengajar</p>
+                        <p class="card-text"><i>Tidak ada jadwal pelajaran</i></p>
                     @endif
                 </div>
             </div>

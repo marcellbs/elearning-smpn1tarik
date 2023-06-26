@@ -16,6 +16,7 @@ use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\TaskstudentsController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\JadwalOnlineController;
+use App\Http\Controllers\TahunAjaranController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,8 +38,17 @@ Route::get('/admin/register', [AdminController::class, 'register']);
 Route::resource('/admin/materi', MateriController::class)->middleware('auth:webadmin');
 // Route::resource('admin/materi', MateriController::class)->middleware('auth:webguru');
 Route::get('/admin/pengumuman', [AdminController::class, 'pengumuman'])->middleware('auth:webadmin');
-// Route::get('/admin/kelas', [AdminController::class, 'kelas'])->middleware('auth:webadmin');
 Route::resource('/admin/kelas', KelasController::class)->middleware('auth:webadmin');
+Route::get('/admin/tahun-ajaran', [TahunAjaranController::class, 'index'])->middleware('auth:webadmin');
+// Route::put('/switch-tahun-ajaran/{id}', [TahunAjaranController::class, 'switchbox'])->name('tahun-ajaran.update');
+Route::post('/admin/tahun-ajaran/switchbox/{id}', [TahunAjaranController::class, 'switchbox'])->name('tahunajaran.switchbox');
+Route::post('/admin/tahun-ajaran', [TahunAjaranController::class, 'storeTahunAjaran'])->middleware('auth:webadmin')->name('tahunajaran.store');
+Route::put('/admin/tahun-ajaran/{id}', [TahunAjaranController::class, 'updateTahunAjaran'])->middleware('auth:webadmin')->name('tahunajaran.update');
+Route::delete('/admin/tahun-ajaran/{id}', [TahunAjaranController::class, 'deleteTahunAjaran'])->middleware('auth:webadmin')->name('tahunajaran.destroy');
+// routes/web.php
+Route::post('/naik-kelas', [AdminController::class,'naikKelas'])->name('naik-kelas');
+
+
 Route::post('/admin/uploadkelas', [AdminController::class, 'uploadkelas'])->middleware('auth:webadmin');
 Route::resource('/admin/mapel', PelajaranController::class)->middleware('auth:webadmin');
 Route::resource('/admin/pengampu', PengampuController::class)->middleware('auth:webadmin');
@@ -52,7 +62,8 @@ Route::post('/admin/tambahsiswa', [AdminController::class, 'submitsiswa'])->midd
 Route::post('/admin/uploadsiswa', [AdminController::class, 'uploadsiswa'])->middleware('auth:webadmin');
 Route::post('/admin/hapuskelassembilan', [AdminController::class, 'hapusSiswaKelasSembilan'])->middleware('auth:webadmin')->name('siswa.hapus.kelassembilan');
 Route::delete('/admin/siswa/{id}', [AdminController::class, 'hapussiswa'])->middleware('auth:webadmin');
-Route::post('/naik-kelas', [AdminController::class, 'naikKelas'])->name('naik-kelas');
+// Route::post('/naik-kelas', [AdminController::class, 'naikKelas'])->name('naik-kelas');
+Route::post('/update-status', [AdminController::class, 'updateStatus'])->middleware('auth:webadmin');
 
 Route::get('/admin/guru', [AdminController::class, 'guru'])->middleware('auth:webadmin');
 Route::post('/admin/uploadguru', [AdminController::class, 'uploadguru'])->middleware('auth:webadmin');
@@ -157,7 +168,6 @@ Route::patch('/siswa/password/{id}', [SiswaController::class, 'changePassword'])
 Route::get('/kelas/getByTahunAjaran', [KelasController::class, 'getByTahunAjaran'])->middleware('auth:webguru')->name('kelas.getByTahunAjaran');
 Route::get('/get-mapel', [TugasController::class, 'getMapel'])->middleware('auth:webguru')->name('get-mapel');
 Route::get('/get-kelas', [TugasController::class,'getKelas'])->middleware('auth:webguru')->name('get-kelas');
-
 Route::get('/', [ElearningController::class, 'index'])->middleware('guest');
 
 

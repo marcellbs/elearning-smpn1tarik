@@ -13,8 +13,6 @@
   </nav>
 </div>
 
-{{-- {{ $siswa }} --}}
-
 <div class="row">
   <div class="col-lg-8">
     <div class="card">
@@ -24,6 +22,14 @@
           <form action="/admin/siswa/{{ $siswa->kode_siswa }}" method="post">
             @csrf
             @method('patch')
+
+            <div class="mb-3">
+              <label for="status" class="form-label fw-bold">Status</label>
+              <select name="status" id="status" class="form-select">
+                <option value="1" {{ $siswa->status == 1 ? 'selected' : '' }}>Aktif</option>
+                <option value="0" {{ $siswa->status == 0 ? 'selected' : '' }}>Nonaktif</option>
+              </select>
+            </div>
 
             <div class="mb-3">
               <label for="nis" class="form-label fw-bold p-0">Nomor Induk Siswa (NIS)</label>
@@ -87,7 +93,10 @@
               @enderror
             </div>
 
-            <button type="submit" class="btn btn-primary">Ubah Data</button>
+            <div class="mb-3 d-flex">
+              <a href="/admin/siswa" class="btn btn-primary text-primary ms-auto me-2">Kembali</a>
+              <button type="submit" class="btn btn-primary bg-primary">Ubah Data</button>
+            </div>
 
           </form>
 

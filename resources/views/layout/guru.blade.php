@@ -142,7 +142,7 @@
         <img src="/img/{{ auth()->user()->foto }}" alt="user-img" class="rounded-circle image-profile">
       @endif
 
-      <h5 class="mb-0 mt-3">{{ auth()->user()->nama }}</h5>
+      <h5 class="mb-0 mt-3 fw-bold">{{ auth()->user()->nama }}</h5>
       <p class="mt-0">Guru / Pengajar</p>
     </div>
 

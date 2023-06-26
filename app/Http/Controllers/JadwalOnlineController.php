@@ -22,7 +22,9 @@ class JadwalOnlineController extends Controller
                 ->select('jadwal.*', 'kelas.nama_kelas', 'pelajaran.nama_pelajaran', 'guru.nama')
                 ->get(),
 
-            'kelas_siswa' => \App\Models\KelasSiswa::where('kode_siswa', auth()->user()->kode_siswa)->first(),
+            'kelas_siswa' => \App\Models\KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
+            ->where('kode_thajaran', $tahunAjaran->id)
+            ->first(),
         ];
         return view('siswa.jadwal-online', $data);
     }

@@ -172,6 +172,13 @@
       </li><!-- End Forms Nav -->
 
       <li class="nav-item">
+        <a class="nav-link {{ (Request::is('admin/tahun-ajaran')) ? 'active' : '' }}" href="/admin/tahun-ajaran">
+          <i class="bi bi-calendar-week"></i><span>Tahun Ajaran</span>
+        </a>
+        
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse">
           <i class="bi bi-people"></i><span>Data Pengguna</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>

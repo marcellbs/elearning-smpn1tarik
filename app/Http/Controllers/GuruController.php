@@ -43,8 +43,7 @@ class GuruController extends Controller
             ->get();
 
 
-        $kelasOptions = Kelas::join('kelas_siswa', 'kelas.kode_kelas', '=', 'kelas_siswa.kode_kelas')
-            ->join('pengampu', 'kelas.kode_kelas', '=', 'pengampu.kode_kelas')
+        $kelasOptions = Kelas::join('pengampu', 'kelas.kode_kelas', '=', 'pengampu.kode_kelas')
             ->join('tahun_ajaran', 'pengampu.kode_thajaran', '=', 'tahun_ajaran.id')
             ->where('tahun_ajaran.status_aktif', '1')
             ->where('pengampu.kode_guru', $kodeGuru)
@@ -61,6 +60,8 @@ class GuruController extends Controller
             ->distinct()
             ->pluck('nama_pelajaran', 'kode_pelajaran');
 
+        $pengumuman = \App\Models\Pengumuman::orderBy('tgl_upload', 'desc')->limit(3)->get();
+
         $data = [
             'guru' => Guru::all(),
             'pengampu' => $pengampu,
@@ -68,6 +69,7 @@ class GuruController extends Controller
             'pelajaranOptions' => $pelajaranOptions,
             'title' => 'Dashboard',
             'hash' => $hash,
+            'pengumuman' => $pengumuman,
         ];
 
         return view('guru.index', $data);
@@ -193,10 +195,11 @@ class GuruController extends Controller
             'hash' => $hash,
             'pengampu' => $pengampu,
             'materi' => $materi,
-            // menampilkan siswa dari tabel siswa yang memiliki id yang sama di tabel kelassiswa dan kode kelas yang sama dan tahun ajaran yang sama dengan pengampu
             'siswa' => \App\Models\Siswa:: join('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
             ->where('kelas_siswa.kode_kelas', $pengampu->kode_kelas)
             ->where('kelas_siswa.kode_thajaran', $pengampu->kode_thajaran)
+            ->where('siswa.status', '1')
+            ->orderBy('nis', 'asc')
             ->get(),
 
 

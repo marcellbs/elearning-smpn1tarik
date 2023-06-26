@@ -39,14 +39,14 @@
         </li> 
         <li>gunakan template file untuk menyesuaikan dengan susunan tabel database</li>
       </ul>
-      {{-- <div class="alert alert-warning" role="alert">
+      <div class="alert alert-warning" role="alert">
         <h4 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> Tahun Ajaran Baru</h4>
         <ul>
           <li>Anda dapat melakukan operasi naik kelas pada siswa dengan menekan tombol Naik Kelas</li>
-          <li>Sebelum menjalankan tombol naik kelas, pastikan siswa kelas 9 lama telah dihapus dengan menggunakan tombol <span class="btn btn-sm btn-danger">Hapus Siswa Kelas 9 Lama</span></li>
+          <li>Sebelum menjalankan tombol naik kelas, pastikan tahun ajaran sudah diperbaharui dan diaktifkan</li>
           <li>Berhati - hatilah dalam menggunakan tombol naik kelas, apabila telah tombol di-klik maka operasi tidak akan bisa dibatalkan</li>
         </ul>
-      </div> --}}
+      </div>
       <hr>
 
       <div class="row">
@@ -71,20 +71,17 @@
       <div class="row">
         <div class="col">
           <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
               
               <a href="/admin/tambahsiswa" class="btn text-white mb-1" style="background-color: orangered">Tambah Data</a>
               
               {{-- template file excel --}}
               <a href="{{ asset('file/excel/template_upload_data_siswa.xlsx') }}" class="btn btn-success mb-1">Template Excel</a>
               
-              {{-- siswa kelas 9 lama --}}
-              {{-- <button class="btn btn-danger hps mb-1">Hapus Siswa Kelas 9 Lama</button> --}}
-              
-              {{-- <form method="POST" action="{{ route('naik-kelas') }}" class="d-inline-flex mb-1">
-                @csrf
-                <button type="submit" class="btn btn-warning">Naik Kelas</button>
-              </form> --}}
+              <form method="POST" action="{{ route('naik-kelas') }}" class="d-inline">
+                  @csrf
+                  <button type="submit" class="btn btn-primary mb-1">Naik Kelas</button>
+              </form>
             </div>
           </div>
         </div>
@@ -92,34 +89,13 @@
 
 
     </div>
-
-    <div class="alert alert-danger hps-9 d-none" role="alert">
-      <h4 class="alert-heading"><i class="bi bi-exclamation-diamond"></i> Perhatian</h4>
-      <ul>
-        <li>Berhati - hatilah ketika akan menghapus data siswa yang memiliki kelas 9 </li>
-        <li>Setelah data siswa kelas 9 dihapus, maka data siswa tersebut akan hilang dari database, dan tidak dapat dikembalikan</li>
-        <li>Untuk menghapus data siswa kelas 9, gunakan tombol <span class="btn btn-sm text-white" style="background-color: red">Hapus Siswa Kelas 9</span></li>
-        <li id="jumlahData">Jumlah data kelas 9 lama ada sebanyak {{ $jumlahData }} orang</li>
-      </ul>
-
-      <hr>
-
-      <div class="col">
-        
-        <form action="{{ route('siswa.hapus.kelassembilan') }}" method="post">
-          @csrf
-          <button type="submit" class="btn btn-danger" onclick="return confirmHapus()">Hapus Siswa Kelas 9</button>
-        </form>
-      </div>
-
-    </div>
-    
   </div>
 
   
   <div class="col-lg-12">
     <div class="card">
       
+      {{-- {{ $siswa }} --}}
       <div class="card-body">
         <div class="table-responsive mt-3">
           <table class="table table-striped" id="datatable">
@@ -128,7 +104,7 @@
                 <th>No</th>
                 <th>NIS</th>
                 <th>Nama</th>
-                <th>Jenis Kelamin</th>
+                <th>Status</th>
                 <th>Kelas</th>
                 <th>Aksi</th>
               </tr>
@@ -138,26 +114,26 @@
               <tr>
                 <td>{{$loop->iteration}}</td>
                 <td>{{$s->nis}}</td>
-                <td>{{ucwords($s->nama_siswa)}}</td>
-                <td>{{$s->jenis_kelamin}}</td>           
-                {{-- menampilkan kelas siswa--}}
+                <td>{{ucwords($s->nama_siswa)}}</td>  
+                  
                 <td>
-                  @if ($s->nama_kelas)
-                    {{ $s->nama_kelas }}
+                  @if ($s->status === 1 )
+                    <span class="badge bg-success">Aktif</span>
                   @else
-                    {{ 'Kelas belum diatur' }}
+                    <span class="badge bg-danger">Nonaktif</span>
                   @endif
+                </td>
+                <td>{{$s->kelas}}</td>
                 <td>
-                  <a href="/admin/siswa/{{$s->kode_siswa}}/edit" class="btn btn-warning btn-sm">Edit</a>
+                  <a href="/admin/siswa/{{$s->kode_siswa}}/edit" class="btn btn-warning btn-sm mb-1"><i class="bi bi-pen"></i></a>
 
                   <form action="/admin/siswa/{{$s->kode_siswa}}" method="post" class="d-inline">
                     @method('delete')
                     @csrf
-                    {{-- konfirmasi alert onclick --}}
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus data ini {!!  $s->nama_siswa  !!} ? ')">Hapus</button>
+                    <button type="submit" class="btn btn-danger btn-sm mb-1" onclick="return confirm('Yakin ingin menghapus data ini {!!  $s->nama_siswa  !!} ? ')"><i class="bi bi-trash"></i></button>
                   </form>
 
-                  <a href="/admin/detailsiswa/{{ $s->kode_siswa }}" class="btn btn-info btn-sm">Detail</a>
+                  <a href="/admin/detailsiswa/{{ $s->kode_siswa }}" class="btn btn-info btn-sm mb-1"><i class="bi bi-eye"></i></a>
                 </td>
               </tr>
               @endforeach
@@ -165,57 +141,9 @@
           </table>
         </div>
       </div>
+
     </div>
   </div>
 </div>
-
-
-<script>
-  var hpsButton = document.querySelector('.hps');
-  var hps9 = document.querySelector('.hps-9');
-
-  hpsButton.addEventListener('click', function() {
-      if (hps9.classList.contains('d-none')) {
-          fadeIn(hps9, 300);
-          hps9.classList.remove('d-none');
-          this.textContent = 'Batal Hapus';
-      } else {
-          fadeOut(hps9, 300, function() {
-              hps9.classList.add('d-none');
-          });
-          this.textContent = 'Hapus Siswa Kelas 9';
-      }
-  });
-
-  function fadeIn(element, duration) {
-      element.style.opacity = 0;
-      element.style.transition = 'opacity ' + duration + 'ms';
-      setTimeout(function() {
-          element.style.opacity = 1;
-      }, 10);
-  }
-
-  function fadeOut(element, duration, callback) {
-      element.style.opacity = 1;
-      element.style.transition = 'opacity ' + duration + 'ms';
-      setTimeout(function() {
-          element.style.opacity = 0;
-          setTimeout(callback, duration);
-      }, 10);
-  }
-
-
-
-  function confirmHapus() {
-    let jumlahData = document.querySelector('#jumlahData').innerText;
-    let konfirmasi = confirm(`Yakin ingin menghapus ${jumlahData} data siswa kelas 9 ?`);
-    if (konfirmasi) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-</script>
 
 @endsection

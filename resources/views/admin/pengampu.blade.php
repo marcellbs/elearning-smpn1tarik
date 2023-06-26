@@ -28,7 +28,7 @@
           
           {{--  berisi mapel, guru, dan kelas --}}
           <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <select class="form-select @error('guru') is-invalid @enderror" name="guru" id="guru">
                   <option value="">Pilih Guru</option>
                   @foreach ($guru as $g)
@@ -39,7 +39,7 @@
                 <div class="invalid-feedback">{{$message}}</div>
                 @enderror
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <select class="form-select @error('mapel') is-invalid @enderror" name="mapel" id="mapel">
                   <option value="">Pilih Mata Pelajaran</option>
                   @foreach ($mapel as $m)
@@ -53,7 +53,7 @@
                 @enderror
             </div>
             {{-- select untuk nama kelas dan kode tingkat --}}
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <select name="kelas" class="form-select  @error('kelas') is-invalid @enderror"  id="kelas">
                   <option value="">Pilih Kelas</option>
                   @foreach ($kelas as $k)
@@ -66,45 +66,58 @@
                 </div>
                 @enderror
             </div>
-            {{-- <div class="col-sm-4 mt-1">
-                <label for="hari">Hari</label>
-                <select name="hari" class="form-select  @error('hari') is-invalid @enderror"  id="kelas">
-                  <option value="">Pilih Hari</option>
-                  <option value="Senin">Senin</option>
-                  <option value="Selasa">Selasa</option>
-                  <option value="Rabu">Rabu</option>
-                  <option value="Kamis">Kamis</option>
-                  <option value="Jumat">Jumat</option>
-                  <option value="Sabtu">Sabtu</option>
+            <div class="col-sm-3">
+                <select name="tahun_ajaran" class="form-select  @error('tahun_ajaran') is-invalid @enderror" id="tahun_ajaran">
+                  @foreach ($tahun_ajaran as $th)
+                    <option value="{{$th->id}}" @if($th->status_aktif == 1) selected @endif>      {{$th->tahun_ajaran}} 
+                    </option>
+                  @endforeach
                 </select>
-                @error('hari')
+                @error('tahun_ajaran')
                 <div class="invalid-feedback">
                   {{$message}}
                 </div>
                 @enderror
             </div>
-            <div class="col-sm-4 mt-1">
-              <label for="hari">Jam Mulai</label>
-                <input type="text" name="jam_mulai" class="form-control  @error('jam_mulai') is-invalid @enderror" placeholder="08:00"  id="jam_mulai">
-                @error('jam_mulai')
-                <div class="invalid-feedback">
-                  {{$message}}
+            
+            
+              <div id="jadwal-container">
+                <div class="jadwal-group">
+
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <label class="form-label">Hari:</label>
+                      <select name="hari[]" id="hari" class="form-select">
+                        <option value="Senin">Senin</option>
+                        <option value="Selasa">Selasa</option>
+                        <option value="Rabu">Rabu</option>
+                        <option value="Kamis">Kamis</option>
+                        <option value="Jumat">Jumat</option>
+                        <option value="Sabtu">Sabtu</option>
+                      </select>
+                    </div>
+                    <div class="col-sm-4">
+                      <label class="form-label">Jam Mulai:</label>
+                      <input type="text" name="jam_mulai[]" class="form-control">
+                    </div>
+                    <div class="col-sm-4">
+                      <label class="form-label">Jam Berakhir:</label>
+                      <input type="text" name="jam_berakhir[]" class="form-control">
+                    </div>
+                    <div class="col-1">
+                      <label for="remove-jadwal" class="form-label">&nbsp;</label>
+                      <button type="button" class="remove-jadwal btn form-control">&times;</button>
+                    </div>
+                  </div>
+
                 </div>
-                @enderror
-            </div>
-            <div class="col-sm-4 mt-1">
-              <label for="hari">Jam Berakhir</label>
-                <input type="text" name="jam_berakhir" class="form-control @error('jam_berakhir') is-invalid @enderror" placeholder="08:00"  id="jam_berakhir">
-                @error('jam_berakhir')
-                <div class="invalid-feedback">
-                  {{$message}}
-                </div>
-                @enderror
-            </div> --}}
+              </div>
+            
 
           </div>
           <div class="d-flex">
             <button type="submit" class="btn btn-primary mt-3 ms-auto">Tambah Data</button>
+            <button type="button" id="add-jadwal" class="btn btn-info mt-3 ms-1">Tambah Jadwal</button>
           </div>
         </form>
       </div>
@@ -117,16 +130,17 @@
     <div class="card">
       <div class="card-body">
         <div class="table-responsive mt-3">
-          <table class="table table-striped table-bordered datatable" id="datatable">
-            <thead>
+          <table class="table compact cell-border" id="datatable">
+            <thead class="dt-head-justify">
               <th>No</th>
               <th>Nama</th>
               <th>Mata Pelajaran</th>
               <th>Kelas</th>
-              {{-- <th>Jadwal</th> --}}
+              <th>Jadwal</th>
+              <th>Tahun Ajaran</th>
               <th>Aksi</th>
             </thead>
-            <tbody>
+            <tbody class="dt-body-nowrap">
               @foreach ($pengampu as $p)
               <tr>
                 <td>{{$loop->iteration}}</td>
@@ -134,15 +148,22 @@
                 <td>{{$p->guru->nama}}</td>
                 <td>{{$p->mapel->nama_pelajaran}}</td>
                 <td>{{$p->kelas->nama_kelas}}</td>
-                {{-- <td>{{$p->hari }}, {{ $p->jam_mulai }} - {{ $p->jam_berakhir }}</td> --}}
                 <td>
-                  <a href="/admin/pengampu/{{$p->id}}/edit" class="btn btn-warning mt-1"><i class="bi bi-pencil-square"></i></a>
-                  <a href="/admin/pengampu/{{$p->id}}" class="btn btn-info mt-1"><i class="bi bi-eye"></i></a>
+                  @foreach ($p->jadwal as $jadwal)
+                      {{ $jadwal->hari }}, {{ $jadwal->jam_mulai }} - {{ $jadwal->jam_berakhir }},<br>
+                  @endforeach
+                </td>
+                <td>
+                  {{ $p->tahunAjaran->tahun_ajaran }}
+                </td>
+                <td>
+                  <a href="/admin/pengampu/{{$p->id}}/edit" class="btn btn-sm btn-warning mt-1"><i class="bi bi-pencil-square"></i></a>
+                  <a href="/admin/pengampu/{{$p->id}}" class="btn btn-sm btn-info mt-1"><i class="bi bi-eye"></i></a>
 
                   <form action="/admin/pengampu/{{$p->id}}" method="post">
                     @csrf
                     @method('delete')
-                    <button type="submit" class="btn btn-danger mt-1" onclick="return confirm('Yakin ingin menghapus data ini?')"><i class="bi bi-trash"></i></button>
+                    <button type="submit" class="btn btn-sm btn-danger mt-1" onclick="return confirm('Yakin ingin menghapus data ini?')"><i class="bi bi-trash"></i></button>
                   </form>
 
                 </td>
@@ -156,5 +177,47 @@
   </div>
 </div>
 
+<script>
+  document.getElementById('add-jadwal').addEventListener('click', function() {
+    var jadwalContainer = document.getElementById('jadwal-container');
+    var jadwalGroup = document.createElement('div');
+    jadwalGroup.classList.add('jadwal-group');
+    jadwalGroup.innerHTML = `
+      <div class="row">
+        <div class="col-sm-3">
+          <label class="form-label">Hari:</label>
+          <select name="hari[]" id="hari" class="form-select">
+            <option value="Senin">Senin</option>
+            <option value="Selasa">Selasa</option>
+            <option value="Rabu">Rabu</option>
+            <option value="Kamis">Kamis</option>
+            <option value="Jumat">Jumat</option>
+            <option value="Sabtu">Sabtu</option>
+          </select>
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">Jam Mulai:</label>
+          <input type="text" name="jam_mulai[]" class="form-control">
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">Jam Berakhir:</label>
+          <input type="text" name="jam_berakhir[]" class="form-control">
+        </div>
+        <div class="col-1">
+          <label for="remove-jadwal" class="form-label">&nbsp;</label>
+          <button type="button" class="remove-jadwal btn form-control">&times;</button>
+        </div>
+      </div>
+    `;
+    jadwalContainer.appendChild(jadwalGroup);
+  });
+
+  // Event listener untuk tombol "Hapus Jadwal"
+  document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('remove-jadwal')) {
+      event.target.parentElement.parentElement.remove();
+    }
+  });
+</script>
 
 @endsection

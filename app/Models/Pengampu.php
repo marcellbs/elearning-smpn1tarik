@@ -39,7 +39,7 @@ class Pengampu extends Model
     }
 
     public function tahunAjaran(){
-        return $this->belongsTo(TahunAjaran::class, 'kode_tahun_ajaran', 'kode_tahun_ajaran');
+        return $this->belongsTo(TahunAjaran::class, 'kode_thajaran', 'id');
     }
 
     public function jadwal(){

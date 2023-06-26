@@ -58,33 +58,79 @@
               </div>
 
               <div class="col-md-6 mt-2 mb-2">
-                <label for="hari">Hari</label>
-                <select name="hari" class="form-select  @error('hari') is-invalid @enderror"  id="hari">
-                  <option value="">Pilih Hari</option>
-                  <option value="Senin" {{ $pengampu->hari == 'Senin' ? 'selected' : '' }}>Senin</option>
-                  <option value="Selasa" {{ $pengampu->hari == 'Selasa' ? 'selected' : '' }}>Selasa</option>
-                  <option value="Rabu" {{ $pengampu->hari == 'Rabu' ? 'selected' : '' }}>Rabu</option>
-                  <option value="Kamis" {{ $pengampu->hari == 'Kamis' ? 'selected' : '' }}>Kamis</option>
-                  <option value="Jumat" {{ $pengampu->hari == 'Jumat' ? 'selected' : '' }}>Jumat</option>
-                  <option value="Sabtu" {{ $pengampu->hari == 'Sabtu' ? 'selected' : '' }}>Sabtu</option>
+                <label for="tahun_ajaran">Tahun Ajaran</label>
+                <select name="tahun_ajaran" class="form-select  @error('tahun_ajaran') is-invalid @enderror"  id="tahun_ajaran">
+                  
+                  @foreach ($tahun_ajaran as $k)
+                  <option value="{{$k->id}}" {{ $k->id == $pengampu->kode_thajaran ? 'selected' : '' }}>{{$k->tahun_ajaran}}</option>
+                  @endforeach
                 </select>
-                @error('hari')
+                @error('tahun_ajaran')
                 <div class="invalid-feedback">
                   {{$message}}
                 </div>
                 @enderror
               </div>
 
-              <div class="row">
-                <div class="col-md-2 mt-2 mb-2 me-1">
-                  <label for="jam_mulai">Jam Mulai</label>
-                  <input type="text" name="jam_mulai" id="jam_mulai" value="{{ $pengampu->jam_mulai }}" class="form-control">
-                </div>
-                <div class="col-md-2 mt-2 mb-2">
-                  <label for="jam_berakhir">Jam Berakhir</label>
-                  <input type="text" name="jam_berakhir" id="jam_berakhir" value="{{ $pengampu->jam_berakhir }}" class="form-control">
-                </div>
+              <label for="jadwal-container">Jadwal Mengajar</label>
+              
+              <div id="jadwal-container">
+                  <div class="jadwal-group">
+              
+                      @foreach ($pengampu->jadwal as $key => $j)
+                      <div class="row">
+                          <div class="col-sm-2">
+                              <label class="form-label">Hari:</label>
+                              <select name="hari[]" class="form-select @error('hari[]') is-invalid @enderror">
+                                  <option value="Senin" {{ $j->hari == 'Senin' ? 'selected' : '' }}>Senin</option>
+                                  <option value="Selasa" {{ $j->hari == 'Selasa' ? 'selected' : '' }}>Selasa</option>
+                                  <option value="Rabu" {{ $j->hari == 'Rabu' ? 'selected' : '' }}>Rabu</option>
+                                  <option value="Kamis" {{ $j->hari == 'Kamis' ? 'selected' : '' }}>Kamis</option>
+                                  <option value="Jumat" {{ $j->hari == 'Jumat' ? 'selected' : '' }}>Jumat</option>
+                                  <option value="Sabtu" {{ $j->hari == 'Sabtu' ? 'selected' : '' }}>Sabtu</option>
+                              </select>
+
+                              @error('hari[]')
+                              <div class="invalid-feedback">
+                                  {{$message}}
+                              </div>
+                              @enderror
+                          </div>
+                          <div class="col-sm-2">
+                              <label class="form-label">Jam Mulai:</label>
+                              <input type="text" name="jam_mulai[]" class="form-control @error('jam_mulai[]') is-invalid @enderror" value="{{ $j->jam_mulai }}">
+                              @error('jam_mulai[]')
+                              <div class="invalid-feedback">
+                                  {{$message}}
+                              </div>
+                              @enderror
+                            </div>
+                          <div class="col-sm-2">
+                              <label class="form-label">Jam Berakhir:</label>
+                              <input type="text" name="jam_berakhir[]" class="form-control @error('jam_berakhir[]') is-invalid @enderror" value="{{ $j->jam_berakhir }}">
+                              @error('jam_berakhir[]')
+                              <div class="invalid-feedback">
+                                  {{$message}}
+                              </div>
+                              @enderror
+                            </div>
+                          <div class="col-1">
+                              <label for="remove-jadwal" class="form-label">&nbsp;</label>
+                              @if ($key == 0)
+                              <button type="button" id="add-jadwal" class="add-jadwal btn form-control">+</button>
+                              @else
+                              <button type="button" class="remove-jadwal btn form-control">&times;</button>
+                              @endif
+                              <input type="hidden" name="jadwal_id[]" value="{{ $j->id }}">
+                          </div>
+                      </div>
+                      @endforeach
+              
+                  </div>
               </div>
+            
+
+              
 
               <div class="d-flex">
                 <a href="/admin/pengampu" class="btn btn-white mt-2 ms-auto me-1" style="color:orange; border:1px solid orange;">Kembali</a>
@@ -101,5 +147,63 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.getElementById('add-jadwal').addEventListener('click', function() {
+    var jadwalContainer = document.getElementById('jadwal-container');
+    var jadwalGroup = document.createElement('div');
+    jadwalGroup.classList.add('jadwal-group');
+    jadwalGroup.innerHTML = `
+      <div class="row">
+        <div class="col-sm-2">
+          <label class="form-label">Hari:</label>
+          <select name="hari[]" id="hari" class="form-select @error('hari[]') is-invalid @enderror" required>
+            <option value="Senin">Senin</option>
+            <option value="Selasa">Selasa</option>
+            <option value="Rabu">Rabu</option>
+            <option value="Kamis">Kamis</option>
+            <option value="Jumat">Jumat</option>
+            <option value="Sabtu">Sabtu</option>
+          </select>
+          @error('hari[]')
+            <div class="invalid-feedback">
+              {{$message}}
+            </div>
+          @enderror
+        </div>
+        <div class="col-sm-2">
+          <label class="form-label">Jam Mulai:</label>
+          <input type="text" name="jam_mulai[]" class="form-control @error('jam_mulai[]') is-invalid @enderror" required>
+          @error('jam_mulai[]')
+            <div class="invalid-feedback">
+              {{$message}}
+            </div>
+          @enderror
+        </div>
+        <div class="col-sm-2">
+          <label class="form-label">Jam Berakhir:</label>
+          <input type="text" name="jam_berakhir[]" class="form-control @error('jam_berakhir[]') is-invalid @enderror" required>
+          @error('jam_berakhir[]')
+            <div class="invalid-feedback">
+              {{$message}}
+            </div>
+          @enderror
+        </div>
+        <div class="col-1">
+          <label for="remove-jadwal" class="form-label">&nbsp;</label>
+          <button type="button" class="remove-jadwal btn form-control">&times;</button>
+        </div>
+      </div>
+    `;
+    jadwalContainer.appendChild(jadwalGroup);
+  });
+
+  // Event listener untuk tombol "Hapus Jadwal"
+  document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('remove-jadwal')) {
+      event.target.parentElement.parentElement.remove();
+    }
+  });
+</script>
 
 @endsection

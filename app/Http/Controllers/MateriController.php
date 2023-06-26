@@ -93,12 +93,16 @@ class MateriController extends Controller
 
             $pelajaranOptions = \App\Models\Mapel::pluck('nama_pelajaran', 'kode_pelajaran');
 
+            $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+            $kelasSiswa = \App\Models\KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
+            ->where('kode_thajaran', $tahunAjaran->id)
+            ->first();
 
             $data = [
                 'materi' => $materi,
                 'pelajaranOptions' => $pelajaranOptions,
                 'title' => 'Materi',
-                'kelas_siswa' => KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
+                'kelas_siswa' => $kelasSiswa,
                 
             ];
 

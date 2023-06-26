@@ -19,12 +19,6 @@
                     -
                   @endif
                   @php
-                    // memecah string nip
-                    // 19810108 201001 2 014
-                    // 8 digit pertama adalah tanggal lahir
-                    // 6 digit berikutnya adalah tanggal masuk
-                    // 1 digit berikutnya adalah jenis kelamin
-                    // 3 digit terakhir adalah nomor urut
                     $tgl_lahir = substr($pengampu->guru->nip, 0, 8);
                     $tgl_masuk = substr($pengampu->guru->nip, 8, 6);
                     $jk = substr($pengampu->guru->nip, 14, 1);
@@ -49,7 +43,9 @@
                 <td>Jadwal</td>
                 <td>:</td>
                 <td>
-                  -
+                  @foreach ($pengampu->jadwal as $jadwal)
+                    <li>{{ $jadwal->hari }}, {{ $jadwal->jam_mulai }} - {{ $jadwal->jam_berakhir }}</li>
+                  @endforeach
                 </td>
               </tr>
               <tr>
@@ -64,6 +60,7 @@
                 <td>:</td>
                 <td>
                   <a href="{{ $pengampu->link }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary">Video Conference</a>
+                  <a href="/siswa" class="btn btn-sm btn-primary">Kembali</a>
                 </td>
               </tr>
             </table>

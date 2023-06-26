@@ -44,7 +44,7 @@
         <h4 class="alert-heading text-center">Tidak Kelas yang diampu</h4>
       </div>
     @endif
-      <section class="splide">
+      <section class="splide mb-3">
         <div class="row">
             <div class="splide__track">
               <ul class="splide__list">
@@ -77,6 +77,113 @@
             </div>
         </div>
       </section>
+
+      <br>
+      <!-- pengumuman -->
+      <div class="col-lg-12 mb-2">
+        <div class="row">
+
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title pb-0">
+                  <h5>Pengumuman Terbaru</h5>
+                  <hr>
+                </div>
+              </div>
+
+              <!-- carousel -->
+              <div id="carouselExampleAutoplaying" class="carousel carousel-dark slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+
+                  <div class="carousel-item active">
+                    <div class="card-body px-5 mx-5">
+                      <p class="mx-1 text-center">
+                        Pengumuman Terbaru
+                      </p>
+                    </div>
+                  </div>
+                  
+                  @foreach ($pengumuman as $p)
+                  <div class="carousel-item" data-interval="20000">
+                    <div class="card-body px-5 mx-5">
+                      <p class="mx-1 text-center">
+                        {{ $p->judul_pengumuman }}
+                      </p>
+                      <p class="mx-1 text-center">
+                        {!! $p->deskripsi !!}
+                      </p>
+                    </div>
+                  </div>
+                  @endforeach
+                </div>
+              </div>           
+              <!-- end carousel -->
+            </div>
+
+        </div>
+      </div>
+      <!-- end pengumuman -->
+
+      <div class="row">
+        <div class="card">
+          <div class="card-body">
+            
+            <div class="card-title pb-0">
+              <h5>Menu</h5>
+              <hr>
+            </div>
+
+            <div class="row">
+              <div class="col-6 col-sm-2 col-md-3 pt-2 rounded-2 mb-2">
+                <a href="/guru/mapel">
+                  <img src="/img/menu/Mapel.png" class="img mx-auto d-block" style="width: 90px;" alt="mapel">
+                  <p class="text-center fw-bold text-dark">Mata Pelajaran</p>
+                </a>
+              </div>
+              <div class="col-6 col-sm-2 col-md-3 pt-2 rounded-2 mb-2">
+                <a href="/guru/jadwal-mengajar">
+                  <img src="/img/menu/Jadwal.png" class="img mx-auto d-block" style="width: 90px;" alt="mapel">
+                  <p class="text-center fw-bold text-dark">Jadwal Mengajar</p>
+                </a>
+              </div>
+              <div class="col-6 col-sm-2 col-md-3 pt-2 rounded-2 mb-2">
+                <a href="/guru/presensi">
+                  <img src="/img/menu/Attendance.png" class="img mx-auto d-block" style="width: 90px;" alt="mapel">
+                  <p class="text-center fw-bold text-dark">Rekap Presensi</p>
+                </a>
+              </div>
+              <div class="col-6 col-sm-2 col-md-3 pt-2 rounded-2 mb-2">
+                <a href="/guru/materi">
+                  <img src="/img/menu/Material.png" class="img mx-auto d-block" style="width: 90px;" alt="mapel">
+                  <p class="text-center fw-bold text-dark">Materi</p>
+                </a>
+              </div>
+              <div class="col-6 col-sm-2 col-md-3 pt-2 rounded-2 mb-2">
+                <a href="/guru/tugas">
+                  <img src="/img/menu/Task.png" class="img mx-auto d-block" style="width: 90px;" alt="mapel">
+                  <p class="text-center fw-bold text-dark">Tugas</p>
+                </a>
+              </div>
+              <div class="col-6 col-sm-2 col-md-3 pt-2 rounded-2 mb-2">
+                <a href="/guru/pengumuman">
+                  <img src="/img/menu/Pengumuman.png" class="img mx-auto d-block" style="width: 90px;" alt="mapel">
+                  <p class="text-center fw-bold text-dark">Pengumuman</p>
+                </a>
+              </div>
+              <div class="col-6 col-sm-2 col-md-3 pt-2 rounded-2 mb-2">
+                <a href="/guru/profile">
+                  <img src="/img/menu/Profile.png" class="img mx-auto d-block" style="width: 90px;" alt="mapel">
+                  <p class="text-center fw-bold text-dark">Profil</p>
+                </a>
+              </div>
+            </div>
+
+          </div>
+          
+
+        </div>
+      </div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js

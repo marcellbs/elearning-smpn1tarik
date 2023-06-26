@@ -140,10 +140,16 @@ class SiswaController extends Controller
         // $hash = new Hashids('my-hash',10);
         $pengampu = \App\Models\Pengampu::find($id);
         $kelas_siswa = KelasSiswa::where('kode_kelas', $pengampu->kode_kelas)->get();
+        
         $materi = \App\Models\Materi::where('kode_guru', $pengampu->kode_guru)->where('kode_pelajaran', $pengampu->kode_pelajaran)->get();
+        
+        $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+        $kelasSiswa = \App\Models\KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
+        ->where('kode_thajaran', $tahunAjaran->id)
+        ->first();
 
         $data = [
-            'kelas_siswa' => KelasSiswa::where('kode_siswa', \Illuminate\Support\Facades\Auth::guard('websiswa')->user()->kode_siswa)->first(),
+            'kelas_siswa' => $kelasSiswa,
             'title' => ''.$pengampu->mapel->nama_pelajaran.' '.$pengampu->kelas->nama_kelas.'',
             'pengampu' => $pengampu,
             'materi' => $materi,

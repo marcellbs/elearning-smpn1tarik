@@ -9,9 +9,10 @@ use App\Models\Mapel;
 use App\Models\Siswa;
 use App\Models\KelasSiswa;
 use App\Models\Pengumuman;
+use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use \Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -133,10 +134,11 @@ class AdminController extends Controller
         $data = [
             // menampilkan data siswa dan kelasnya
             'siswa' => Siswa::leftJoin('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
-                ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
-                ->select('siswa.*', 'kelas.nama_kelas')
-                ->orderBy('kelas.kode_kelas', 'asc')
-                ->get(),
+            ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
+            ->select('siswa.kode_siswa','siswa.nis','siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status', DB::raw('GROUP_CONCAT(kelas.nama_kelas SEPARATOR ", ") as kelas'))
+            ->groupBy('siswa.kode_siswa','siswa.nis', 'siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status')
+            ->orderBy('siswa.nis', 'asc')
+            ->get(),
 
             'title' => 'Data Siswa',
             'jumlahData' => $jumlahData,
@@ -145,10 +147,69 @@ class AdminController extends Controller
         return view('admin.siswa', $data);
     }
 
-    public function uploadsiswa(Request $request){
+    // public function uploadsiswa(Request $request){
+    //     $request->validate([
+    //         'file' => 'required|mimes:xlsx,xls'
+    //     ],[
+    //         'file.required' => 'File tidak boleh kosong',
+    //         'file.mimes' => 'File harus berupa file Excel'
+    //     ]);
+
+    //     // Ambil file yang diunggah
+    //     $file = $request->file('file');
+
+    //     // Baca file Excel menggunakan PhpSpreadsheet
+    //     $spreadsheet = IOFactory::load($file);
+
+    //     // Dapatkan daftar semua sheet dalam file
+    //     $sheets = $spreadsheet->getAllSheets();
+
+    //     // Loop untuk setiap sheet
+    //     foreach ($sheets as $sheet) {
+    //         $data = $sheet->toArray(null, true, true, true);
+
+    //         // Hapus baris header
+    //         unset($data[1]);
+
+    //         // Loop untuk setiap baris data
+    //         foreach ($data as $row) {
+    //             $nis = $row['A'];
+    //             $namaSiswa = $row['B'];
+    //             $username = $row['C'];
+    //             $password = $row['D'];
+    //             $foto = $row['F'];
+    //             $status = $row['G'];
+
+    //             // Simpan data siswa
+    //             $siswa = Siswa::create([
+    //                 'nis' => $nis,
+    //                 'nama_siswa' => $namaSiswa,
+    //                 'username' => $username,
+    //                 'password' => bcrypt($password),
+    //                 'foto' => $foto,
+    //                 'status' => $status,
+    //             ]);
+
+    //             $kodeKelas = $row['E'];
+
+    //             // Simpan data ke dalam tabel kelas_siswa
+    //             KelasSiswa::create([
+    //                 'kode_siswa' => $siswa->kode_siswa,
+    //                 'kode_kelas' => $kodeKelas
+    //             ]);
+    //         }
+    //     }
+
+    //     // Redirect ke halaman upload dengan pesan sukses
+    //     return redirect()->back()->with('success', '<strong>Berhasil!</strong> Data berhasil diunggah.');
+
+    // }
+
+    public function uploadsiswa(Request $request)
+    {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls'
-        ],[
+        ], [
             'file.required' => 'File tidak boleh kosong',
             'file.mimes' => 'File harus berupa file Excel'
         ]);
@@ -163,7 +224,12 @@ class AdminController extends Controller
         $sheets = $spreadsheet->getAllSheets();
 
         // Loop untuk setiap sheet
-        foreach ($sheets as $sheet) {
+        foreach ($sheets as $index => $sheet) {
+            // Skip sheet pertama
+            if ($index === 0) {
+                continue;
+            }
+
             $data = $sheet->toArray(null, true, true, true);
 
             // Hapus baris header
@@ -176,6 +242,7 @@ class AdminController extends Controller
                 $username = $row['C'];
                 $password = $row['D'];
                 $foto = $row['F'];
+                $status = $row['G'];
 
                 // Simpan data siswa
                 $siswa = Siswa::create([
@@ -184,22 +251,25 @@ class AdminController extends Controller
                     'username' => $username,
                     'password' => bcrypt($password),
                     'foto' => $foto,
+                    'status' => $status,
                 ]);
 
                 $kodeKelas = $row['E'];
+                $tahunAjaran = TahunAjaran::where('status_aktif', 1)->first();
 
                 // Simpan data ke dalam tabel kelas_siswa
                 KelasSiswa::create([
                     'kode_siswa' => $siswa->kode_siswa,
-                    'kode_kelas' => $kodeKelas
+                    'kode_kelas' => $kodeKelas,
+                    'kode_thajaran' => $tahunAjaran->id
                 ]);
             }
         }
 
         // Redirect ke halaman upload dengan pesan sukses
         return redirect()->back()->with('success', '<strong>Berhasil!</strong> Data berhasil diunggah.');
-
     }
+
 
     public function tambahsiswa(){
         $data = [
@@ -231,10 +301,6 @@ class AdminController extends Controller
         ]);
 
         $foto = 'avatar-'.rand(1, 10).'.png';
-        // username berisikan nama depan-nis
-        // nama = rizki ramadan
-        // nis  = 123456
-        // username = rizki-123456
         $username = explode(' ', $request->nama)[0].'-'.$request->nis;
 
         Siswa::create([
@@ -248,14 +314,17 @@ class AdminController extends Controller
             'email' => null,
             'foto' => $foto,
             'password' => bcrypt($request->password),
+            'status' => 1,
         ]);
 
         // simpan ke kelas siswa
         $siswa = Siswa::where('nis', $request->nis)->first();
-
+        $id_thajaran = TahunAjaran::where('status_aktif', '1')->first();
+        
         KelasSiswa::create([
             'kode_siswa' => $siswa->kode_siswa,
             'kode_kelas' => $request->kelas,
+            'kode_thajaran' => $id_thajaran->id,
         ]);
 
         return redirect('/admin/siswa')->with('success', '<strong>Berhasil !</strong> Siswa baru berhasil ditambahkan');
@@ -270,37 +339,56 @@ class AdminController extends Controller
             $kelasSiswa->delete();
         }
         $siswa->delete();
+        
         return redirect('/admin/siswa')->with('success', '<strong>Berhasil !</strong> Siswa berhasil dihapus');
     }
 
-    public function detailsiswa($id){
-        
+    public function detailsiswa($id)
+    {
         $siswa = Siswa::leftJoin('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
             ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
-            ->select('siswa.*', 'kelas.nama_kelas')
+            ->select('siswa.kode_siswa','siswa.nis','siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status', 'siswa.foto', 'siswa.agama', DB::raw('GROUP_CONCAT(kelas.nama_kelas SEPARATOR ", ") as kelas'))
+            ->groupBy('siswa.kode_siswa','siswa.nis', 'siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status', 'siswa.foto', 'siswa.agama')
             ->where('siswa.kode_siswa', $id)
             ->first();
 
         $data = [
             'title' => 'Detail Siswa',
             'siswa' => $siswa,
+            
         ];
+
         return view('admin.detailsiswa', $data);
     }
 
-    public function editsiswa($id){
-        $siswa = Siswa::leftJoin('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
-            ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
-            ->select('siswa.*', 'kelas.kode_kelas', 'kelas.nama_kelas')
-            ->where('siswa.kode_siswa', $id)
-            ->first();
 
-        $data = [
-            'title' => 'Edit Siswa',
-            'siswa' => $siswa,
-            'kelas' => Kelas::all(),
-        ];
-        return view('admin.editsiswa', $data);
+    public function editsiswa($id){
+
+        $kodeThnAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+        
+        $siswa = KelasSiswa::
+        where('siswa.kode_siswa', $id)->where('kode_thajaran', $kodeThnAjaran->id)
+        ->join('siswa', 'kelas_siswa.kode_siswa', '=', 'siswa.kode_siswa')
+        ->join('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
+        ->select('kelas_siswa.kode_siswa', 'kelas_siswa.kode_kelas', 'kelas_siswa.kode_thajaran', 'siswa.nis', 'siswa.status', 'kelas.nama_kelas', 'siswa.nama_siswa')
+        ->first();
+
+        if($siswa) {
+            $data = [
+                'title' => 'Edit Siswa',
+                'siswa' => $siswa,
+                'kelas' => Kelas::all(),
+            ];
+            return view('admin.editsiswa', $data);
+        } else {
+            $siswa = Siswa::where('kode_siswa', $id)->first();
+            $data = [
+                'title' => 'Edit Siswa',
+                'siswa' => $siswa,
+                'kelas' => Kelas::all(),
+            ];
+            return view('admin.editsiswa', $data);
+        }
     }
 
     public function updatesiswa(Request $request, $id){
@@ -319,6 +407,7 @@ class AdminController extends Controller
         $siswa = Siswa::find($id);
         $siswa->nis = $request->nis;
         $siswa->nama_siswa = $request->nama;
+        $siswa->status = $request->status;
 
         // jika password tidak kosong
         if($request->password != null){
@@ -338,23 +427,128 @@ class AdminController extends Controller
 
         // jika di tabel kelas_siswa tidak ada data siswa dengan kode_siswa = $id
         // maka buat data baru
+        $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
         if(KelasSiswa::where('kode_siswa', $id)->count() == 0){
             KelasSiswa::create([
                 'kode_siswa' => $id,
                 'kode_kelas' => $request->kelas,
+                'kode_thajaran' => $tahunAjaran->id,
             ]);
         }else{
             // jika ada, maka update data
-            $kelas_siswa = KelasSiswa::where('kode_siswa', $id)->first();
+            $kelas_siswa = KelasSiswa::where('kode_siswa', $id)->where('kode_thajaran', $tahunAjaran->id)->first();
             $kelas_siswa->kode_kelas = $request->kelas;
             $kelas_siswa->save();
         }
 
         $siswa->save();
 
-        return redirect('/admin/siswa')->with('success', '<strong>Berhasil !</strong> Siswa berhasil diubah');
+        // redirect ke detail 
+        return redirect('/admin/detailsiswa/'.$id)->with('success', '<strong>Berhasil !</strong> Siswa berhasil diubah');
 
     }
+
+    public function updateStatus(Request $request)
+    {
+        $kodeSiswa = $request->input('kode_siswa');
+        $status = $request->input('status');
+
+        $siswa = Siswa::find($kodeSiswa);
+        if (!$siswa) {
+            return response()->json(['message' => 'Siswa not found'], 404);
+        }
+
+        $siswa->status = $status;
+        $siswa->save();
+
+        return response()->json(['message' => 'Status updated'], 200);
+    }    
+
+    public function naikKelas()
+    {
+        $siswaNaikKelas = Siswa::all();
+        $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+
+        foreach ($siswaNaikKelas as $siswa) {
+            $kelasSiswa = KelasSiswa::where('kode_siswa', $siswa->kode_siswa)
+                ->latest('created_at')
+                ->first();
+            
+            if ($kelasSiswa) {
+                $kodeKelas = $kelasSiswa->kode_kelas;
+
+                if ($this->isNaikKelasAllowed($kodeKelas)) {
+                    // Siswa naik kelas
+                    if ($this->isKelas9($kodeKelas)) {
+                        continue; // Lewati naik kelas untuk kelas 9
+                    }
+
+                    $newKelasSiswa = new KelasSiswa();
+                    $newKelasSiswa->kode_siswa = $siswa->kode_siswa;
+
+                    // Tentukan kode_kelas berdasarkan pola kelas
+                    if ($this->isKelas7($kodeKelas)) {
+                        $newKelasSiswa->kode_kelas = $kodeKelas + 1; // Penambahan 3 sesuai pola kelas 7
+                    } elseif ($this->isKelas8($kodeKelas)) {
+                        $newKelasSiswa->kode_kelas = $kodeKelas + 1; // Penambahan 3 sesuai pola kelas 8
+                    } else {
+                        $newKelasSiswa->kode_kelas = $kodeKelas + 1; // Kode_kelas + 1 untuk kelas lainnya
+                    }
+
+                    $newKelasSiswa->kode_thajaran = $tahunAjaran->id; // Misalnya, set ke tahun ajaran baru
+                    $newKelasSiswa->save();
+                } elseif ($this->isStatusNonaktifAllowed($kodeKelas)) {
+                    // Ubah status siswa menjadi nonaktif
+                    $siswa->status = 0;
+                    $siswa->save();
+                }
+            }
+        }
+
+        // Tampilkan notifikasi atau pesan sukses
+        session()->flash('success', 'Siswa telah naik kelas.');
+
+        // Redirect ke halaman yang sesuai
+        return redirect()->back();
+    }
+
+    private function isNaikKelasAllowed($kodeKelas)
+    {
+        // Tambahkan kondisi untuk penentuan kelas yang diizinkan naik kelas
+        // Misalnya, jika kelas 7 dan 8 diizinkan naik kelas:
+        return $this->isKelas7($kodeKelas) || $this->isKelas8($kodeKelas);
+    }
+
+    private function isKelas7($kodeKelas)
+    {
+        // Tentukan kondisi untuk penentuan kelas 7
+        // Misalnya, jika kelas 7 dimulai dari 1 dan diteruskan dengan penambahan 3:
+        return $kodeKelas >= 1 && ($kodeKelas - 1) % 3 == 0;
+    }
+
+    private function isKelas8($kodeKelas)
+    {
+        // Tentukan kondisi untuk penentuan kelas 8
+        // Misalnya, jika kelas 8 dimulai dari 2 dan diteruskan dengan penambahan 3:
+        return $kodeKelas >= 2 && ($kodeKelas - 2) % 3 == 0;
+    }
+
+    private function isKelas9($kodeKelas)
+    {
+        // Tentukan kondisi untuk penentuan kelas 9
+        // Misalnya, jika kelas 9 dimulai dari 3 dan diteruskan dengan penambahan 3:
+        return $kodeKelas >= 3 && ($kodeKelas - 3) % 3 == 0;
+    }
+
+    private function isStatusNonaktifAllowed($kodeKelas)
+    {
+        // Tambahkan kondisi untuk penentuan kelas yang diizinkan status nonaktif
+        // Misalnya, jika kelas 3-9 diizinkan menjadi nonaktif:
+        return $kodeKelas >= 3 && $kodeKelas <= 9;
+    }
+
+
+
 
 
     // =======================================================
@@ -394,33 +588,30 @@ class AdminController extends Controller
         // foto diambil dari avatar-(angka).png
         $foto = 'avatar-'.rand(1, 20).'.png';
 
-        // membuat username dari nama
-        // contoh : nama = Drs. Sulaiman 
-        // maka username = sulaiman
-        // contoh : nama = Nurdiono, M.Pd.
-        // maka username = nurdiono
-        // contoh : nama = Anggoro Adhi Priyo Utomo, S.Pd.
-        // maka username = anggoro-adhi (2 kata pertama)
-        // contoh : nama = Drs. sulih prihatiningsih, M.Pd.
-        // maka username = sulih-prihatiningsih (2 kata terakhir)
-        // koma dihilangkan
         $nama = explode(' ', $request->nama);
         $username = strtolower($nama[0]);
-        // jika nama hanya satu kata
+
         if(count($nama) == 1){
             $username = $nama[0];
-        }
+        } 
 
         $gelar = [
-            'S.Pd.', 'S.Pd.I', 'S.Kom','S.T', 'SE', 'SH.', 'M.Pd.', 'M.Pd.I', 'M.Kom', 'Drs.', 'Dra.', 'Dr.', 'S.Th', 'S.Si', 'A.Md'
+            'S.Pd.', 'S.Pd.I', 'S.Kom','S.T', 'SE', 'SH.', 'M.Pd.', 'M.Pd.I', 'M.Kom', 'Drs.', 'Dra.', 'Dr.', 'S.Th', 'S.Si', 'A.Md', 'S.Gr'
         ];
 
         // jika nama dengan index 1 ada di array gelar
-        if(in_array($nama[1], $gelar)){
+        if(count($nama) > 0 && count($nama) < 2){
             $username = strtolower($nama[0]);
-        } elseif(in_array($nama[0], $gelar)){
+        }
+        elseif(in_array($nama[1], $gelar)){
+            $username = strtolower($nama[0]);
+        }
+        elseif(in_array($nama[0], $gelar)){
             $username = strtolower($nama[1]);
-        } elseif(in_array($nama[2], $gelar)){
+        } elseif( count($nama) > 1 && count($nama) < 3){
+            $username = strtolower($nama[0]).'-'.strtolower($nama[1]);
+        }
+        elseif(in_array($nama[2], $gelar)){
             $username = strtolower($nama[0]).'-'.strtolower($nama[1]);
         } elseif(count($nama) > 2){
             $username = strtolower($nama[0]).'-'.strtolower($nama[1]);
@@ -437,8 +628,6 @@ class AdminController extends Controller
         $guru->password = bcrypt($request->password);
         $guru->foto = $foto;
         $guru->username = $username;
-
-        // dd($request->all(), $guru->foto, $guru->username);
 
         $guru->save();
 

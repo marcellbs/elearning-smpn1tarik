@@ -138,15 +138,6 @@ class TugasController extends Controller
         return view('tugas.index', $data);
     }
 
-
-
-
-
-
-
-
-    
-
     /**
      * Show the form for creating a new resource.
      *
@@ -238,6 +229,8 @@ class TugasController extends Controller
                 })
                 ->where('tugas.kode_tugas', $tuga->kode_tugas)
                 ->where('kelas_siswa.kode_thajaran', $tuga->kode_thajaran)
+                ->where('siswa.status', '1')
+                ->orderBy('siswa.nis', 'asc')
                 ->get();
 
             $tgl_indonesia = \Carbon\Carbon::parse($tuga->deadline)->locale('id');
@@ -566,10 +559,12 @@ class TugasController extends Controller
         $tugas = Tugas::where('kode_kelas', $kodeKelas)
             ->where('kode_pelajaran', $kodePelajaran)
             ->where('kode_guru', auth()->user()->kode_guru)
+            ->where('kode_thajaran', $selectedTahunAjaran)
             ->get();
 
-        $siswa = Siswa::whereHas('kelasSiswa', function ($query) use ($kodeKelas) {
-            $query->where('kode_kelas', $kodeKelas);
+        $siswa = Siswa::whereHas('kelasSiswa', function ($query) use ($kodeKelas, $selectedTahunAjaran) {
+            $query->where('kode_kelas', $kodeKelas)
+            ->where('kode_thajaran', $selectedTahunAjaran);
         })->get();
 
         // Membuat objek Spreadsheet
@@ -682,6 +677,7 @@ class TugasController extends Controller
                 }
 
                 $keterangan = $jawaban ? $jawaban->keterangan : '-';
+                
                 $worksheet->setCellValue('D' . $rowIndex, $keterangan);
                 $worksheet->getColumnDimension('D')->setAutoSize(true);
 
@@ -704,11 +700,12 @@ class TugasController extends Controller
             $worksheet->setCellValue('B' . $keteranganRow, 'Belum dinilai');
         }
 
-
+        // mengganti tahun_ajaran yang berisi 2022/2023 menjadi 2022-2023
+        $thAjaran = str_replace('/', '-', $tahunAjaran->tahun_ajaran);
 
         // Simpan file Excel
         $writer = new Xlsx($spreadsheet);
-        $fileName = 'Report_Tugas_'.$mapel->nama_pelajaran.'_'.$kelas->nama_kelas.'.xlsx';
+        $fileName = 'ReportTugas_'.$mapel->nama_pelajaran.'_'.$kelas->nama_kelas.'_'.$thAjaran.'.xlsx';
         $filePath = storage_path('app/public/' . $fileName);
         $writer->save($filePath);
 

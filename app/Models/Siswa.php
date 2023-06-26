@@ -11,19 +11,8 @@ class Siswa extends Model implements \Illuminate\Contracts\Auth\Authenticatable
     use HasFactory;
     protected $table = 'siswa';
     protected $primaryKey = 'kode_siswa';
-    protected $fillable =[
-        'nis',
-        'nama_siswa',
-        'username',
-        'jenis_kelamin',
-        'alamat',
-        'telepon',
-        'agama',
-        'foto',
-        'email',
-        'password'
-    ];
-    // tidak menggunakan created_at dan updated_at
+    protected $guarded = ['kode_siswa'];
+
     public $timestamps = false;
 
     // menampilkan tingkat kelas siswa dan nama kelas siswa

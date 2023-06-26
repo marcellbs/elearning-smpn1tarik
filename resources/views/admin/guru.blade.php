@@ -87,7 +87,7 @@
                 <th>No</th>
                 <th>NIP</th>
                 <th>Nama</th>
-                <th>Email</th>
+                <th>Username</th>
                 <th>Aksi</th>
               </tr>
             </thead>
@@ -111,17 +111,17 @@
                   <td>{{$formattedNIP}}</td>
                 @endif
                 <td>{{$g->nama}}</td>
-                <td>{{$g->email}}</td>
+                <td>{{$g->username}}</td>
                 <td>
-                  <a href="/admin/guru/{{$g->kode_guru}}/edit" class="btn btn-sm btn-warning"><i class="bi bi-pen"></i></a>
+                  <a href="/admin/guru/{{$g->kode_guru}}/edit" class="btn btn-sm btn-warning mb-2"><i class="bi bi-pen"></i></a>
 
                   <form action="/admin/guru/{{$g->kode_guru}}" method="post" class="d-inline">
                     @method('delete')
                     @csrf
-                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus data ini {!!  $g->nama  !!} ? ')"><i class="bi bi-trash"></i></button>
+                    <button type="submit" class="btn btn-sm btn-danger mb-2" onclick="return confirm('Yakin ingin menghapus data ini {!!  $g->nama  !!} ? ')"><i class="bi bi-trash"></i></button>
                   </form>
 
-                  <a href="/admin/detailguru/{{ $g->kode_guru }}" class="btn btn-info btn-sm"><i class="bi bi-eye"></i></a>
+                  <a href="/admin/detailguru/{{ $g->kode_guru }}" class="btn btn-info btn-sm mb-2"><i class="bi bi-eye"></i></a>
                 </td>
               </tr>
               @endforeach

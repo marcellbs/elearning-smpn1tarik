@@ -28,7 +28,13 @@
               <tr>
                 <th>Jadwal </th>
                 <td>:</td>
-                <td> {{ $pengampu->hari}}, {{ $pengampu->jam_mulai }} - {{ $pengampu->jam_berakhir }}</td>
+                <td>
+                  <ul>
+                    @foreach ($pengampu->jadwal as $jadwal)
+                      <li>{{ $jadwal->hari }} {{ $jadwal->jam_mulai }} - {{ $jadwal->jam_berakhir }}</li>
+                    @endforeach
+                  </ul>
+                </td>
               </tr>
               
             </table>
@@ -37,7 +43,7 @@
       </div>
     </div>
   </div>
-
+  
   <div class="row">
     <div class="col-lg-12">
       <div class="card">
@@ -45,11 +51,21 @@
           <div class="table-responsive mt-3">
             <table class="table table-bordered">
               <tr>
+                <th colspan="3" class="text-center">Daftar Siswa Kelas {{ $pengampu->kelas->nama_kelas }}</th>
+              </tr>
+              <tr>
+                <th>No</th>
                 <th>NIS</th>
                 <th>Nama Siswa</th>
               </tr>
-              @foreach ($pengampu->kelas->siswa as $siswa)
+              @php
+                // mengurutkan siswa berdasarkan nis
+                $siswas = $pengampu->kelas->siswa->sortBy('nis');
+              @endphp
+              @foreach ($siswas as $siswa)
               <tr>
+                
+                  <td>{{ $loop->iteration }}</td>
                   <td>{{ $siswa->nis }}</td>
                   <td>{{ $siswa->nama_siswa}}</td>
               </tr>

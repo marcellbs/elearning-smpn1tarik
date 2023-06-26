@@ -13,7 +13,7 @@ class TahunAjaran extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'tahun_ajaran',
-        'status'
+        'status_aktif'
     ];
     public $timestamps = false;
 

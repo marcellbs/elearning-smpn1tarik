@@ -69,7 +69,10 @@ class TaskstudentsController extends Controller
 
         $tugas = $query->paginate(6);
 
-        $kelasSiswa = \App\Models\KelasSiswa::where('kode_siswa', auth()->user()->kode_siswa)->first();
+        $kelasSiswa = \App\Models\KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
+        ->where('kode_thajaran', $tahunAjaran->id)
+        ->first();
+
         $pelajaranOptions = Mapel::pluck('nama_pelajaran', 'kode_pelajaran');
         $listTahunAjaran = \App\Models\TahunAjaran::pluck('tahun_ajaran', 'id');
 
@@ -153,12 +156,17 @@ class TaskstudentsController extends Controller
         $jawaban = JawabanTugas::where('kode_tugas', $id)
             ->where('kode_siswa', auth()->user()->kode_siswa)
             ->first();
+        
+        $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+        $kelasSiswa = \App\Models\KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
+            ->where('kode_thajaran', $tahunAjaran->id)
+            ->first();
 
         $data = [
             'tugas' => $tugas,
             'title' => 'Detail Tugas',
             'jawaban' => $jawaban,
-            'kelas_siswa' => \App\Models\KelasSiswa::where('kode_siswa', auth()->user()->kode_siswa)->first(),
+            'kelas_siswa' => $kelasSiswa,
         ];
 
         return view('siswa.detail-tugas', $data);

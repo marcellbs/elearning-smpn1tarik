@@ -16,7 +16,23 @@
             <tr>
               <td>NIP</td>
               <td>:</td>
-              <td>{{ $pengampu->guru['nip'] }}</td>
+              <td>
+                @if( $pengampu->guru->nip == null )
+                    -
+                  @endif
+                  @php
+                    $tgl_lahir = substr($pengampu->guru->nip, 0, 8);
+                    $tgl_masuk = substr($pengampu->guru->nip, 8, 6);
+                    $jk = substr($pengampu->guru->nip, 14, 1);
+                    $no_urut = substr($pengampu->guru->nip, 15, 3);
+
+                    // menggabungkan variabel di atas menjadi format NIP yang benar
+                    $nip = $tgl_lahir . ' ' . $tgl_masuk . ' ' . $jk . ' ' . $no_urut;
+
+                  @endphp
+
+                  {{ $nip}}
+              </td>
             </tr>
             <tr>
               <td>Nama Guru</td>
@@ -59,6 +75,11 @@
                 <a href="/guru/presensi/{{ $hash->encode($pengampu->id)}}" class="btn btn-outline-warning d-block">Presensi</a>
               </div>
             </div>
+            <div class="row">
+              <div class="col-md-6 ps-1 mt-1">
+                <a href="/guru" class="btn btn-primary d-block">Kembali</a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -71,7 +92,7 @@
           <div class="card">
             <h5><strong>Materi yang dibagikan</strong> </h5>
             <hr class="hr">
-            <table class="table table-borderless">
+            <table class="table table-borderless datatable" id="datatable">
               <thead>
                 <tr>
                   <th>Judul Materi</th>
@@ -90,13 +111,13 @@
                     ?>
                     {{-- menampilkan ekstensi file tersebut --}}
                     @if ($ext == 'pdf')
-                      <i class="bi bi-file-earmark-pdf text-danger"></i>
+                      <i class="bi bi-file-earmark-pdf text-danger">pdf</i>
                     @elseif ($ext == 'docx')
-                      <i class="bi bi-file-earmark-word text-primary"></i>
+                      <i class="bi bi-file-earmark-word text-primary">doc/docx</i>
                     @elseif ($ext == 'pptx')
-                      <i class="bi bi-file-earmark-ppt text-danger"></i>
+                      <i class="bi bi-file-earmark-ppt text-danger">ppt/pptx</i>
                     @elseif ($ext == 'xlsx')
-                      <i class="bi bi-file-earmark-excel text-success"></i>
+                      <i class="bi bi-file-earmark-excel text-success">xls/xlsx</i>
                     @endif
                   </td>
                   <td>

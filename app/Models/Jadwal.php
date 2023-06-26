@@ -12,5 +12,6 @@ class Jadwal extends Model
     protected $table = 'jadwal';
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
+    public $timestamps = false;
 
 }
