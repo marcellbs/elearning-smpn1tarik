@@ -91,11 +91,11 @@
                     </div>
 
                     <div class="col-12">
-                      <label for="password" class="form-label">password</label>
+                      <label for="password" class="form-label">Password</label>
                       <div class="input-group has-validation">
                           <input class="form-control @error('password') is-invalid @enderror password" type="password" name="password" id="password" required>
 
-                          <span class="input-group-text"><a href="" class="text-dark"><i class="bi bi-eye-slash"></i></a></span>
+                          <span class="input-group-text"><a href="" class="text-dark"><i class="bi bi-lock"></i></a></span>
 
                           @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -110,7 +110,7 @@
                     <div class="col-12">
                       <a href="/" class="btn btn-white w-100 " style="border-color: orange; border-style: solid; color:orange;">Kembali</a>
                     </div>
-                    <a href="#" class="text-primary">Lupa Password ?</a>
+                    {{-- <a href="#" class="text-primary">Lupa Password ?</a> --}}
                   </form>
 
                 </div>
@@ -118,7 +118,7 @@
 
               <div class="credits">
                 
-                Created with <span class="text-danger">&#10084;</span>  by <a href="https://bootstrapmade.com/">SMP NEGERI 1 TARIK</a>
+                Created with <span class="text-danger">&#10084;</span>  by <a href="https://www.smpn1tarik.sch.id/">SMP NEGERI 1 TARIK</a>
               </div>
 
             </div>

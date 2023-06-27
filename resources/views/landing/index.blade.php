@@ -72,7 +72,7 @@
         </div>
         
         <div class="credits border-light">
-          Created with <span class="text-danger">&#10084;</span>  by <a href="https://">SMP NEGERI 1 TARIK</a>
+          Created with <span class="text-danger">&#10084;</span>  by <a href="https://www.smpn1tarik.sch.id">SMP NEGERI 1 TARIK</a>
         </div>
       </section>
       
