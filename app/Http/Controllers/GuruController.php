@@ -282,9 +282,11 @@ class GuruController extends Controller
             // maka update data guru dengan foto
             // hapus foto lama
             $guru = \App\Models\Guru::where('kode_guru', $id)->first();
-
-            // jika foto tidak sama dengan file avatar user di folder public/img maka hapus foto
-            if($guru->foto != auth()->user()->foto){
+            $foto = [
+                'avatar-1.png', 'avatar-2.png', 'avatar-3.png', 'avatar-4.png', 'avatar-5.png', 'avatar-6.png', 'avatar-7.png', 'avatar-8.png', 'avatar-9.png', 'avatar-10.png', 'avatar-11.png', 'avatar-12.png', 'avatar-13.png', 'avatar-14.png', 'avatar-15.png', 'avatar-16.png', 'avatar-17.png', 'avatar-18.png', 'avatar-19.png', 'avatar-20.png'
+            ];
+            
+            if(!in_array($guru->foto, $foto)){
                 unlink(public_path('img/guru/'.$guru->foto));
             }
 
@@ -295,7 +297,7 @@ class GuruController extends Controller
             $foto->move($tujuan_upload, $nama_foto);
 
             // hapus foto lama
-            unlink(public_path('img/guru/'.$guru->foto));
+            // unlink(public_path('img/guru/'.$guru->foto));
 
             // update data guru
             \App\Models\Guru::where('kode_guru', $id)->update([

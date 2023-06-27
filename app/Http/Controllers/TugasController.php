@@ -176,14 +176,23 @@ class TugasController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
-        $request->validate([
-                
+        $request->validate([         
             'judul_tugas' => 'required',
             'deskripsi_tugas' => 'required',
             'kelas' => 'required',
+            'mapel' => 'required',
             'berkas' => 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt|max:2048',
             'deadline' => 'required',
 
+        ],[
+            'judul_tugas.required' => 'Judul tugas tidak boleh kosong',
+            'deskripsi_tugas.required' => 'Deskripsi tugas tidak boleh kosong',
+            'kelas.required' => 'Kelas tidak boleh kosong',
+            'mapel.required' => 'Mata pelajaran tidak boleh kosong',
+            'berkas.mimes' => 'Berkas harus berupa file pdf, doc, docx, xls, xlsx, ppt, pptx, atau txt',
+            'berkas.max' => 'Ukuran berkas maksimal 2 MB',
+            'deadline.required' => 'Deadline tidak boleh kosong',
+            
         ]);
 
         $tugas = new Tugas;
@@ -211,6 +220,7 @@ class TugasController extends Controller
         
         return redirect('guru/tugas')->with('success', 'Tugas berhasil ditambahkan!');
     }
+
 
     /**
      * Display the specified resource.

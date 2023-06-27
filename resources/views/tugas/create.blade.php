@@ -43,7 +43,7 @@
               <select name="kelas" id="kelas" class="form-select">
                 <option value="">-- Pilih Kelas --</option>
                 @foreach ($kelas as $item)
-                  <option value="{{ $item['kode_kelas'] }}">{{$item['nama_kelas'] }}</option>
+                  <option value="{{ $item['kode_kelas'] }}" {{ old('kelas') == $item['kode_kelas'] ? 'selected' : '' }}>{{ $item['nama_kelas'] }}</option>
                 @endforeach
               </select>
               @error('kelas')
@@ -59,7 +59,7 @@
               <select name="mapel" id="mapel" class="form-select">
                 <option value="">-- Pilih Mata Pelajaran --</option>
                 @foreach ($mapel as $item)
-                  <option value="{{ $item['kode_pelajaran'] }}">{{ $item['nama_pelajaran'] }}</option>
+                  <option value="{{ $item['kode_pelajaran'] }}" {{ old('mapel') == $item['kode_pelajaran'] ? 'selected' : '' }}>{{ $item['nama_pelajaran'] }}</option>
                 @endforeach
               </select>
               @error('mapel')
@@ -85,7 +85,8 @@
             {{-- berkas --}}
             <div class="form-group">
               <label for="berkas">Berkas</label>
-              <input type="file" name="berkas" id="berkas" class="form-control" value="{{ old('berkas') }}">
+              <input type="file" name="berkas" id="berkas" class="form-control @error('berkas') is-invalid @enderror">
+              <div id="file-name"></div>
               @error('berkas')
               <div class="text-danger mt-1">
                 {{ $message }}
@@ -130,5 +131,20 @@
     });
   });
 </script> --}}
+
+<script>
+  // Mendapatkan elemen input file
+  var fileInput = document.getElementById('berkas');
+
+  // Menambahkan event listener untuk mendeteksi perubahan pada input file
+  fileInput.addEventListener('change', function() {
+      // Mendapatkan nama file yang diunggah
+      var fileName = fileInput.files[0].name;
+
+      // Menampilkan nama file di elemen dengan id "file-name"
+      var fileNameElement = document.getElementById('file-name');
+      fileNameElement.textContent = fileName;
+  });
+</script>
 
 @endsection

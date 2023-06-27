@@ -51,14 +51,13 @@
 
 </form>
 
-
-
+<hr>
 
 <form action="{{ route('presensi') }}" method="GET" class="mb-2">
     <div class="row">
         <div class="col-md-4">
             <div class="form-group">
-                <label for="tahun_ajaran">Filter</label>
+                <label for="tahun_ajaran" class="fw-bold">Filter</label>
                 <select name="tahun_ajaran" id="tahun_ajaran" class="form-select">
                     <option value="">-- Pilih Tahun Ajaran --</option>
                     @foreach ($tahunAjaranOptions as $tahunAjaranId => $tahunAjaran)

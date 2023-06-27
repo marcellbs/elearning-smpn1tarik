@@ -322,11 +322,6 @@ class SiswaController extends Controller
         // ]);
 
         if($request->file('foto') == null){
-            // jika tidak ada file yang diupload
-            // maka update data siswa tanpa foto
-
-            // dd($request->all());
-
             \App\Models\Siswa::where('kode_siswa', $id)->update([
                 'nis' => $request->nis,
                 'nama_siswa' => $request->nama,
@@ -337,13 +332,13 @@ class SiswaController extends Controller
                 'agama' => $request->agama,
             ]);
         }else{
-            // jika ada file yang diupload
-            // maka update data siswa dengan foto
-
             // hapus foto lama
             $siswa = \App\Models\Siswa::where('kode_siswa', $id)->first();
             
-            if($siswa->foto != auth()->user()->foto){
+            // jika foto = avatar-1 s.d. 20 , maka tidak usah dihapus
+            $foto = ['avatar-1.png', 'avatar-2.png', 'avatar-3.png', 'avatar-4.png', 'avatar-5.png', 'avatar-6.png', 'avatar-7.png', 'avatar-8.png', 'avatar-9.png', 'avatar-10.png', 'avatar-11.png', 'avatar-12.png', 'avatar-13.png', 'avatar-14.png', 'avatar-15.png', 'avatar-16.png', 'avatar-17.png', 'avatar-18.png', 'avatar-19.png', 'avatar-20.png'];
+
+            if(!in_array($siswa->foto, $foto)){
                 unlink(public_path('img/siswa/'.$siswa->foto));
             }
 
@@ -353,10 +348,7 @@ class SiswaController extends Controller
             $tujuan_upload = 'img/siswa';
             $foto->move($tujuan_upload, $nama_foto);
             
-            unlink(public_path('img/siswa/'.$siswa->foto));
-
-            // dd($request->all());
-
+            // update data
             \App\Models\Siswa::where('kode_siswa', $id)->update([
                 'nis' => $request->nis,
                 'nama_siswa' => $request->nama,
