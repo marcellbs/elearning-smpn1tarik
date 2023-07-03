@@ -10,8 +10,19 @@
       </ol>
     </nav>
   </div>
-
+    
     <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Jadwal Mengajar</h4>
+                <ul>
+                    <li>Jadwal mengajar yang tersedia adalah jadwal yang terbaru berdasarkan tahun ajaran ini</li>
+                    <li>Jadwal ini dapat berubah sewaktu-waktu apabila diperlukan</li>
+        
+                </ul>
+            </div>
+        </div>
+
         @php
             $hariHari = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
         @endphp
@@ -43,6 +54,7 @@
                 </div>
             </div>
         @endforeach
+
     </div>
 
 

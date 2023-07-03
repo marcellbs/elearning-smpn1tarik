@@ -4,6 +4,13 @@
 
   @include ('partials.page-title', ['title' => $title])
 
+  <div class="alert alert-info" role="alert">
+      <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Halaman Pengumuman</h4>
+      <ul>
+          <li>Halaman ini menampilkan semua pengumuman yang dibuat oleh bapak ibu guru maupun dari administrator</li>
+      </ul>
+  </div>
+
   <form action="{{ '/siswa/pengumuman' }}" method="GET">
     <div class="row">
       <div class="col-md-6">

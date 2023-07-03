@@ -5,6 +5,15 @@
 
   <section class="section profile">
     {{-- {{ auth()->user() }} --}}
+
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Halaman Profil</h4>
+        <ul>
+            <li>Anda dapat melakukan kostumisasi pada profil anda baik itu mengganti foto profil, nama, maupun data lain yang bermasalah</li>
+            <li>Anda juga dapat mengatur ulang kata sandi anda jika diperlukan</li>
+        </ul>
+    </div>
+
     <div class="row">
       <div class="col-xl-4">
         <div class="card">

@@ -12,6 +12,13 @@
     </nav>
   </div>
 
+  <div class="alert alert-info" role="alert">
+      <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Materi Pelajaran</h4>
+      <ul>
+          <li>Anda dapat melihat semua materi yang ada.</li>
+          <li>Gunakan pencarian, atau fiter yang ada untuk menemukan materi yang anda inginkan.</li>
+      </ul>
+  </div>
 
   <section class="section material">
     <div class="row">

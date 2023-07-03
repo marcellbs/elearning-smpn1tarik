@@ -12,7 +12,6 @@
     </nav>
   </div>
 
-
   <section class="section material">
     <div class="row">
       <div class="col-12">

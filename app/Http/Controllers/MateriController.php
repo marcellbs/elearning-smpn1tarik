@@ -148,13 +148,15 @@ class MateriController extends Controller
                 'judul' => 'required',
                 'kelas' => 'required',
                 'mapel' => 'required',
-                'file' => 'required',
+                'file' => 'required|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:2048',
 
             ],[
                 'judul.required' => 'Kolom judul harus diisi',
                 'kelas.required' => 'Kolom kelas harus diisi',
                 'mapel.required' => 'Kolom pelajaran harus diisi',
                 'file.required' => 'Kolom file harus diisi',
+                'file.mimes' => 'File harus berupa pdf, doc, docx, xls, xlsx, ppt, pptx',
+                'file.max' => 'Ukuran file maksimal 2MB',
             ]);
 
             $file = $request->file('file');

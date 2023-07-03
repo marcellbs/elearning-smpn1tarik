@@ -51,7 +51,12 @@
               <div class="row">
                 <label for="file" class="form-label fw-bold"><i class="bi bi-upload"></i> Upload File Excel</label>
                 <div class="col-md-8">
-                  <input type="file" name="file" id="file" class="form-control mb-1">
+                  <input type="file" name="file" id="file" class="form-control mb-1 @error('file') is-invalid @enderror">
+                  @error('file')
+                    <div class="invalid-feedback">
+                      {{ $message }}
+                    </div>
+                  @enderror
                 </div>
                 <div class="col-sm-1">
                   <button type="submit" class="btn btn-primary">Upload</button>

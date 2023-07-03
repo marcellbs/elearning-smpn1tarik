@@ -3,6 +3,14 @@
 @section('content')
   @include ('partials.page-title', ['title' => 'Profile'])
 
+  <div class="alert alert-info" role="alert">
+      <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Halaman Profil</h4>
+      <ul>
+          <li>Anda dapat melakukan kostumisasi pada profil anda baik itu mengganti foto profil, nama, maupun data lain yang bermasalah</li>
+          <li>Anda juga dapat mengatur ulang kata sandi anda jika diperlukan</li>
+      </ul>
+  </div>
+
   <section class="section profile">
     <div class="row">
       <div class="col-xl-4">
@@ -38,6 +46,37 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
         @endif
+
+        @error('password')
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {!! $message !!}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        @enderror
+        @error('passwordbaru')
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {!! $message !!}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        @enderror
+        @error('ulangpassword')
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {!! $message !!}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        @enderror
+        @error('nama')
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {!! $message !!}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        @enderror
+        @error('foto')
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {!! $message !!}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        @enderror
 
         <div class="card">
           <div class="card-body pt-3">
@@ -133,21 +172,36 @@
                   <div class="row mb-3">
                     <label for="password" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="password" type="password" class="form-control" id="password">
+                      <input name="password" type="password" class="form-control @error('password') is-invalid @enderror" id="password">
+                      @error('password')
+                        <div class="invalid-feedback">
+                          {{ $message }}
+                        </div>
+                      @enderror
                     </div>
                   </div>
   
                   <div class="row mb-3">
                     <label for="passwordbaru" class="col-md-4 col-lg-3 col-form-label">New Password</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="passwordbaru" type="password" class="form-control" id="passwordbaru">
+                      <input name="passwordbaru" type="password" class="form-control @error('passwordbaru') is-invalid @enderror" id="passwordbaru">
+                      @error('passwordbaru')
+                        <div class="invalid-feedback">
+                          {{ $message }}
+                        </div>
+                      @enderror
                     </div>
                   </div>
   
                   <div class="row mb-3">
                     <label for="ulangpassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="ulangpassword" type="password" class="form-control" id="ulangpassword">
+                      <input name="ulangpassword" type="password" class="form-control @error('ulangpassword') is-invalid @enderror" id="ulangpassword">
+                      @error('ulangpassword')
+                        <div class="invalid-feedback">
+                          {{ $message }}
+                        </div>
+                      @enderror
                     </div>
                   </div>
   

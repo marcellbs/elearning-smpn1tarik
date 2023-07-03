@@ -21,6 +21,11 @@
                 <td> {{ $pengampu->mapel->nama_pelajaran }}</td>
               </tr>
               <tr>
+                <th>Tahun Ajaran </th>
+                <td>:</td>
+                <td> {{ $pengampu->tahunAjaran->tahun_ajaran }}</td>
+              </tr>
+              <tr>
                 <th>Kelas </th>
                 <td>:</td>
                 <td>{{ $pengampu->kelas->nama_kelas }}</td>
@@ -60,11 +65,11 @@
               </tr>
               @php
                 // mengurutkan siswa berdasarkan nis
-                $siswas = $pengampu->kelas->siswa->sortBy('nis');
+                $siswas = $kelas_siswa->sortBy('nis');
               @endphp
               @foreach ($siswas as $siswa)
               <tr>
-                
+
                   <td>{{ $loop->iteration }}</td>
                   <td>{{ $siswa->nis }}</td>
                   <td>{{ $siswa->nama_siswa}}</td>

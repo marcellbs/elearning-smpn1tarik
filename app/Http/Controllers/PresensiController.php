@@ -186,12 +186,67 @@ class PresensiController extends Controller
     //     ]);
     // }
 
+    // public function presensi(Request $request)
+    // {
+    //     $tahunAjaranId = $request->input('tahun_ajaran');
+        
+    //     // Mendapatkan data presensi dengan relasi
+    //     $presensi = PresensiModel::with('kelas', 'mapel', 'tahunAjaran');
+
+    //     // Filter berdasarkan tahun ajaran jika ada
+    //     if ($tahunAjaranId) {
+    //         $presensi->where('kode_thajaran', $tahunAjaranId);
+    //     } else {
+    //         // Jika tidak ada tahun ajaran yang dipilih, ambil tahun ajaran aktif
+    //         $tahunAjaranAktif = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+    //         if ($tahunAjaranAktif) {
+    //             $presensi->where('kode_thajaran', $tahunAjaranAktif->id);
+    //         }
+    //     }
+
+    //     // Mengelompokkan presensi berdasarkan kelas, mata pelajaran, dan tahun ajaran
+    //     $groupedPresensi = $presensi->get()->groupBy(['kelas.nama_kelas', 'mapel.nama_pelajaran', 'tahunAjaran.tahun_ajaran']);
+
+    //     // Menghitung total masing-masing status untuk setiap kelompok presensi
+    //     $statusCounts = [];
+    //     foreach ($groupedPresensi as $groupKey => $group) {
+    //         $statusCounts[$groupKey] = [
+    //             'S' => $group->where('status', 'S')->count(),
+    //             'H' => $group->where('status', 'H')->count(),
+    //             'I' => $group->where('status', 'I')->count(),
+    //             'A' => $group->where('status', 'A')->count(),
+    //             'K' => $group->where('status', 'K')->count()
+    //         ];
+    //     }
+
+    //     // Paginasi hasil pengelompokkan presensi
+    //     $perPage = 6;
+    //     $currentPage = request()->query('page', 1);
+    //     $groupedPresensi = new LengthAwarePaginator(
+    //         $groupedPresensi->forPage($currentPage, $perPage),
+    //         $groupedPresensi->count(),
+    //         $perPage,
+    //         $currentPage,
+    //         ['path' => request()->url()]
+    //     );
+
+    //     // Mendapatkan daftar tahun ajaran
+    //     $tahunAjaranOptions = \App\Models\TahunAjaran::pluck('tahun_ajaran', 'id');
+
+    //     return view('guru.presensi', [
+    //         'groupedPresensi' => $groupedPresensi,
+    //         'statusCounts' => $statusCounts,
+    //         'title' => 'Presensi',
+    //         'tahunAjaranOptions' => $tahunAjaranOptions
+    //     ]);
+    // }
+
     public function presensi(Request $request)
     {
         $tahunAjaranId = $request->input('tahun_ajaran');
-        
+
         // Mendapatkan data presensi dengan relasi
-        $presensi = PresensiModel::with('kelas', 'mapel', 'tahunAjaran');
+        $presensi = PresensiModel::with('kelas', 'mapel', 'tahunAjaran')->orderBy('created_at', 'desc');
 
         // Filter berdasarkan tahun ajaran jika ada
         if ($tahunAjaranId) {
@@ -204,8 +259,8 @@ class PresensiController extends Controller
             }
         }
 
-        // Mengelompokkan presensi berdasarkan kelas, mata pelajaran, dan tahun ajaran
-        $groupedPresensi = $presensi->get()->groupBy(['kelas.nama_kelas', 'mapel.nama_pelajaran', 'tahunAjaran.tahun_ajaran']);
+        // Mengelompokkan presensi berdasarkan tanggal presensi, kelas, mapel, dan tahun ajaran berdasarkan tanggal presensi
+        $groupedPresensi = $presensi->get()->groupBy(['tanggal_presensi', 'kelas.nama_kelas', 'mapel.nama_pelajaran', 'tahunAjaran.tahun_ajaran']);
 
         // Menghitung total masing-masing status untuk setiap kelompok presensi
         $statusCounts = [];
@@ -242,8 +297,10 @@ class PresensiController extends Controller
     }
 
 
+
     public function editPresensi($tanggalPresensi, $kodeKelas, $kodePelajaran)
     {
+        // urutkan berdasarkan nama siswa
         $presensi = PresensiModel::where('tanggal_presensi', $tanggalPresensi)
             ->where('kode_kelas', $kodeKelas)
             ->where('kode_pelajaran', $kodePelajaran)

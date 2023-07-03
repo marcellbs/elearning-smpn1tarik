@@ -3,6 +3,14 @@
 @section('content')
   @include ('partials.page-title', ['title' => 'Tugas'])
 
+  <div class="alert alert-info" role="alert">
+      <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Tugas Siswa</h4>
+      <ul>
+          <li>Anda dapat melihat semua tugas yang dibuat oleh guru pengampu di kelas anda</li>
+          <li>Anda juga dapat melihat histori tugas yang pernah anda kerjakan melalui filter</li>
+          <li>Manfaatkan filter tersebut berdasarkan tahun dan mata pelajaran, atau salah satu</li>
+      </ul>
+  </div>
 
   <form action="{{ '/siswa/tugas' }}" method="GET" class="mb-3">
     <div class="row">

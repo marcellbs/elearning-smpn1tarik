@@ -651,44 +651,101 @@ class AdminController extends Controller
         return redirect('/admin/guru')->with('success', '<strong>Berhasil !</strong> Guru berhasil dihapus');
     }
 
-    public function uploadguru(Request $request){
-            // Validasi file
-            $request->validate([
-                'file' => 'required|mimes:xls,xlsx'
-            ],[
-                'file.required' => 'Kolom file tidak boleh kosong',
-                'file.mimes' => 'File harus bertipe .xls atau .xlsx'
-            ]);
+    // public function uploadguru(Request $request){
+    //         // Validasi file
+    //         $request->validate([
+    //             'file' => 'required|mimes:xls,xlsx'
+    //         ],[
+    //             'file.required' => 'Kolom file tidak boleh kosong',
+    //             'file.mimes' => 'File harus bertipe .xls atau .xlsx'
+    //         ]);
 
-            // Ambil file Excel dari request
-            $file = $request->file('file');
+    //         // Ambil file Excel dari request
+    //         $file = $request->file('file');
 
-            // Baca file Excel
-            $spreadsheet = IOFactory::load($file);
+    //         // Baca file Excel
+    //         $spreadsheet = IOFactory::load($file);
 
-            // Ambil sheet dengan nama tertentu
-            // $worksheet = $spreadsheet->getSheetByName('NamaSheet');
-            $worksheet = $spreadsheet->getSheet(1);
-            $data = $worksheet->toArray();
+    //         $worksheet = $spreadsheet->getSheet(1);
+    //         $data = $worksheet->toArray();
 
-            // Loop melalui setiap baris data
-            for ($i = 1; $i < count($data); $i++) {
-                $row = $data[$i];
+    //         // Loop melalui setiap baris data
+    //         for ($i = 1; $i < count($data); $i++) {
+    //             $row = $data[$i];
     
-                // Buat data guru baru
-                $guru = new Guru();
-                $guru->nip = $row[0];
-                $guru->nama = $row[1];
-                $guru->username = $row[2];
-                $guru->foto = $row[3];
-                $guru->password = bcrypt($row[4]); // Gunakan bcrypt() untuk mengenkripsi password
+    //             // Buat data guru baru
+    //             $guru = new Guru();
+    //             $guru->nip = $row[0];
+    //             $guru->nama = $row[1];
+    //             $guru->username = $row[2];
+    //             $guru->foto = $row[3];
+    //             $guru->password = bcrypt($row[4]); // Gunakan bcrypt() untuk mengenkripsi password
     
-                // Simpan data guru
-                $guru->save();
+    //             // Simpan data guru
+    //             $guru->save();
+    //         }
+
+    //         // Berikan notifikasi
+    //         return redirect()->back()->with('success', 'Data guru berhasil ditambahkan.');
+    // }
+
+    public function uploadguru(Request $request)
+    {
+        // Validasi file upload
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls',
+    ]);
+
+    // Mendapatkan file yang diupload
+    $file = $request->file('file');
+
+    // Mendapatkan path sementara file yang diupload
+    $temporaryFilePath = $file->getPathName();
+
+    try {
+        // Membaca file Excel
+        $spreadsheet = IOFactory::load($temporaryFilePath);
+
+        // Mendapatkan semua sheet di dalam file
+        $worksheets = $spreadsheet->getAllSheets();
+
+        // Looping untuk setiap sheet
+        foreach ($worksheets as $sheetIndex => $worksheet) {
+            // Skip sheet pertama
+            if ($sheetIndex === 0) {
+                continue;
             }
 
-            // Berikan notifikasi
-            return redirect()->back()->with('success', 'Data guru berhasil ditambahkan.');
+            // Mengambil data baris ke-2 hingga baris terakhir
+            $rows = $worksheet->toArray();
+            $data = array_slice($rows, 1); // Menghapus header
+
+            // Looping untuk menyimpan data ke dalam database
+            foreach ($data as $row) {
+                $nip = $row[0];
+                $nama = $row[1];
+                $username = $row[2];
+                $foto = $row[3];
+                $password = $row[4];
+
+                // Simpan ke dalam tabel "guru"
+                Guru::create([
+                    'nip' => $nip,
+                    'nama' => $nama,
+                    'username' => $username,
+                    'foto' => $foto,
+                    'password' => $password,
+                ]);
+            }
+        }
+
+        // Menghapus file sementara setelah selesai diimport
+        unlink($temporaryFilePath);
+
+        return redirect()->back()->with('success', 'Data berhasil diimport.');
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    }
     }
 
     public function editguru($id){

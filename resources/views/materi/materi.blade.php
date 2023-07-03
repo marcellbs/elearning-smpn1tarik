@@ -15,6 +15,18 @@
     </nav>
   </div>
 
+  <div class="alert alert-info" role="alert">
+    <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Halaman Materi</h4>
+    <ul>
+      <li>Anda dapat menambah, menghapus, mengubah data Materi</li>
+      <li>
+        Untuk <i>user</i> guru dapat melihat materi yang dibagikan di halaman <button type="button" class="btn text-white btn-sm" style="background-color: orange;">Materi yang Dibagikan</button>
+      </li> 
+      <li>
+        Halaman sudah dilengkapi dengan fitur pencarian dan filter
+      </li>
+    </ul>
+  </div>
 
   <section class="section material">
     <div class="row">

@@ -23,10 +23,19 @@
   </div>
   
 </form> --}}
+<div class="alert alert-info" role="alert">
+  <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Halaman Tugas</h4>
+  <ul>
+      <li>Anda dapat mengelola tugas di halaman ini, mulai dari membuat, menghapu, dan mengubah tugas</li>
+      <li>Anda juga dapat melihat histori tugas yang pernah anda buat di tahun sebelumnya</li>
+      <li>Anda dapat memanfaatkan tombol <button type="button" class="btn btn-sm btn-primary">Report Tugas</button> untuk melihat siswa yang sudah mengumpulkan atau belum</li>
+      <li>Halaman sudah dilengkapi dengan fitur Filter</li>
+  </ul>
+</div>
 
 <form method="GET" action="/guru/tugas" id="filter-form" class="mb-3">
   <div class="row">
-    <p>Filter Tugas</p>
+    <p class="fw-bold">Filter Tugas</p>
     <div class="col">
       {{-- <label for="tahun_ajaran">Tahun Ajaran:</label> --}}
       <div class="form-group">

@@ -3,8 +3,17 @@
 @section('content')
   @include('partials.page-title',['title' => $title])
 
-  <i class="mb-2">Semua Mata Pelajaran yang anda ampu akan muncul di halaman ini</i>
-  
+  {{-- <i class="mb-2">Semua Mata Pelajaran yang anda ampu akan muncul di halaman ini</i> --}}
+  <div class="alert alert-info" role="alert">
+    <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Data Mata Pelajaran</h4>
+    <ul>
+      <li>Anda dapat melihat mata pelajaran tahun ajaran yang aktif dan dapat melihat histori tahun lalu</li>
+      <li>
+        Mata pelajaran yang anda lihat adalah mata pelajaran yang anda ampu pada tahun ajaran yang aktif
+      </li> 
+      <li>Gunakan filter berdasarkan tahun dibawah ini untuk melihat histori mata pelajaran</li>
+    </ul>
+  </div>
   <!-- Form untuk filter -->
 <form action="/guru/mapel" method="GET">
   <div class="row">

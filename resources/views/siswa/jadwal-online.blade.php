@@ -12,6 +12,15 @@
   </div>
 
   <div class="row">
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Jadwal Pelajaran</h4>
+        <ul>
+            <li>Jadwal pelajaran yang tersedia adalah jadwal yang terbaru berdasarkan tahun ajaran ini</li>
+            <li>Jadwal pelajaran dapat berubah sewaktu-waktu apabila diperlukan</li>
+
+        </ul>
+    </div>
+
     @php
         $hariHari = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
     @endphp

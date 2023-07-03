@@ -155,7 +155,12 @@ class SiswaController extends Controller
             'title' => ''.$pengampu->mapel->nama_pelajaran.' '.$pengampu->kelas->nama_kelas.'',
             'pengampu' => $pengampu,
             'materi' => $materi,
-            'siswa' => \App\Models\Siswa::whereIn('kode_siswa', $kelas_siswa->pluck('kode_siswa'))->orderBy('nis', 'asc')->get(),
+            'siswa' => \App\Models\Siswa:: join('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
+            ->where('kelas_siswa.kode_kelas', $pengampu->kode_kelas)
+            ->where('kelas_siswa.kode_thajaran', $pengampu->kode_thajaran)
+            ->where('siswa.status', '1')
+            ->orderBy('nis', 'asc')
+            ->get(),
         ];
 
         return view('siswa.detailkelas', $data);

@@ -4,6 +4,13 @@
 
   @include('partials.page-title', ['title' => $title])
 
+  <div class="alert alert-info" role="alert">
+      <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Halaman Pengumuman</h4>
+      <ul>
+          <li>Halaman ini menampilkan semua pengumuman yang dibuat oleh bapak ibu guru maupun dari administrator</li>
+          <li>Anda juga memiliki akses untuk mengelola pengumuman</li>
+      </ul>
+  </div>
   {{-- <a href="/guru/pengumuman/create" class="btn mb-2 text-white" style="background-color:#33FF00;">Tambah Pengumuman</a> --}}
   <form action="{{ '/guru/pengumuman' }}" method="GET" class="mb-3">
     <div class="row">
@@ -20,6 +27,33 @@
     Tambah Pengumuman
   </button>
   <a href="/guru/pengumuman/shared" class="btn mb-2 text-white" style="background-color:#ffbb00;">Pengumuman yang dibuat</a>
+  
+  @if (session('status'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {!! session('status') !!}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  @endif
+  @if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {!! session('error') !!}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  @endif
+  
+  @error('judul_pengumuman')
+    <div class="alert alert-danger alert-dismissible fade show mt-2">
+      {{ $message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  @enderror
+
+  @error('deskripsi')
+    <div class="alert alert-danger alert-dismissible fade show mt-2">
+      {{ $message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  @enderror
 
   <div class="row">
     <div class="col-lg-12">

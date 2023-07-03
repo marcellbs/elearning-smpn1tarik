@@ -22,6 +22,11 @@
 
 
 <div class="container">
+  @if (empty($pengampu->all()))
+    <div class="alert alert-danger" role="alert">
+      <h4 class="alert-heading">Tidak ada mata pelajaran</h4>
+    </div>
+  @endif
   <section class="splide mb-3">
     <div class="row">
         <div class="splide__track">

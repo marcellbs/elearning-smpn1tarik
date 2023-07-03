@@ -65,7 +65,7 @@ class PengampuController extends Controller
             'tahun_ajaran.required' => 'Kolom tahun ajaran harus diisi',
         ]);
 
-        dd($request->all());
+        // dd($request->all());
         $pengampu = new Pengampu();
         $pengampu->kode_guru = $request->guru;
         $pengampu->kode_kelas = $request->kelas;
@@ -113,7 +113,12 @@ class PengampuController extends Controller
             'title' => 'Detail Pengampu',
             'pengampu' => $pengampu,
             'jadwal' => $pengampu->jadwal,
-            'kelas_siswa' => $pengampu->kelas->siswa,
+            'kelas_siswa' => \App\Models\Siswa:: join('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
+            ->where('kelas_siswa.kode_kelas', $pengampu->kode_kelas)
+            ->where('kelas_siswa.kode_thajaran', $pengampu->kode_thajaran)
+            ->where('siswa.status', '1')
+            ->orderBy('nis', 'asc')
+            ->get(),
         ];
         
         return view('pengampu.detailpengampu', $data);

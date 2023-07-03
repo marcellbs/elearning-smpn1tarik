@@ -130,59 +130,58 @@
             <form action="/guru/pengumuman/{{ $p->id }}" method="POST">
               @csrf
               @method('DELETE')
-              <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+              <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah anda yakin untuk menghapus pengumuman ini ?');">Hapus</button>
             </form>
           </div>
 
         </div>
       </div>
     </div>
-    @endforeach
-  </div>
 
-  
+    <!-- Modal -->
+    @if($pengumuman->count() > 0)
+    <div class="modal fade" id="exampleModal{{ $p->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit {{ $p->judul_pengumuman }}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form action="/guru/pengumuman/{{ $p->id }}" method="post">
+            <div class="modal-body">
+              @csrf
+              @method('PUT')
 
-<!-- Modal -->
-@if($pengumuman->count() > 0)
-  <div class="modal fade" id="exampleModal{{ $p->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Edit {{ $p->judul_pengumuman }}</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <div class="form-group">
+                <label for="judul_pengumuman">Judul Pengumuman</label>
+                <input type="text" name="judul_pengumuman" id="judul_pengumuman" class="form-control @error('judul_pengumuman') is-invalid @enderror" value="{{ $p->judul_pengumuman }}">
+                @error('judul_pengumuman')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <div class="form-group">
+                <label for="mytextarea">Deskripsi Pengumuman</label>
+                <textarea name="deskripsi" id="mytextarea" cols="30" rows="10" class="form-control @error('deskripsi') is-invalid @enderror">
+                  {{ $p->deskripsi }}
+                </textarea>
+                @error('deskripsi')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+          </form>
         </div>
-        <form action="/guru/pengumuman/{{ $p->id }}" method="post">
-          <div class="modal-body">
-            @csrf
-            @method('PUT')
-
-            <div class="form-group">
-              <label for="judul_pengumuman">Judul Pengumuman</label>
-              <input type="text" name="judul_pengumuman" id="judul_pengumuman" class="form-control @error('judul_pengumuman') is-invalid @enderror" value="{{ $p->judul_pengumuman }}">
-              @error('judul_pengumuman')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
-            <div class="form-group">
-              <label for="mytextarea">Deskripsi Pengumuman</label>
-              <textarea name="deskripsi" id="mytextarea" cols="30" rows="10" class="form-control @error('deskripsi') is-invalid @enderror">
-                {{ $p->deskripsi }}
-              </textarea>
-              @error('deskripsi')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
-
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Save changes</button>
-          </div>
-        </form>
       </div>
     </div>
+    @endif
+
+    @endforeach
   </div>
-@endif
 
 
 

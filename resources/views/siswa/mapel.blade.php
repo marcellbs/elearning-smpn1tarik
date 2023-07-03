@@ -4,7 +4,16 @@
   @include ('partials.page-title', ['title' => $title])
 
   <div class="row mt-3">
-    <i class="mb-2">Anda dapat melihat semua mata pelajaran yang tersedia</i>
+    <div class="alert alert-info" role="alert">
+      <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Data Mata Pelajaran</h4>
+      <ul>
+        <li>Anda dapat melihat mata pelajaran tahun ajaran yang aktif dan dapat melihat histori tahun lalu</li>
+        <li>
+          Mata pelajaran yang anda lihat adalah mata pelajaran yang anda ikuti pada tahun ajaran yang aktif
+        </li> 
+        <li>Gunakan filter berdasarkan tahun dibawah ini untuk melihat histori mata pelajaran</li>
+      </ul>
+    </div>
 
     <form action="/siswa/mapel" method="GET" class="mb-3">
       <div class="row">
