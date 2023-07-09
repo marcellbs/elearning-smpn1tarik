@@ -265,9 +265,15 @@ class SiswaController extends Controller
             ->where('kode_thajaran', $tahunAjaran->id)
             ->first();
 
+
+        if (empty($kelasSiswa)) {
+            return redirect()->back()->with('error', 'Tahun Ajaran ' . $namaTahunAjaran . ' tidak ditemukan');
+        }
+        
         $query = \App\Models\Pengampu::where('kode_kelas', $kelasSiswa->kode_kelas)
             ->where('kode_thajaran', $tahunAjaran->id)
             ->orderBy('kode_pelajaran', 'asc');
+        
 
         $pengampu = $query->get();
 

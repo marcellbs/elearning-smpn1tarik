@@ -3,6 +3,12 @@
 @section('content')
   @include ('partials.page-title', ['title' => $title])
 
+        @if (session()->has('error'))
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {!! session('error') !!}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        @endif
   <div class="row mt-3">
     <div class="alert alert-info" role="alert">
       <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Data Mata Pelajaran</h4>
@@ -14,6 +20,7 @@
         <li>Gunakan filter berdasarkan tahun dibawah ini untuk melihat histori mata pelajaran</li>
       </ul>
     </div>
+    
 
     <form action="/siswa/mapel" method="GET" class="mb-3">
       <div class="row">

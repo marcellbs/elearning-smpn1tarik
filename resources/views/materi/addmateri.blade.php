@@ -36,9 +36,9 @@
     <label for="kelas">Kelas</label>
     <select class="form-select @error('kelas') is-invalid @enderror" name="kelas" id="kelas">
       <option value="">Pilih Kelas</option>
-      <option value="7">7</option>
-      <option value="8">8</option>
-      <option value="9">9</option>
+      <option value="7" {{ old('kelas') == '7' ? 'selected' : '' }}>7</option>
+      <option value="8" {{ old('kelas') == '8' ? 'selected' : '' }}>8</option>
+      <option value="9" {{ old('kelas') == '9' ? 'selected' : '' }}>9</option>
     </select>
       @error('kelas')
       <div class="invalid-feedback">
@@ -52,7 +52,7 @@
     <select class="form-select @error('mapel') is-invalid @enderror" name="mapel" id="mapel">
       <option value="">Pilih Mata Pelajaran</option>
       @foreach ($mapel as $m)
-      <option value="{{$m->kode_pelajaran}}">{{$m->nama_pelajaran}}</option>
+      <option value="{{$m->kode_pelajaran}}" {{ old('mapel') == $m->kode_pelajaran ? 'selected' : '' }} >{{$m->nama_pelajaran}}</option>
       @endforeach
     </select>
     @error('mapel')

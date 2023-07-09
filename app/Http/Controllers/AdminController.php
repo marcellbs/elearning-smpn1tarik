@@ -734,7 +734,7 @@ class AdminController extends Controller
                     'nama' => $nama,
                     'username' => $username,
                     'foto' => $foto,
-                    'password' => $password,
+                    'password' => bcrypt($password),
                 ]);
             }
         }

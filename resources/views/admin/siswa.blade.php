@@ -117,7 +117,7 @@
                 <td>{{ucwords($s->nama_siswa)}}</td>  
                   
                 <td>
-                  @if ($s->status === 1 )
+                  @if ($s->status === '1' )
                     <span class="badge bg-success">Aktif</span>
                   @else
                     <span class="badge bg-danger">Nonaktif</span>

@@ -72,7 +72,11 @@ class TaskstudentsController extends Controller
         $kelasSiswa = \App\Models\KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
         ->where('kode_thajaran', $tahunAjaran->id)
         ->first();
-
+        
+        if(!$kelasSiswa) {
+            return redirect()->back()->with('error', 'Anda belum terdaftar di kelas manapun untuk tahun ajaran ini');
+        }
+        
         $pelajaranOptions = Mapel::pluck('nama_pelajaran', 'kode_pelajaran');
         $listTahunAjaran = \App\Models\TahunAjaran::pluck('tahun_ajaran', 'id');
 

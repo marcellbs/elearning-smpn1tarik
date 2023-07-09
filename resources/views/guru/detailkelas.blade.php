@@ -143,7 +143,8 @@
             <h5 class="mb-0"><strong>Daftar Siswa</strong></h5>
             <p class="text-muted mb-0">Jumlah siswa : {{$siswa->count()}}</p>
             <hr class="hr">
-            <table class="table table-striped datatable mb-2" id="datatable"> 
+            <table class="table mb-2 datatable" id="datatable">
+                 
               <thead>
                 <tr>
                   <th>No</th>
@@ -163,8 +164,8 @@
                   </td>
                 </tr>
                 @endforeach
-
               </tbody>
+              
             </table>
           </div>
         </div>
@@ -177,7 +178,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Link Video Conference</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -185,7 +186,7 @@
               @csrf
               @method('put')
               <div class="mb-3">
-                <label for="link" class="form-label">Link</label>
+                <label for="link" class="form-label">Masukkan link dibawah ini</label>
                 <input type="text" class="form-control" id="link" name="link" value="{{ $pengampu->link }}">
               </div>
 
