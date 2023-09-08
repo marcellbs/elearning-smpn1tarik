@@ -243,10 +243,15 @@ class PresensiController extends Controller
 
     public function presensi(Request $request)
     {
+        $guruId = auth()->user()->kode_guru;
         $tahunAjaranId = $request->input('tahun_ajaran');
 
         // Mendapatkan data presensi dengan relasi
-        $presensi = PresensiModel::with('kelas', 'mapel', 'tahunAjaran')->orderBy('created_at', 'desc');
+        // $presensi = PresensiModel::with('kelas', 'mapel', 'tahunAjaran')->orderBy('created_at', 'desc');
+
+        $presensi = PresensiModel::with('kelas', 'mapel', 'tahunAjaran')
+            ->where('kode_guru', $guruId)
+            ->orderBy('created_at', 'desc');
 
         // Filter berdasarkan tahun ajaran jika ada
         if ($tahunAjaranId) {

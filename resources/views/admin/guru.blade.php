@@ -73,8 +73,7 @@
         
           {{-- template file excel --}}
           <a href="{{ asset('file/excel/template_upload_data_guru.xlsx') }}" class="btn btn-success">Template Excel</a>
-          {{-- siswa kelas 9 lama --}}
-          <button class="btn btn-danger hps">Kosongkan Data Guru</button>
+          
         </div>
       </div>
 

@@ -11,7 +11,6 @@
 
   <!-- Favicons -->
   <link href="/img/logso.png" rel="icon">
-  <link href="/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -26,6 +25,7 @@
   <link href="/vendor/remixicon/remixicon.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.2/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+  
   <!-- Template Main CSS File -->
   <link rel="stylesheet" href="/css/style.css">
 
@@ -175,11 +175,18 @@
       </li>
 
       <li class="nav-item">
+        <a class="nav-link {{ (Request::is('guru/video')) ? 'active' : '' }}" href="/guru/video">
+          <i class="bi bi-play-btn"></i>
+          <span>Video</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
         <a class="nav-link {{ (Request::is('guru/materi')) ? 'active' : '' }}" href="/guru/materi">
           <i class="bi bi-book"></i>
           <span>Materi</span>
         </a>
-      </li><!-- End Dashboard Nav -->
+      </li>
 
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('guru/tugas')) ? 'active' : '' }}" href="/guru/tugas">

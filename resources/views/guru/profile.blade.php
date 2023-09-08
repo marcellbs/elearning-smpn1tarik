@@ -118,7 +118,11 @@
                     $nip = $tgl_lahir . ' ' . $tgl_masuk . ' ' . $jenis_kelamin . ' ' . $urutan;
 
                   @endphp
-                  <div class="col-lg-9 col-md-8">{{ $nip }}</div>
+                  @if (auth()->user()->nip == null)
+                    <div class="col-lg-9 col-md-8 text-muted"><i>Belum / Tidak ada informasi</i></div>
+                  @else
+                    <div class="col-lg-9 col-md-8">{{ $nip }}</div>
+                  @endif
                   {{-- <div class="col-lg-9 col-md-8">{{ auth()->user()->nip }}</div> --}}
                 </div>
 
@@ -129,7 +133,11 @@
   
                 <div class="row">
                   <div class="col-lg-3 col-md-4 label">Email</div>
-                  <div class="col-lg-9 col-md-8">{{ auth()->user()->email }}</div>
+                  @if(auth()->user()->email == null)
+                    <div class="col-lg-9 col-md-8 text-muted"><i>Belum / Tidak ada informasi</i></div>
+                  @else
+                    <div class="col-lg-9 col-md-8">{{ auth()->user()->jenis_kelamin }}</div>
+                  @endif
                 </div>
                 
                 <div class="row">

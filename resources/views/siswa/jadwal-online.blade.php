@@ -23,13 +23,19 @@
 
     @php
         $hariHari = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+        $backgroundColor = ['#007bff', '#6610f2', '#6f42c1', '#e83e8c', '#dc3545', '#fd7e14'];
     @endphp
 
     @foreach ($hariHari as $hari)
         <div class="col-md-4 mb-3">
             <div class="card">
-                <div class="card-header py-0 bg-info" style="border-bottom: 1px solid rgb(177, 177, 177);">
-                    <h5 class="card-title p-2">{{ ucfirst(strtolower($hari)) }}</h5>
+                {{-- background color --}}
+                @php
+                    // warna urut sesuai hari
+                    $randomColor = $backgroundColor[array_search($hari, $hariHari)];
+                @endphp
+                <div class="card-header fw-bold" style="background-color: {{ $randomColor }}; color: white">
+                    {{ Str::ucfirst($hari) }}
                 </div>
                 <div class="card-body mt-3">
                     @php

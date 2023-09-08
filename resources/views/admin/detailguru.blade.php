@@ -58,7 +58,13 @@
                 <tr>
                   <td>Nomor Induk Pegawai (NIP)</td>
                   <td >:</td>
-                  <td>{{ $formattedNIP }}</td>
+                  <td>
+                    @if($guru->nip == null)
+                      <span class="badge bg-danger">Belum ada NIP</span>
+                    @else
+                      {{ $formattedNIP }}
+                    @endif
+                  </td>
                 </tr>
                 <tr>
                   <td>Nama Lengkap</td>

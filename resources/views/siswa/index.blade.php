@@ -22,9 +22,10 @@
 
 
 <div class="container">
+  <p class="my-1 fst-italic text-end">item dapat digeser</p>
   @if (empty($pengampu->all()))
     <div class="alert alert-danger" role="alert">
-      <h4 class="alert-heading">Tidak ada mata pelajaran</h4>
+      <h4 class="alert-heading text-center">Tidak ada mata pelajaran</h4>
     </div>
   @endif
   <section class="splide mb-3">
@@ -49,7 +50,7 @@
                   </ul>
                 </div>
                 <div class="card-footer p-2 m-0 d-flex border-0 me-2" style="background-color: transparent;">
-                  <a href="/siswa/detail/{{($p->id)}}" class="m-0 ms-auto text-dark">Akses Kelas <i class="bi bi-box-arrow-in-right"></i></a>
+                  <a href="/siswa/detail/{{$hash->encode($p->id)}}" class="m-0 ms-auto text-dark">Akses Kelas <i class="bi bi-box-arrow-in-right"></i></a>
                 </div>
               </div>
             </div>

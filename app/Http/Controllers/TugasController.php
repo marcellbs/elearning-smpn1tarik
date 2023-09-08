@@ -217,8 +217,14 @@ class TugasController extends Controller
         // dd($tugas);
 
         $tugas->save();
+
+        // jika tugas dari route /guru/tugas-kelas/{id}, maka kembalikan ke halaman sebelumnya
+        if($request->input('from') == 'tugas-kelas'){
+            return redirect()->back()->with('success', 'Tugas berhasil ditambahkan!');
+        } else {
+            return redirect('guru/tugas')->with('success', 'Tugas berhasil ditambahkan!');
+        }
         
-        return redirect('guru/tugas')->with('success', 'Tugas berhasil ditambahkan!');
     }
 
 
@@ -383,7 +389,7 @@ class TugasController extends Controller
         $tuga->save();
 
         // kembali ke halaman sebelumnya
-        return redirect('/guru/tugas')->with('success', 'Tugas berhasil diubah');
+        return redirect()->back()->with('success', 'Tugas berhasil diubah');
     }
 
     /**

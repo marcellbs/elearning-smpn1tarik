@@ -23,6 +23,9 @@ class PengampuController extends Controller
         // menampilkan data pengampu sekali dan jadwal yang ada di pengampu tersebut walaupun ada lebih dari satu
         $pengampu = Pengampu::with('jadwal', 'tahunAjaran')->orderBy('kode_thajaran', 'desc')->get();
 
+        // filtering untuk menampilkan pengampu sesuai tahun ajaran yang dipilih melalui dropdown
+
+
         $data = [
             'pengampu' => $pengampu,
             'guru' => \App\Models\Guru::all(),
@@ -159,18 +162,14 @@ class PengampuController extends Controller
             'kelas' => 'required',
             'mapel' => 'required',
             'tahun_ajaran' => 'required',
-            'hari[]' => 'required',
-            'jam_mulai[]' => 'required',
-            'jam_berakhir[]' => 'required',
+            
 
         ],[
             'guru.required' => 'Kolom guru harus diisi',
             'kelas.required' => 'Kolom kelas harus diisi',
             'mapel.required' => 'Kolom pelajaran harus diisi',
             'tahun_ajaran.required' => 'Kolom tahun ajaran harus diisi',
-            'hari[].required' => 'Kolom hari harus diisi',
-            'jam_mulai[].required' => 'Kolom jam mulai harus diisi',
-            'jam_berakhir[].required' => 'Kolom jam berakhir harus diisi',
+            
         ]); 
 
         // dd($request->all());

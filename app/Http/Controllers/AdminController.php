@@ -50,8 +50,8 @@ class AdminController extends Controller
 
     public function pengumuman(){
         $data = [
-            // pengumuman berdasarkan id admin
-            'pengumuman' => Pengumuman::where('kode_admin', Auth::guard('webadmin')->user()->kode_admin)->orderBy('tgl_upload', 'desc')->get(),
+            // menampilkan semua pengumuman
+            'pengumuman' => Pengumuman::orderBy('tgl_upload', 'desc')->get(),
             'title' => 'Pengumuman',
         ];
         return view('admin.pengumuman', $data);
@@ -126,22 +126,25 @@ class AdminController extends Controller
     // =======================================================
 
     public function siswa(){
-        $jumlahData = Siswa::join('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
-        ->join('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
-        ->where('kelas.nama_kelas', 'LIKE', '9%')
-        ->count();
 
         $data = [
             // menampilkan data siswa dan kelasnya
+            // 'siswa' => Siswa::leftJoin('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
+            // ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
+            // ->select('siswa.kode_siswa','siswa.nis','siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status', DB::raw('GROUP_CONCAT(kelas.nama_kelas SEPARATOR ", ") as kelas'))
+            // ->groupBy('siswa.kode_siswa','siswa.nis', 'siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status')
+            // ->orderBy('siswa.nis', 'asc')
+            // ->get(),
+
             'siswa' => Siswa::leftJoin('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
-            ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
-            ->select('siswa.kode_siswa','siswa.nis','siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status', DB::raw('GROUP_CONCAT(kelas.nama_kelas SEPARATOR ", ") as kelas'))
-            ->groupBy('siswa.kode_siswa','siswa.nis', 'siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status')
-            ->orderBy('siswa.nis', 'asc')
-            ->get(),
+                ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
+                ->leftJoin('tahun_ajaran', 'kelas_siswa.kode_thajaran', '=', 'tahun_ajaran.id')
+                ->select('siswa.kode_siswa', 'siswa.nis', 'siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status', 'kelas.nama_kelas', 'tahun_ajaran.tahun_ajaran')
+                ->where('tahun_ajaran.status_aktif', true) // Hanya ambil tahun ajaran yang aktif
+                ->orderBy('siswa.nis', 'asc')
+                ->get(),
 
             'title' => 'Data Siswa',
-            'jumlahData' => $jumlahData,
 
         ];
         return view('admin.siswa', $data);
@@ -345,13 +348,23 @@ class AdminController extends Controller
 
     public function detailsiswa($id)
     {
+        // $siswa = Siswa::leftJoin('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
+        //     ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
+        //     ->select('siswa.kode_siswa','siswa.nis','siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status', 'siswa.foto', 'siswa.agama', DB::raw('GROUP_CONCAT(kelas.nama_kelas SEPARATOR ", ") as kelas'))
+        //     ->groupBy('siswa.kode_siswa','siswa.nis', 'siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status', 'siswa.foto', 'siswa.agama')
+        //     ->where('siswa.kode_siswa', $id)
+        //     ->first();
+
         $siswa = Siswa::leftJoin('kelas_siswa', 'siswa.kode_siswa', '=', 'kelas_siswa.kode_siswa')
             ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
-            ->select('siswa.kode_siswa','siswa.nis','siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status', 'siswa.foto', 'siswa.agama', DB::raw('GROUP_CONCAT(kelas.nama_kelas SEPARATOR ", ") as kelas'))
-            ->groupBy('siswa.kode_siswa','siswa.nis', 'siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status', 'siswa.foto', 'siswa.agama')
+            ->leftJoin('tahun_ajaran', 'kelas_siswa.kode_thajaran', '=', 'tahun_ajaran.id')
+            ->select('siswa.kode_siswa', 'siswa.nis', 'siswa.nama_siswa', 'siswa.username', 'siswa.jenis_kelamin', 'siswa.telepon', 'siswa.email', 'siswa.alamat', 'siswa.status', 'siswa.foto', 'siswa.agama', 'kelas.nama_kelas', 'tahun_ajaran.tahun_ajaran')
             ->where('siswa.kode_siswa', $id)
-            ->first();
+            ->orderBy('kelas_siswa.id', 'asc') // Mengurutkan berdasarkan ID kelas_siswa
+            ->get();
 
+        // dd($siswa);
+        
         $data = [
             'title' => 'Detail Siswa',
             'siswa' => $siswa,
@@ -734,7 +747,7 @@ class AdminController extends Controller
                     'nama' => $nama,
                     'username' => $username,
                     'foto' => $foto,
-                    'password' => $password,
+                    'password' => bcrypt($password),
                 ]);
             }
         }

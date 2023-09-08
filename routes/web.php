@@ -17,7 +17,9 @@ use App\Http\Controllers\TaskstudentsController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\JadwalOnlineController;
 use App\Http\Controllers\TahunAjaranController;
-
+use App\Http\Controllers\RuangkelasController;
+use App\Http\Controllers\VideoController;
+use App\Http\Controllers\RuangSiswaController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -77,8 +79,16 @@ Route::post('/admin/tambahguru', [AdminController::class, 'submitguru'])->middle
 Route::get('/admin/mapel', [AdminController::class, 'mapel'])->middleware('auth:webadmin');
 Route::post('/admin/uploadmapel', [AdminController::class, 'uploadmapel'])->middleware('auth:webadmin');
 
+Route::get('/admin/video', [VideoController::class, 'adminVideo'])->middleware('auth:webadmin');
+Route::get('/admin/video/create', [VideoController::class, 'adminVideoCreate'])->middleware('auth:webadmin');
+Route::post('/admin/video', [VideoController::class, 'adminVideoSave'])->middleware('auth:webadmin');
+Route::get('/admin/video/{id}', [VideoController::class, 'adminVideoDetail'])->middleware('auth:webadmin');
+Route::get('/admin/video/{id}/edit', [VideoController::class, 'adminVideoEdit'])->middleware('auth:webadmin');
+Route::patch('/admin/video/{id}', [VideoController::class, 'adminVideoUpdate'])->middleware('auth:webadmin');
+Route::delete('/admin/video/{id}', [VideoController::class, 'adminVideoDestroy'])->middleware('auth:webadmin');
+
 // ===========================================================
-// ===================== CRUD PROFILE ==========================
+// ===================== CRUD PROFILE ========================
 // ===========================================================
 Route::get('/admin/profile', [AdminController::class, 'profile'])->middleware('auth:webadmin');
 Route::patch('/admin/profile/{id}', [AdminController::class, 'updateProfile'])->middleware('auth:webadmin');
@@ -116,13 +126,28 @@ Route::get('/guru/register', [GuruController::class, 'register']);
 Route::post('/guru/register', [GuruController::class, 'save']);
 Route::get('/guru/logout', [GuruController::class, 'logout']);
 
+Route::get('/guru/video', [VideoController::class, 'index'])->middleware('auth:webguru');
+Route::get('/guru/video/shared', [VideoController::class, 'shared'])->middleware('auth:webguru');
+Route::get('/guru/video/create', [VideoController::class, 'create'])->middleware('auth:webguru');
+Route::post('/guru/video', [VideoController::class, 'save'])->middleware('auth:webguru');
+Route::get('/guru/video/{id}', [VideoController::class, 'detail'])->middleware('auth:webguru');
+Route::get('/guru/video/{id}/edit', [VideoController::class, 'edit'])->middleware('auth:webguru');
+Route::patch('/guru/video/{id}', [VideoController::class, 'update'])->middleware('auth:webguru');
+Route::delete('/guru/video/{id}', [VideoController::class, 'destroy'])->middleware('auth:webguru');
+
 Route::get('/guru/tugas/report-excel', [TugasController::class, 'exportReport'])->middleware('auth:webguru')->name('tugas.export-excel');
 Route::get('/guru/jadwal-mengajar', [JadwalmengajarController::class, 'index'])->middleware('auth:webguru');
 Route::get('/guru/tugas/report', [TugasController::class, 'report'])->middleware('auth:webguru');
 Route::get('/tugas/{tuga}/download-all', [TugasController::class, 'downloadAll'])->middleware('auth:webguru')->name('tugas.download-all');
 Route::resource('/guru/tugas', TugasController::class)->middleware('auth:webguru');
 Route::get('/guru/mapel', [GuruController::class, 'mapel'])->middleware('auth:webguru');
-Route::get('/guru/detail/{id}', [GuruController::class, 'detail'])->middleware('auth:webguru');
+
+Route::get('/guru/detail/{id}', [RuangkelasController::class, 'index'])->middleware('auth:webguru');
+Route::get('/guru/video-kelas/{id}', [RuangkelasController::class, 'video'])->middleware('auth:webguru');
+Route::get('/guru/materi-kelas/{id}', [RuangkelasController::class, 'materiKelas'])->middleware('auth:webguru');
+Route::get('/guru/tugas-kelas/{id}', [RuangkelasController::class, 'tugasKelas'])->middleware('auth:webguru');
+Route::get('/guru/rekap-tugas-kelas/{id}', [RuangkelasController::class, 'rekapTugas'])->middleware('auth:webguru');
+
 Route::resource('/guru/pengampu', PengampuController::class)->middleware('auth:webguru');
 Route::get('/guru/materi/shared', [MateriController::class, 'shared'])->middleware('auth:webguru');
 Route::resource('/guru/materi', MateriController::class)->middleware('auth:webguru');
@@ -151,7 +176,15 @@ Route::post('/siswa/auth', [SiswaController::class, 'auth'])->middleware('guest'
 Route::get('/siswa/register', [SiswaController::class, 'register']);
 Route::post('/siswa/register', [SiswaController::class, 'save']);
 Route::get('/siswa/logout', [SiswaController::class, 'logout']);
-Route::get('/siswa/detail/{id}', [SiswaController::class, 'detail'])->middleware('auth:websiswa');
+
+Route::get('/siswa/detail/{id}', [RuangSiswaController::class, 'index'])->middleware('auth:websiswa');
+Route::get('/siswa/video-kelas/{id}', [RuangSiswaController::class, 'video'])->middleware('auth:websiswa');
+Route::get('/siswa/materi-kelas/{id}', [RuangSiswaController::class, 'materiKelas'])->middleware('auth:websiswa');
+Route::get('/siswa/tugas-kelas/{id}', [RuangSiswaController::class, 'tugasKelas'])->middleware('auth:websiswa');
+
+Route::get('/siswa/video', [VideoController::class, 'videoSiswa'])->middleware('auth:websiswa');
+Route::get('/siswa/video/{id}', [VideoController::class, 'detailVideoSiswa'])->middleware('auth:websiswa');
+
 Route::resource('/siswa/materi', MateriController::class)->middleware('auth:websiswa');
 Route::get('/guru/tugas/create/{id}', [TugasController::class, 'getKelas'])->middleware('auth:webguru');
 Route::put('/guru/detail/{id}', [GuruController::class, 'updateLink'])->middleware('auth:webguru');
@@ -170,4 +203,6 @@ Route::get('/get-mapel', [TugasController::class, 'getMapel'])->middleware('auth
 Route::get('/get-kelas', [TugasController::class,'getKelas'])->middleware('auth:webguru')->name('get-kelas');
 Route::get('/', [ElearningController::class, 'index'])->middleware('guest');
 
-
+// percobaan
+Route::get('/percobaan', [ElearningController::class, 'percobaan'])->middleware('guest');
+Route::get('/percobaan/video/{id}', [ElearningController::class, 'video'])->middleware('auth:webguru');

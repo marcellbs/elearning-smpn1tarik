@@ -2,6 +2,9 @@
 
 @section('content')
   @include('partials.page-title', ['title' => $title])
+
+  <h5 class="fw-bold"><i>Tahun Ajaran {{ $tahunAjaran->tahun_ajaran }}</i></h5>
+
   <!-- Tambahkan kode berikut sebelum tabel -->
   <form action="{{ '/guru' }}" method="GET" class="mb-2">
     <div class="row">
@@ -38,12 +41,12 @@
   </form>
   {{-- {{ $pengampu }} --}}
   <div class="container">
-
     @if($pengampu->isEmpty())
       <div class="alert alert-danger" role="alert">
-        <h4 class="alert-heading text-center">Tidak Kelas yang diampu</h4>
+        <h4 class="alert-heading text-center">Tidak ada kelas yang diampu</h4>
       </div>
     @endif
+      <p class="fst-italic text-end my-1">item dapat digeser</p>
       <section class="splide mb-3">
         <div class="row">
             <div class="splide__track">

@@ -137,7 +137,7 @@
             <tbody>
               @foreach ($kelas as $k)
               <tr>
-                <td>{{$loop->iteration}}</td>
+                <td>{{ $loop->iteration + $kelas->firstItem() - 1 }}</td>
                 <td>{{ $k->kode_kelas }}</td>
                 <td>{{$k->nama_kelas}}</td>
                 <td>
@@ -157,6 +157,9 @@
         </div>
       </div>
     </div>
+    <p class="mb-0">Halaman : {{ $kelas->currentPage(); }}</p>
+    <p class="mb-0">Jumlah  : {{ $kelas->total(); }}</p>
+    <p class="mb-0">Data Per Halaman : {{ $kelas->perPage(); }}</p>
 
     <div class="d-flex justify-content-center">
       {{ $kelas->links() }}

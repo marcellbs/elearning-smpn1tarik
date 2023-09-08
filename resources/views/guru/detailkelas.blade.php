@@ -1,9 +1,9 @@
-@extends('layout.guru')
+@extends('layout.ruangkelas')
 
 @section('content')
-
 {{-- @include('partials.page-title', ['title' => $title]) --}}
 
+<h4 class="fw-bold">Ruang Kelas {{ $pengampu->kelas->nama_kelas }}</h4>
 <div class="row">
   <div class="col-lg-6">
     <div class="card">
@@ -19,8 +19,8 @@
               <td>
                 @if( $pengampu->guru->nip == null )
                     -
-                  @endif
-                  @php
+                @endif
+                @php
                     $tgl_lahir = substr($pengampu->guru->nip, 0, 8);
                     $tgl_masuk = substr($pengampu->guru->nip, 8, 6);
                     $jk = substr($pengampu->guru->nip, 14, 1);
@@ -29,9 +29,9 @@
                     // menggabungkan variabel di atas menjadi format NIP yang benar
                     $nip = $tgl_lahir . ' ' . $tgl_masuk . ' ' . $jk . ' ' . $no_urut;
 
-                  @endphp
+                @endphp
 
-                  {{ $nip}}
+                {{ $nip}}
               </td>
             </tr>
             <tr>
@@ -85,6 +85,7 @@
       </div>
     </div>
   </div>
+  
   <div class="col-lg-6">
     <div class="card">
       <div class="card-body">

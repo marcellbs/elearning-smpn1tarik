@@ -100,26 +100,27 @@
                               <label class="form-label">Jam Mulai:</label>
                               <input type="text" name="jam_mulai[]" class="form-control @error('jam_mulai[]') is-invalid @enderror" value="{{ $j->jam_mulai }}">
                               @error('jam_mulai[]')
-                              <div class="invalid-feedback">
-                                  {{$message}}
-                              </div>
+                                <div class="invalid-feedback">
+                                    {{$message}}
+                                </div>
                               @enderror
                             </div>
                           <div class="col-sm-2">
                               <label class="form-label">Jam Berakhir:</label>
                               <input type="text" name="jam_berakhir[]" class="form-control @error('jam_berakhir[]') is-invalid @enderror" value="{{ $j->jam_berakhir }}">
+                              
                               @error('jam_berakhir[]')
-                              <div class="invalid-feedback">
-                                  {{$message}}
-                              </div>
+                                <div class="invalid-feedback">
+                                    {{$message}}
+                                </div>
                               @enderror
                             </div>
                           <div class="col-1">
                               <label for="remove-jadwal" class="form-label">&nbsp;</label>
                               @if ($key == 0)
-                              <button type="button" id="add-jadwal" class="add-jadwal btn form-control">+</button>
+                                <button type="button" id="add-jadwal" class="add-jadwal btn form-control">+</button>
                               @else
-                              <button type="button" class="remove-jadwal btn form-control">&times;</button>
+                                <button type="button" class="remove-jadwal btn form-control">&times;</button>
                               @endif
                               <input type="hidden" name="jadwal_id[]" value="{{ $j->id }}">
                           </div>

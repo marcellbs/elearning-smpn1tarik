@@ -215,7 +215,7 @@
 @else
     <div class="alert alert-danger" role="alert">
         <h4 class="alert-heading">Tidak ada data presensi!</h4>
-        <p>Silakan tambahkan lakukan presensi terlebih dahulu.</p>
+        <p>Silakan lakukan presensi terlebih dahulu.</p>
     </div>
 @endif
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Siswa;
 use App\Models\KelasSiswa;
 use Illuminate\Http\Request;
+use Hashids\Hashids;
 
 class SiswaController extends Controller
 {
@@ -12,7 +13,6 @@ class SiswaController extends Controller
     {
         $siswa = \App\Models\Siswa::all();
         $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
-        // dd($tahunAjaran->id);
 
         // mengambil kode siswa dari kode_kelas di kelas _siswa yang memiliki kode_thajaran yang sama dengan tahun ajaran yang aktif
         $kelasSiswa = \App\Models\KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
@@ -32,6 +32,9 @@ class SiswaController extends Controller
         
         $pengumuman = \App\Models\Pengumuman::orderBy('tgl_upload', 'desc')->limit(3)->get();
         $pengampu = $query->get();
+
+        $hash = new Hashids('my-hash',10);
+        
         
         $data = [
             'title' => 'Dashboard',
@@ -40,6 +43,7 @@ class SiswaController extends Controller
             'pengampu' => $pengampu,
             'tahunAjaran' => $tahunAjaran->tahun_ajaran,
             'pengumuman' => $pengumuman,
+            'hash' => $hash,
         ];
         
         return view('siswa.index', $data);
@@ -141,7 +145,6 @@ class SiswaController extends Controller
     public function detail($id){
         // $hash = new Hashids('my-hash',10);
         $pengampu = \App\Models\Pengampu::find($id);
-        $kelas_siswa = KelasSiswa::where('kode_kelas', $pengampu->kode_kelas)->get();
         
         $materi = \App\Models\Materi::where('kode_guru', $pengampu->kode_guru)->where('kode_pelajaran', $pengampu->kode_pelajaran)->get();
         
@@ -264,7 +267,7 @@ class SiswaController extends Controller
         $kelasSiswa = KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
             ->where('kode_thajaran', $tahunAjaran->id)
             ->first();
-
+        
         $query = \App\Models\Pengampu::where('kode_kelas', $kelasSiswa->kode_kelas)
             ->where('kode_thajaran', $tahunAjaran->id)
             ->orderBy('kode_pelajaran', 'asc');

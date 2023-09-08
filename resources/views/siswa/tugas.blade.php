@@ -54,7 +54,7 @@
     @if (count($tugas) == 0)
       <div class="col-lg-12">
         <div class="alert alert-warning">
-          <p class="mb-0">Belum ada tugas yang diberikan</p>
+          <p class="mb-0 alert-heading text-center">Belum ada tugas yang diberikan</p>
         </div>  
       </div>
     @else    

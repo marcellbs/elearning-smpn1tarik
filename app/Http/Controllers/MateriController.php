@@ -187,7 +187,7 @@ class MateriController extends Controller
             if(\Illuminate\Support\Facades\Auth::guard('webadmin')->check())
                 return redirect('/admin/materi')->with('sukses', 'Data berhasil ditambahkan');
             else(\Illuminate\Support\Facades\Auth::guard('webguru')->check());
-                return redirect('/guru/materi')->with('sukses', 'Data berhasil ditambahkan');
+                return redirect()->back()->with('sukses', 'Data berhasil ditambahkan');
 
         }elseif(\Illuminate\Support\Facades\Auth::guard('websiswa')->check()){
             return redirect('/siswa/materi')->with('gagal', 'Maaf, anda tidak memiliki akses ke halaman tersebut');

@@ -123,7 +123,7 @@
                     <span class="badge bg-danger">Nonaktif</span>
                   @endif
                 </td>
-                <td>{{$s->kelas}}</td>
+                <td>{{$s->nama_kelas}}</td>
                 <td>
                   <a href="/admin/siswa/{{$s->kode_siswa}}/edit" class="btn btn-warning btn-sm mb-1"><i class="bi bi-pen"></i></a>
 

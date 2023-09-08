@@ -62,6 +62,8 @@ class GuruController extends Controller
 
         $pengumuman = \App\Models\Pengumuman::orderBy('tgl_upload', 'desc')->limit(3)->get();
 
+        $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)->first();
+
         $data = [
             'guru' => Guru::all(),
             'pengampu' => $pengampu,
@@ -70,6 +72,7 @@ class GuruController extends Controller
             'title' => 'Dashboard',
             'hash' => $hash,
             'pengumuman' => $pengumuman,
+            'tahunAjaran' => $tahunAjaran,
         ];
 
         return view('guru.index', $data);
@@ -187,8 +190,7 @@ class GuruController extends Controller
         $hash = new Hashids('my-hash',10);
         $pengampu = Pengampu::find($hash->decode($id)[0]);
 
-        $kelas_siswa = \App\Models\KelasSiswa::where('kode_kelas', $pengampu->kode_kelas)->get();
-        $materi = \App\Models\Materi::where('kode_guru', $pengampu->kode_guru)->where('kode_pelajaran', $pengampu->kode_pelajaran)->get();
+        $materi = \App\Models\Materi::where('kode_guru', $pengampu->kode_guru)->where('kode_pelajaran', $pengampu->kode_pelajaran)->where('tingkat', $pengampu->kelas->nama_kelas[0])->get();
 
         $data = [
             'title' => ''.$pengampu->mapel->nama_pelajaran.' '.$pengampu->kelas->nama_kelas.'',
@@ -201,8 +203,6 @@ class GuruController extends Controller
             ->where('siswa.status', '1')
             ->orderBy('nis', 'asc')
             ->get(),
-
-
         ];
 
         return view('guru.detailkelas', $data);

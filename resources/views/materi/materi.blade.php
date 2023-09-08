@@ -106,7 +106,7 @@
           @if($materi->isEmpty())
             <div class="col-md-12">
               <div class="alert alert-danger" role="alert">
-                <h4 class="alert-heading">Tidak ada materi</h4>
+                <h4 class="alert-heading text-center">Belum ada materi yang dibagikan</h4>
               </div>
             </div>
           @endif

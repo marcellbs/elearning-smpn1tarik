@@ -30,7 +30,7 @@
       <div class="card mb-3 rounded-2">
         <div class="card-header-shared">
           <h5 class="card-title-shared">{{$m->judul_materi}}</h5>
-          <h6 class="card-subtitle text-muted"><i>{{$m->mapel->nama_pelajaran}}</i></h6>
+          <h6 class="card-subtitle text-muted"><i>{{$m->mapel->nama_pelajaran}} | Kelas {{$m->tingkat}}</i></h6>
         </div>
         <hr class="hr">
         <div class="card-body">

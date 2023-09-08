@@ -7,7 +7,7 @@
   </div>
 
   <div class="col-md-2 my-auto d-grid">
-    <a href="/guru/tugas" class="gap-2 btn btn-block btn-primary">Kembali</a>
+      <a href="javascript:history.back()" class="gap-2 btn btn-block btn-primary">Kembali</a>
   </div>
   
 </div>

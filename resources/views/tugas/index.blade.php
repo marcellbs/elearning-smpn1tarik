@@ -77,7 +77,7 @@
     @if (count($tugas) == 0)
       <div class="col-lg-12">
         <div class="alert alert-warning">
-          <p class="mb-0">Tidak ada tugas yang dibuat</p>
+          <p class="mb-0 alert-heading text-center">Belum ada ada tugas yang dibuat</p>
         </div>  
       </div>
     @else    

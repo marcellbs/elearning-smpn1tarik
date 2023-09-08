@@ -164,7 +164,14 @@
 
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('siswa/jadwal-online')) ? 'active' : '' }}" href="/siswa/jadwal-online">
-          <i class="bi bi-calendar-week"></i><span>Jadwal Online</span>
+          <i class="bi bi-calendar-week"></i><span>Jadwal Pelajaran</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('siswa/video')) ? 'active' : '' }}" href="/siswa/video">
+          <i class="bi bi-play-btn"></i>
+          <span>Video</span>
         </a>
       </li>
 
@@ -173,8 +180,7 @@
           <i class="bi bi-book"></i>
           <span>Materi</span>
         </a>
-      </li><!-- End Dashboard Nav -->
-
+      </li>
       
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('siswa/tugas')) ? 'active' : '' }}" href="/siswa/tugas">

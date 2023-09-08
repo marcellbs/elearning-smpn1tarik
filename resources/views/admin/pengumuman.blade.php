@@ -22,6 +22,8 @@
 <div class="row">
   <div class="col-lg-12">
     <div class="card">
+      <h5 class="mx-3 mt-2 mb-0 fw-bold">Buat Pengumuman Baru</h5>
+      <hr>
       <div class="card-body">
         <div class="table-responsive mt-3">
           <form action="/admin/createpengumuman" method="post">
@@ -51,6 +53,8 @@
 
   <div class="col-lg-12">
     <div class="card">
+      <h5 class="mx-3 mt-2 mb-0 fw-bold">Daftar Pengumuman</h5>
+      <hr>
       <div class="card-body">
         <div class="table-responsive mt-3">
           

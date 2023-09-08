@@ -13,19 +13,20 @@
   </nav>
 </div>
 
+
 <section class="section profile">
   <div class="row">
     <div class="col-xl-4 mb-3">
       <div class="card mb-2">
         <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
 
-          @if( file_exists( public_path().'/img/siswa/'.$siswa->foto ))
-            <img src="/img/siswa/{{ $siswa->foto }}" alt="profil-{{ $siswa->nama_siswa }}" class="rounded-circle img-thumbnail">
+          @if( file_exists( public_path().'/img/siswa/'.$siswa[0]->foto ))
+            <img src="/img/siswa/{{ $siswa[0]->foto }}" alt="profil-{{ $siswa->nama_siswa }}" class="rounded-circle img-thumbnail">
           @else
-            <img src="/img/{{ $siswa->foto }}" alt="profil-{{ $siswa->nama_siswa }}" class="rounded-circle img-thumbnail">
+            <img src="/img/{{ $siswa[0]->foto }}" alt="profil-{{ $siswa[0]->nama_siswa }}" class="rounded-circle img-thumbnail">
           @endif
 
-          <h5 class="mt-2 mb-0 pb-0"><strong>{{ ucwords($siswa->nama_siswa) }}</strong></h5>
+          <h5 class="mt-2 mb-0 pb-0 text-center"><strong>{{ ucwords($siswa[0]->nama_siswa) }}</strong></h5>
           <p class="mt-2 mb-0">Siswa</p>
           {{-- <p class="mt-1">{{ $siswa->nis }} | {{ $siswa->nama_kelas }}</p> --}}
           
@@ -57,52 +58,57 @@
                 <tr>
                   <td>Nomor Induk Siswa</td>
                   <td>:</td>
-                  <td>{{ $siswa->nis }}</td>
+                  <td>{{ $siswa[0]->nis }}</td>
                 </tr>
                 <tr>
                   <td>Nama</td>
                   <td>:</td>
-                  <td>{{ $siswa->nama_siswa }}</td>
+                  <td>{{ $siswa[0]->nama_siswa }}</td>
                 </tr>
                 <tr>
                   <td>Status</td>
                   <td>:</td>
-                  <td id="status-siswa">{!! $siswa->status == 1 ? '<span class="badge bg-success">Aktif</span>' : '<span class="badge bg-danger">Nonaktif</span>' !!}</td>
+                  <td id="status-siswa">{!! $siswa[0]->status == "1" ? '<span class="badge bg-success">Aktif</span>' : '<span class="badge bg-danger">Nonaktif</span>' !!}</td>
                 </tr>
                 <tr>
                   <td>Username</td>
                   <td>:</td>
-                  <td>{{ $siswa->username }}</td>
+                  <td>{{ $siswa[0]->username }}</td>
                 </tr>
                 <tr>
                   <td>Kelas</td>
                   <td>:</td>
-                  <td>{{ $siswa->kelas }}</td>
+                  <td>
+                    @foreach ($siswa as $dataSiswa)
+                        {{ $dataSiswa->nama_kelas }} - {{ $dataSiswa->tahun_ajaran }}
+                        <br>
+                    @endforeach
+                  </td>
                 </tr>
                 <tr>
                   <td>Email</td>
                   <td>:</td>
-                  <td>{!! $siswa->email != null ? $siswa->email : '<i>Belum ada keterangan</i>' !!}</td>
+                  <td>{!! $siswa[0]->email != null ? $siswa[0]->email : '<i>Belum ada keterangan</i>' !!}</td>
                 </tr>
                 <tr>
                   <td>Jenis Kelamin</td>
                   <td>:</td>
-                  <td>{!! $siswa->jenis_kelamin != null ? $siswa->jenis_kelamin : '<i>Belum ada keterangan</i>' !!}</td>
+                  <td>{!! $siswa[0]->jenis_kelamin != null ? $siswa[0]->jenis_kelamin : '<i>Belum ada keterangan</i>' !!}</td>
                 </tr>
                 <tr>
                   <td>Telepon</td>
                   <td>:</td>
-                  <td>{!! $siswa->telepon != null ? $siswa->telepon : '<i>Belum ada keterangan</i>' !!}</td>
+                  <td>{!! $siswa[0]->telepon != null ? $siswa[0]->telepon : '<i>Belum ada keterangan</i>' !!}</td>
                 </tr>
                 <tr>
                   <td>Agama</td>
                   <td>:</td>
-                  <td>{!! $siswa->agama != null ? $siswa->agama : '<i>Belum ada keterangan</i>'  !!}</td>
+                  <td>{!! $siswa[0]->agama != null ? $siswa[0]->agama : '<i>Belum ada keterangan</i>'  !!}</td>
                 </tr>
                 <tr>
                   <td>Alamat</td>
                   <td>:</td>
-                  <td>{!! $siswa->alamat != null ? $siswa->alamat : '<i>Belum ada keterangan</i>' !!}</td>
+                  <td>{!! $siswa[0]->alamat != null ? $siswa[0]->alamat : '<i>Belum ada keterangan</i>' !!}</td>
                 </tr>
 
               </table>

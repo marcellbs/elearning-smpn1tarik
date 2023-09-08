@@ -137,7 +137,7 @@
     <div class="text-center">
       <img src="/img/{{ auth()->user()->foto }}" alt="Profile" class="align-center rounded-circle image-profile">
       {{-- {!! ucwords('khoirul badi S.Kom., M.T.') !!} --}}
-      <h5 class="mb-0 mt-3">{{ auth()->user()->nama }}</h5>
+      <h5 class="mb-0 mt-3 fw-bold">{{ auth()->user()->nama }}</h5>
       <p class="mt-0">Administrator</p>
     </div>
 
@@ -155,6 +155,13 @@
         <a class="nav-link {{ (Request::is('admin/materi')) ? 'active' : '' }}" href="/admin/materi">
           <i class="bi bi-book"></i>
           <span>Materi</span>
+        </a>
+      </li><!-- End Dashboard Nav -->
+      
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('admin/video')) ? 'active' : '' }}" href="/admin/video">
+          <i class="bi bi-play-btn"></i>
+          <span>Video</span>
         </a>
       </li><!-- End Dashboard Nav -->
 
@@ -221,7 +228,7 @@
       </li><!-- End Icons Nav -->
       <li class="nav-item">
         <a class="nav-link" href="/admin/logout" class="{{ (Request::is('admin/logout')) ? 'active' : '' }}" >
-          <i class="bi bi-box-arrow-right"></i><span>Keluar</span>
+          <i class="bi bi-box-arrow-left"></i><span>Keluar</span>
         </a>
       </li><!-- End Icons Nav -->
     </ul>
