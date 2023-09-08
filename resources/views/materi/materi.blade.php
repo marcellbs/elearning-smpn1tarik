@@ -188,6 +188,9 @@
       </div>
     </div>
   </section>
+  <div class="d-flex justify-content-center">
+      {{ $materi->links() }}
+    </div>
 </div>
 
 @endsection

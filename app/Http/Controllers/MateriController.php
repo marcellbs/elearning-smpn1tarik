@@ -46,7 +46,7 @@ class MateriController extends Controller
             // ->join('tingkat_kelas', 'materi.kode_tingkat', '=', 'tingkat_kelas.kode_tingkat')
             ->join('pelajaran', 'materi.kode_pelajaran', '=', 'pelajaran.kode_pelajaran')
             ->select('materi.*','pelajaran.nama_pelajaran')
-            ->get();
+            ->paginate(6);
 
             $pelajaranOptions = \App\Models\Mapel::pluck('nama_pelajaran', 'kode_pelajaran');
 
