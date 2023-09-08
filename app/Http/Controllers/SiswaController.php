@@ -267,14 +267,10 @@ class SiswaController extends Controller
         $kelasSiswa = KelasSiswa::where('kode_siswa', auth()->guard('websiswa')->user()->kode_siswa)
             ->where('kode_thajaran', $tahunAjaran->id)
             ->first();
-<<<<<<< HEAD
-=======
-
 
         if (empty($kelasSiswa)) {
             return redirect()->back()->with('error', 'Tahun Ajaran ' . $namaTahunAjaran . ' tidak ditemukan');
         }
->>>>>>> 4ebc43f947b002fad9b38b3d82049793dfbdf3f9
         
         $query = \App\Models\Pengampu::where('kode_kelas', $kelasSiswa->kode_kelas)
             ->where('kode_thajaran', $tahunAjaran->id)
@@ -293,9 +289,6 @@ class SiswaController extends Controller
 
         return view('siswa.mapel', $data);
     }
-
-
-
 
 
     public function profile(){
